@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+.bob
+PRD.md
+Technical_requirement.md
+AGENTS.md
+.env
+steps.txt

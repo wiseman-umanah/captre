@@ -7,7 +7,15 @@ authors = [
     { name = "wiseman-umanah", email = "wisemanumanah@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "algorand-python>=3.5.1",
+    "fastapi>=0.141.1",
+    "py-algorand-sdk>=2.11.1",
+    "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
+    "uvicorn>=0.52.1",
+    "x402-avm[avm,extensions,fastapi]>=2.0.2",
+]
 
 [project.scripts]
 captre = "captre:main"
@@ -15,3 +23,12 @@ captre = "captre:main"
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "algokit-utils>=4.2.3",
+    "algorand-python>=3.5.1",
+    "pyright>=1.1.411",
+    "pytest>=9.1.1",
+    "ruff>=0.16.2",
+]
