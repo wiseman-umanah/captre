@@ -15,6 +15,7 @@ import logging
 import os
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import cast
 
 from algokit_utils import AlgorandClient, BoxReference, SigningAccount
@@ -43,14 +44,21 @@ def _get_service_account() -> SigningAccount:
     return SigningAccount(private_key=private_key)
 
 
+_ARC56_SPEC = json.loads(
+    (Path(__file__).parent.parent / "contract" / "artifacts" / "CaptreApp.arc56.json").read_text()
+)
+
+
 def _get_app_client(service_account: SigningAccount):
     algod_url = os.environ["ALGOD_URL"]
     algod_token = os.environ.get("ALGOD_TOKEN", "")
-    client = AlgorandClient.from_clients(AlgodClient(algod_token, algod_url))
-    # app_spec required by get_app_client_by_id; empty string is accepted for
-    # raw ABI calls where we don't need approval/clear program validation.
+    from algosdk.v2client.indexer import IndexerClient as _IdxClient
+    client = AlgorandClient.from_clients(
+        AlgodClient(algod_token, algod_url),
+        _IdxClient("", os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")),
+    )
     return client.client.get_app_client_by_id(
-        app_spec="",
+        app_spec=_ARC56_SPEC,
         app_id=_get_app_id(),
         default_sender=service_account.address,
         default_signer=service_account.signer,
@@ -205,7 +213,14 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
         args=[content_hash_bytes],
         box_references=[BoxReference(app_id=_get_app_id(), name=content_hash_bytes)],
     ))
-    raw = cast(bytes, result.abi_return)
+    abi_val = result.abi_return
+    if not abi_val:
+        return None
+    # ABI returns Bytes as list[int]; cast to bytes
+    if isinstance(abi_val, (list, bytes, bytearray)):
+        raw = bytes(abi_val)
+    else:
+        raw = cast(bytes, abi_val)
     if not raw:
         return None
     return Attestation.model_validate(json.loads(raw.decode()))
