@@ -71,7 +71,7 @@ async def attest(request: Request, body: AttestRequest) -> AttestResponse:
             detail=ErrorResponse(
                 error="content_hash already claimed",
                 existing_attestation=existing,
-            ).model_dump(),
+            ).model_dump(mode="json"),
         )
     except RuntimeError as exc:
         logger.error("attest write failed: %s", exc)

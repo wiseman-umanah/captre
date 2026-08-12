@@ -24,6 +24,7 @@ from algosdk.mnemonic import to_private_key
 from algosdk.v2client.algod import AlgodClient
 from dotenv import load_dotenv
 
+from captre.index_db import put as index_put
 from captre.models import Attestation, AttestationStatus, AttestRequest
 
 load_dotenv()
@@ -116,6 +117,7 @@ def write_attestation(
             args=[content_hash_bytes, payer_address, metadata_json],
             box_references=[BoxReference(app_id=_get_app_id(), name=content_hash_bytes)],
         ))
+        index_put(attestation_id, request.content_hash)
         logger.info(
             "attest box written | attestation_id=%s content_hash=%s author=%s",
             attestation_id,
@@ -123,15 +125,15 @@ def write_attestation(
             payer_address,
         )
     except Exception as exc:
-        msg = str(exc)
-        if "ERR_ALREADY_CLAIMED" in msg:
+        # Walk the full exception chain — algokit wraps LogicError inside ValueError
+        full_msg = " ".join(str(e) for e in [exc, exc.__cause__, exc.__context__] if e)
+        if "ERR_ALREADY_CLAIMED" in full_msg:
             raise ValueError(f"content_hash already claimed: {request.content_hash}") from exc
-        # Payment already settled — log for retry, then re-raise
         logger.error(
             "box write FAILED after payment settled | payment_tx_id=%s content_hash=%s error=%s",
             payment_tx_id,
             request.content_hash,
-            msg,
+            full_msg,
         )
         raise RuntimeError(
             f"Box write failed after payment settled (payment_tx_id={payment_tx_id}). "
@@ -186,6 +188,9 @@ def revoke_attestation(
             payer_address,
         )
     except Exception as exc:
+        full_msg = " ".join(str(e) for e in [exc, exc.__cause__, exc.__context__] if e)
+        if "ERR_NOT_FOUND" in full_msg:
+            raise ValueError(f"attestation not found on-chain: {content_hash}") from exc
         logger.error(
             "revoke box update FAILED after payment settled | payment_tx_id=%s error=%s",
             payment_tx_id,

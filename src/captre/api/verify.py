@@ -1,6 +1,6 @@
 """
 GET /verify          — free, lookup by content_hash query param
-GET /attestation/:id — free, lookup by attestation_id
+GET /attestation/:id — free, lookup by attestation_id (via SQLite index)
 
 Verify calls do not contribute to leaderboard volume (free endpoints).
 """
@@ -9,6 +9,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException, Query, status
 
+from captre.index_db import get as index_get
 from captre.models import VerifyResponse
 from captre.settlement.write_attestation import read_attestation_from_box
 
@@ -43,16 +44,16 @@ async def verify(
     description="Free full retrieval by attestation_id.",
 )
 async def get_attestation(attestation_id: str) -> VerifyResponse:
-    # Box keys are content_hash; attestation_id is stored inside the box value.
-    # We can't do a direct box lookup by attestation_id without a secondary index,
-    # so this endpoint requires the backend to maintain a content_hash→attestation_id
-    # mapping in memory or a lightweight local store.
-    # For v1, raise 501 until that index is wired up.
-    # TODO: wire up attestation_id → content_hash index
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail=(
-            "Lookup by attestation_id requires a secondary index. "
-            "Use GET /verify?content_hash=... for now."
-        ),
-    )
+    content_hash = index_get(attestation_id)
+    if content_hash is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No attestation found for id: {attestation_id}",
+        )
+    attestation = read_attestation_from_box(content_hash)
+    if attestation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No attestation found for id: {attestation_id}",
+        )
+    return VerifyResponse(attestation=attestation)

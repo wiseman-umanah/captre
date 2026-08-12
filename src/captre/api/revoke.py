@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException, Request, status
 from x402.mechanisms.avm import decode_payment_group
 
 from captre.api.attest import _extract_payer
+from captre.index_db import get as index_get
 from captre.models import ErrorResponse, RevokeRequest, RevokeResponse
 from captre.settlement.write_attestation import (
     read_attestation_from_box,
@@ -47,18 +48,20 @@ async def revoke(request: Request, body: RevokeRequest) -> RevokeResponse:
 
     payer_address, payment_tx_id = _extract_payer(payment_payload)
 
-    # We need the content_hash to look up the box; the request only has attestation_id.
-    # For now, read the attestation_id index. This mirrors the TODO in verify.py —
-    # until the index is wired, callers must pass content_hash here too.
-    # TODO: resolve attestation_id → content_hash via index
-    # Temporary: treat attestation_id as content_hash for testnet iteration
+    # Resolve content_hash: RevokeRequest carries attestation_id.
+    # Try it as a content_hash first (direct), then look up via index.
     content_hash = body.attestation_id
-
     existing = read_attestation_from_box(content_hash)
+    if existing is None:
+        # Try resolving as an attestation_id via the index
+        resolved = index_get(body.attestation_id)
+        if resolved:
+            content_hash = resolved
+            existing = read_attestation_from_box(content_hash)
     if existing is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No attestation found for id: {body.attestation_id}",
+            detail=f"No attestation found for: {body.attestation_id}",
         )
 
     try:

@@ -7,11 +7,14 @@ Correct API (v2.0.2):
   - Middleware: payment_middleware(routes, server) as @app.middleware("http")
   - Payment payload injected as request.state.payment_payload
   - Server setup: x402ResourceServer + register_exact_avm_server(server)
+  - Bazaar discovery: extensions=declare_discovery_extension(...) on each RouteConfig
+    Middleware auto-registers BazaarResourceServerExtension when it sees "bazaar" in extensions.
 """
 
 import os
 
 from dotenv import load_dotenv
+from x402.extensions.bazaar.resource_service import OutputConfig, declare_discovery_extension
 from x402.http.types import PaymentOption, RouteConfig
 from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
 
@@ -44,6 +47,43 @@ ATTEST_ROUTE_CONFIG = RouteConfig(
         network=NETWORK,
     ),
     description="Create a first-claim attestation on Algorand",
+    extensions=declare_discovery_extension(
+        input={
+            "content_hash": "sha256:abc123...",
+            "agent_id": "my-agent-v1",
+            "output_type": "file",
+            "description": "Optional description of the content",
+            "tags": ["research", "v1"],
+        },
+        input_schema={
+            "properties": {
+                "content_hash": {"type": "string", "description": "SHA-256 hash of the content"},
+                "agent_id": {"type": "string", "description": "Optional agent identifier"},
+                "output_type": {
+                    "type": "string",
+                    "enum": ["research", "file", "decision", "code", "report", "other"],
+                },
+                "description": {"type": "string"},
+                "model": {"type": "string"},
+                "tags": {"type": "array", "items": {"type": "string"}},
+            },
+            "required": ["content_hash"],
+        },
+        body_type="json",
+        output=OutputConfig(
+            example={
+                "attestation": {
+                    "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
+                    "author": "GFYF3KDNCMINZCDJ6KIQDV24WU2PPFMLNST4J5FBW2Z2YQFT54BOEEGJYY",
+                    "content_hash": "sha256:abc123...",
+                    "status": "active",
+                    "tx_id": "QK5ATJTD7CDTXADBQIX4NX52EWC7GYOL3BSBN5YTJWZP5HQMXLLA",
+                    "created_at": "2025-01-01T00:00:00Z",
+                },
+                "message": "Attestation created successfully",
+            }
+        ),
+    ),
 )
 
 REVOKE_ROUTE_CONFIG = RouteConfig(
@@ -54,6 +94,30 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
         network=NETWORK,
     ),
     description="Revoke an existing attestation (original author only)",
+    extensions=declare_discovery_extension(
+        input={
+            "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
+        },
+        input_schema={
+            "properties": {
+                "attestation_id": {
+                    "type": "string",
+                    "description": "UUID attestation_id or content_hash of the attestation to revoke",
+                },
+            },
+            "required": ["attestation_id"],
+        },
+        body_type="json",
+        output=OutputConfig(
+            example={
+                "attestation": {
+                    "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
+                    "status": "revoked",
+                },
+                "message": "Attestation revoked successfully",
+            }
+        ),
+    ),
 )
 
 ROUTES_CONFIG = {
