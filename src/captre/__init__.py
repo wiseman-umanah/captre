@@ -38,6 +38,27 @@ def create_app() -> FastAPI:
     app.include_router(verify_router)
     app.include_router(revoke_router)
 
+    @app.get("/")
+    async def root() -> dict:
+        return {
+            "name": "Captre",
+            "description": "On-chain attestation service — first-claim proofs anchored on Algorand via x402",
+            "version": "0.1.0",
+            "endpoints": {
+                "POST /attest": "Create a first-claim attestation (x402 paid)",
+                "GET /verify": "Verify an attestation by content hash (free)",
+                "GET /attestation/{id}": "Retrieve attestation by ID (free)",
+                "POST /revoke": "Revoke an attestation — original author only (x402 paid)",
+                "GET /health": "Service health check",
+            },
+            "docs": "http://localhost:8000/docs",
+            "network": "testnet",
+            "contract": {
+                "app_id": 769033926,
+                "explorer": "https://testnet.explorer.perawallet.app/application/769033926",
+            },
+        }
+
     @app.get("/health")
     async def health() -> dict:
         return {"status": "ok"}
