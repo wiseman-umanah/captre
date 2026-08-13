@@ -31,6 +31,25 @@ router = APIRouter()
 async def verify(
     content_hash: str = Query(..., description="The content hash to verify, e.g. sha256:abc123"),
 ) -> VerifyResponse:
+    """
+    Look up an attestation by its exact ``content_hash``.
+
+    Parameters
+    ----------
+    content_hash : str
+        The exact hash used when the attestation was created
+        (e.g. ``sha256:abc123...``). Passed as a query parameter.
+
+    Returns
+    -------
+    VerifyResponse
+        The matching attestation record with ``verified=True``.
+
+    Raises
+    ------
+    HTTPException(404)
+        If no attestation box exists for the given ``content_hash``.
+    """
     attestation = read_attestation_from_box(content_hash)
     if attestation is None:
         raise HTTPException(
@@ -47,13 +66,32 @@ async def verify(
     summary="Retrieve an attestation by ID or content hash",
     description=(
         "Lookup by attestation_id (UUID) or content_hash. "
-        "First checks the local SQLite index, then falls back to querying "
-        "on-chain box storage directly using the parameter as a content_hash. "
-        "The on-chain fallback ensures this endpoint works even after a fresh "
-        "deploy with no local database."
+        "First checks the on-chain id_index BoxMap to resolve a UUID to its "
+        "content_hash, then falls back to using the parameter directly as a "
+        "content_hash. Fully on-chain — no SQLite dependency."
     ),
 )
 async def get_attestation(attestation_id: str) -> VerifyResponse:
+    """
+    Retrieve an attestation by UUID or by content hash.
+
+    Parameters
+    ----------
+    attestation_id : str
+        Either a UUID ``attestation_id`` (resolved via the on-chain
+        ``id_index`` BoxMap) or a raw ``content_hash``.
+
+    Returns
+    -------
+    VerifyResponse
+        The matching attestation record with ``verified=True``.
+
+    Raises
+    ------
+    HTTPException(404)
+        If neither the UUID lookup nor the direct content_hash lookup finds
+        a matching attestation box on-chain.
+    """
     # Step 1 — on-chain id_index: resolve attestation_id UUID → content_hash
     content_hash = resolve_id_from_chain(attestation_id)
     if content_hash is not None:

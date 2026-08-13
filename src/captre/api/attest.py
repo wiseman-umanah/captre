@@ -7,6 +7,7 @@ Payer address is decoded from the AVM payment group (transactions[payment_index]
 """
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request, status
 from x402.mechanisms.avm import decode_payment_group
@@ -21,8 +22,36 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def _extract_payer(payment_payload) -> tuple[str, str]:
-    """Extract (payer_address, tx_id) from the x402 payment payload."""
+def _extract_payer(payment_payload: Any) -> tuple[str, str]:
+    """
+    Decode the payer address and a stable transaction reference from an x402
+    payment payload object injected by the middleware.
+
+    Parameters
+    ----------
+    payment_payload : Any
+        The object attached to ``request.state.payment_payload`` by the x402
+        middleware after a successful settlement. Expected to have a ``.payload``
+        attribute containing a dict with ``"paymentGroup"`` (base64-encoded AVM
+        transaction group) and ``"paymentIndex"`` (int index of the payment tx).
+
+    Returns
+    -------
+    tuple[str, str]
+        A two-element tuple of ``(payer_address, tx_id)`` where:
+
+        * ``payer_address`` — the Algorand address of the account that signed
+          the payment transaction (the true author / caller identity).
+        * ``tx_id`` — the group ID of the payment transaction group, used as a
+          stable reference for retry tracing. Falls back to
+          ``"group-idx-<payment_index>"`` when no group ID is present.
+
+    Notes
+    -----
+    This is the **only** place where the real author address should be
+    extracted. Do **not** use ``Txn.sender()`` from the AVM app call — that
+    is always the backend service account.
+    """
     inner = payment_payload.payload
     payment_group = inner["paymentGroup"]
     payment_index = inner["paymentIndex"]
@@ -47,6 +76,32 @@ def _extract_payer(payment_payload) -> tuple[str, str]:
     ),
 )
 async def attest(request: Request, body: AttestRequest) -> AttestResponse:
+    """
+    Handle a paid POST /attest request.
+
+    Parameters
+    ----------
+    request : Request
+        The incoming FastAPI request. Must have ``request.state.payment_payload``
+        set by the x402 middleware; returns 402 otherwise.
+    body : AttestRequest
+        Validated JSON request body containing at minimum ``content_hash``.
+
+    Returns
+    -------
+    AttestResponse
+        The newly created attestation record wrapped in a response envelope.
+
+    Raises
+    ------
+    HTTPException(402)
+        If no payment payload is present on the request state.
+    HTTPException(409)
+        If the ``content_hash`` has already been claimed. The response detail
+        contains the existing attestation.
+    HTTPException(500)
+        If the box write fails after payment has already settled.
+    """
     # middleware injects payment_payload into request.state after settlement
     payment_payload = getattr(request.state, "payment_payload", None)
     if payment_payload is None:

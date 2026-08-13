@@ -30,11 +30,19 @@ ALGOD_TOKEN = os.environ.get("ALGOD_TOKEN", "")
 DEPLOYER_MNEMONIC = os.environ["DEPLOYER_MNEMONIC"]
 ENV_FILE = ".env"
 
-
 INDEXER_URL = os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")
 
 
 def get_client() -> AlgorandClient:
+    """
+    Build an ``AlgorandClient`` from the environment-configured algod and
+    indexer URLs.
+
+    Returns
+    -------
+    AlgorandClient
+        A connected algokit-utils client ready for deployment and interaction.
+    """
     return AlgorandClient.from_clients(
         AlgodClient(ALGOD_TOKEN, ALGOD_URL),
         IndexerClient("", INDEXER_URL),
@@ -42,7 +50,35 @@ def get_client() -> AlgorandClient:
 
 
 def deploy() -> int:
-    """Deploy CaptreApp and return the app_id. Idempotent — checks APP_ID in env first."""
+    """
+    Deploy the CaptreApp contract and return its application ID.
+
+    If ``APP_ID`` is already set in the environment the existing deployment is
+    reused and no new transaction is submitted. Otherwise the contract is
+    compiled from the ARC-56 spec in
+    ``src/captre/contract/artifacts/CaptreApp.arc56.json`` and deployed with
+    ``OnSchemaBreak.ReplaceApp`` / ``OnUpdate.ReplaceApp`` policies.
+
+    After a successful first deploy, ``APP_ID`` and ``APP_ADDRESS`` are written
+    back to the ``.env`` file so subsequent runs reuse the same application.
+
+    Parameters
+    ----------
+    (none)
+
+    Returns
+    -------
+    int
+        The Algorand application ID of the deployed (or reused) CaptreApp.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the compiled ARC-56 artifact is not found. Run
+        ``algokit compile python src/captre/contract/captre_app.py`` first.
+    RuntimeError
+        If the ``algokit-utils`` deployment call fails.
+    """
     existing = os.environ.get("APP_ID")
     if existing:
         print(f"[deploy] Reusing existing APP_ID={existing}")

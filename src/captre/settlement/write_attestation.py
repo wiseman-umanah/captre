@@ -34,6 +34,19 @@ SERVICE_MNEMONIC = os.environ["SERVICE_MNEMONIC"]
 
 
 def _get_app_id() -> int:
+    """
+    Read the deployed contract app ID from the environment.
+
+    Returns
+    -------
+    int
+        The Algorand application ID of the deployed CaptreApp contract.
+
+    Raises
+    ------
+    RuntimeError
+        If ``APP_ID`` is not set in the environment (deploy has not been run).
+    """
     val = os.environ.get("APP_ID", "")
     if not val:
         raise RuntimeError("APP_ID is not set in .env — run `uv run python -m captre.contract.deploy` first")
@@ -41,6 +54,15 @@ def _get_app_id() -> int:
 
 
 def _get_service_account() -> SigningAccount:
+    """
+    Construct the backend service ``SigningAccount`` from the environment mnemonic.
+
+    Returns
+    -------
+    SigningAccount
+        An algokit-utils ``SigningAccount`` whose address is the Captre service
+        wallet. All on-chain app calls are submitted from this account.
+    """
     private_key = to_private_key(SERVICE_MNEMONIC)
     return SigningAccount(private_key=private_key)
 
@@ -51,6 +73,21 @@ _ARC56_SPEC = json.loads(
 
 
 def _get_app_client(service_account: SigningAccount):
+    """
+    Build an algokit-utils app client for the deployed CaptreApp contract.
+
+    Parameters
+    ----------
+    service_account : SigningAccount
+        The signing account used as the default sender and signer for all
+        method calls made through the returned client.
+
+    Returns
+    -------
+    ApplicationClient
+        An algokit-utils ``ApplicationClient`` configured with the ARC-56 spec,
+        the current ``APP_ID``, and the provided ``service_account``.
+    """
     algod_url = os.environ["ALGOD_URL"]
     algod_token = os.environ.get("ALGOD_TOKEN", "")
     from algosdk.v2client.indexer import IndexerClient as _IdxClient
@@ -68,23 +105,42 @@ def _get_app_client(service_account: SigningAccount):
 
 def write_attestation(
     request: AttestRequest,
-    payer_address: str,   # extracted from x402 payment payload — the real author
-    payment_tx_id: str,   # used as tx_id reference and for retry tracing
+    payer_address: str,
+    payment_tx_id: str,
 ) -> Attestation:
     """
-    Write a new attestation box.
+    Write a new attestation to on-chain box storage.
 
-    Args:
-        request:         Validated client request body.
-        payer_address:   Algorand address from x402 payment payload (the author).
-        payment_tx_id:   Settlement tx id from x402 facilitator response.
+    Generates a UUID ``attestation_id``, builds the full ``Attestation`` record,
+    then submits the ``attest()`` AVM method call which writes two boxes
+    atomically: ``attestations[content_hash]`` and ``id_index[attestation_id]``.
 
-    Returns:
-        The fully-populated Attestation record.
+    Parameters
+    ----------
+    request : AttestRequest
+        Validated client request body. Must contain at minimum ``content_hash``.
+    payer_address : str
+        Algorand address of the x402 payment payer — this becomes the
+        ``author`` field in the stored attestation. **Never** pass
+        ``Txn.sender()`` here; that is always the service account.
+    payment_tx_id : str
+        Payment group ID from the x402 facilitator response. Used as the
+        ``tx_id`` reference in the stored record and in retry-trace logs.
 
-    Raises:
-        ValueError:  If the content_hash is already claimed (contract abort).
-        RuntimeError: On unexpected app call failure after payment settled.
+    Returns
+    -------
+    Attestation
+        The fully-populated attestation record that was written on-chain.
+
+    Raises
+    ------
+    ValueError
+        If the ``content_hash`` has already been claimed (contract aborts
+        with ``ERR_ALREADY_CLAIMED``).
+    RuntimeError
+        If the box write fails for any other reason after payment has already
+        settled. The error message includes the ``payment_tx_id`` to allow
+        manual follow-up. Re-submitting is safe — the write is idempotent.
     """
     attestation_id = str(uuid.uuid4())
     now = datetime.now(tz=timezone.utc)
@@ -149,20 +205,42 @@ def write_attestation(
 
 def revoke_attestation(
     content_hash: str,
-    payer_address: str,   # from x402 payment payload of the /revoke request
+    payer_address: str,
     existing: Attestation,
     payment_tx_id: str,
 ) -> Attestation:
     """
-    Revoke an existing attestation box.
+    Revoke an existing attestation by overwriting its on-chain box with an
+    updated record whose ``status`` is set to ``"revoked"``.
 
-    Auth check: payer_address must match existing.author.
-    This comparison uses the x402 payer address — NOT Algorand tx senders,
-    since both the original attest and this revoke are submitted by the service account.
+    Parameters
+    ----------
+    content_hash : str
+        The ``content_hash`` key for the attestation box to update.
+    payer_address : str
+        Algorand address of the x402 payment payer for this /revoke request.
+        Must equal ``existing.author`` or a ``PermissionError`` is raised
+        before any chain call is made.
+    existing : Attestation
+        The current attestation record read from on-chain storage. All fields
+        except ``status`` are preserved verbatim in the updated record.
+    payment_tx_id : str
+        Payment group ID from the x402 facilitator response, used in
+        error-trace logs.
 
-    Raises:
-        PermissionError: If payer_address does not match existing.author.
-        RuntimeError:    On unexpected app call failure after payment settled.
+    Returns
+    -------
+    Attestation
+        A copy of ``existing`` with ``status="revoked"``, reflecting what
+        was written back to the on-chain box.
+
+    Raises
+    ------
+    PermissionError
+        If ``payer_address`` does not match ``existing.author``. Raised
+        **before** any on-chain call so no ALGO is consumed.
+    RuntimeError
+        If the box update fails for any reason after payment has settled.
     """
     # Authorization check — payer address vs stored author
     if payer_address != existing.author:
@@ -211,8 +289,19 @@ def revoke_attestation(
 
 def read_attestation_from_box(content_hash: str) -> Attestation | None:
     """
-    Read an attestation directly from on-chain box storage.
-    Returns None if no box exists for this content_hash.
+    Read an attestation record directly from on-chain box storage.
+
+    Parameters
+    ----------
+    content_hash : str
+        The ``content_hash`` used as the box key (e.g. ``sha256:abc123...``).
+        The ``"a:"`` key prefix required by the contract is applied internally.
+
+    Returns
+    -------
+    Attestation or None
+        The deserialized ``Attestation`` if a box exists for this hash,
+        or ``None`` if the box is empty or does not exist.
     """
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
@@ -241,8 +330,21 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
 
 def resolve_id_from_chain(attestation_id: str) -> str | None:
     """
-    Look up content_hash for an attestation_id using the on-chain id_index BoxMap.
-    Returns the content_hash string, or None if not found.
+    Resolve an ``attestation_id`` UUID to its ``content_hash`` using the
+    on-chain ``id_index`` BoxMap.
+
+    Parameters
+    ----------
+    attestation_id : str
+        The UUID assigned at attest time (e.g.
+        ``"a00fe88e-c4fa-4d4a-92d6-043af786e4b4"``). The ``"i:"`` key prefix
+        required by the contract is applied internally.
+
+    Returns
+    -------
+    str or None
+        The ``content_hash`` string if the id_index box exists for this UUID,
+        or ``None`` if not found (the UUID has never been attested).
     """
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)

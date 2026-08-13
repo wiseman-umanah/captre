@@ -38,6 +38,34 @@ router = APIRouter()
     ),
 )
 async def revoke(request: Request, body: RevokeRequest) -> RevokeResponse:
+    """
+    Handle a paid POST /revoke request.
+
+    Parameters
+    ----------
+    request : Request
+        The incoming FastAPI request. Must have ``request.state.payment_payload``
+        set by the x402 middleware; returns 402 otherwise.
+    body : RevokeRequest
+        Validated JSON request body. ``attestation_id`` may be either a UUID
+        or a raw ``content_hash`` — the endpoint resolves either.
+
+    Returns
+    -------
+    RevokeResponse
+        The updated attestation record with ``status="revoked"``.
+
+    Raises
+    ------
+    HTTPException(402)
+        If no payment payload is present on the request state.
+    HTTPException(403)
+        If the payer address does not match the original author stored on-chain.
+    HTTPException(404)
+        If no attestation can be found for the given ``attestation_id``.
+    HTTPException(500)
+        If the on-chain box update fails after payment has already settled.
+    """
     payment_payload = getattr(request.state, "payment_payload", None)
     if payment_payload is None:
         raise HTTPException(

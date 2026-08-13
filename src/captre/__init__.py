@@ -10,7 +10,7 @@ Run (prod):
 
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 
 from captre.api.attest import router as attest_router
 from captre.api.revoke import router as revoke_router
@@ -24,6 +24,24 @@ logging.basicConfig(level=logging.INFO)
 
 
 def create_app() -> FastAPI:
+    """
+    Construct and return the configured FastAPI application instance.
+
+    Registers all routers (attest, verify, revoke), the root and health
+    endpoints, and the x402 payment middleware. This factory is used both
+    by the uvicorn entry point (``--factory`` flag) and by tests.
+
+    Returns
+    -------
+    FastAPI
+        A fully configured, ready-to-serve application instance.
+
+    Notes
+    -----
+    The x402 middleware **must** be added after routers are registered so
+    that route matching is available when payment_middleware evaluates
+    incoming requests.
+    """
     app = FastAPI(
         title="Captre",
         description=(
@@ -69,12 +87,18 @@ def create_app() -> FastAPI:
     middleware_fn = payment_middleware(ROUTES_CONFIG, server)
 
     @app.middleware("http")
-    async def x402_middleware(request, call_next):
+    async def x402_middleware(request: Request, call_next) -> Response:
         return await middleware_fn(request, call_next)
 
     return app
 
 
 def main() -> None:
+    """
+    Entry point for ``uv run captre``.
+
+    Starts a uvicorn server in development mode (reload enabled) on
+    ``0.0.0.0:8000``.
+    """
     import uvicorn
     uvicorn.run("captre:create_app", factory=True, host="0.0.0.0", port=8000, reload=True)
