@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Captre — On-Chain Attestation{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Captre is an on-chain attestation service that lets agents and humans create permanent, verifiable first-claim proofs anchored on Algorand via x402.{% endblock %}"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="{% block canonical %}{{ request.url }}{% endblock %}"/>
+
+  <meta property="og:type"        content="website"/>
+  <meta property="og:title"       content="{% block og_title %}Captre — On-Chain Attestation{% endblock %}"/>
+  <meta property="og:description" content="First-claim proofs anchored on Algorand via x402. Permanent. Verifiable. Agent-native."/>
+  <meta property="og:url"         content="{{ request.url }}"/>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Captre",
+    "description": "On-chain attestation service — first-claim proofs anchored on Algorand via x402",
+    "applicationCategory": "DeveloperApplication",
+    "url": "{{ request.base_url }}",
+    "offers": { "@type": "Offer", "price": "0.05", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/static/style.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-mark"><span>C</span></div>
+      Captre
+    </a>
+
+    <div class="nav-links">
+      <a href="/explore" class="hide-sm">Explore</a>
+      <a href="/api-reference" class="hide-sm">API Docs</a>
+      <a href="/docs" class="hide-sm">OpenAPI</a>
+      <span class="nav-pill">{{ network }}</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark/light mode">
+        <span id="themeIcon">&#9790;</span>
+      </button>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="2" y1="4.5" x2="16" y2="4.5"/>
+          <line x1="2" y1="9"   x2="16" y2="9"/>
+          <line x1="2" y1="13.5" x2="16" y2="13.5"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="/explore">Explore</a>
+  <a href="/api-reference">API Docs</a>
+  <a href="/docs">OpenAPI ↗</a>
+  {% if app_id %}
+    <a href="{{ explorer_base }}/{{ app_id }}" target="_blank" rel="noopener">Contract #{{ app_id }} ↗</a>
+  {% endif %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="nav-logo-mark"><span>C</span></div>
+        Captre
+      </div>
+      <div class="footer-links">
+        <a href="/explore">Explore</a>
+        <a href="/api-reference">API Docs</a>
+        <a href="/docs">OpenAPI</a>
+        {% if app_id %}
+          <a href="{{ explorer_base }}/{{ app_id }}" target="_blank" rel="noopener">Contract #{{ app_id }}</a>
+        {% endif %}
+        <a href="https://algorand.com" target="_blank" rel="noopener">Algorand</a>
+        <a href="https://x402.org" target="_blank" rel="noopener">x402</a>
+      </div>
+    </div>
+    <p class="footer-copy">
+      On-chain attestation on Algorand &middot; Payments settled via x402 protocol &middot; {{ network }}
+    </p>
+  </div>
+</footer>
+
+<script>
+  // ── Theme toggle ──────────────────────────────────────────────
+  var html = document.documentElement;
+  var stored = localStorage.getItem('captre-theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme = stored || (prefersDark ? 'dark' : 'light');
+  html.setAttribute('data-theme', theme);
+
+  function setTheme(t) {
+    html.setAttribute('data-theme', t);
+    localStorage.setItem('captre-theme', t);
+    document.getElementById('themeIcon').textContent = t === 'dark' ? '☀' : '☽';
+  }
+  setTheme(theme);
+
+  document.getElementById('themeToggle').addEventListener('click', function() {
+    setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Mobile hamburger ─────────────────────────────────────────
+  var hamburger = document.getElementById('navHamburger');
+  var drawer    = document.getElementById('navDrawer');
+  hamburger.addEventListener('click', function() {
+    drawer.classList.toggle('open');
+  });
+  // close drawer when a link is tapped
+  drawer.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() { drawer.classList.remove('open'); });
+  });
+</script>
+
+</body>
+</html>

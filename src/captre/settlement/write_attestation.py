@@ -23,6 +23,7 @@ from algokit_utils import AlgorandClient, BoxReference, SigningAccount
 from algokit_utils.applications.app_client import AppClientMethodCallParams
 from algosdk.mnemonic import to_private_key
 from algosdk.v2client.algod import AlgodClient
+from algosdk.error import AlgodResponseError
 from dotenv import load_dotenv
 
 from captre.models import Attestation, AttestationStatus, AttestRequest
@@ -90,9 +91,10 @@ def _get_app_client(service_account: SigningAccount):
     """
     algod_url = os.environ["ALGOD_URL"]
     algod_token = os.environ.get("ALGOD_TOKEN", "")
+    algod_timeout = int(os.environ.get("ALGOD_TIMEOUT", "15"))
     from algosdk.v2client.indexer import IndexerClient as _IdxClient
     client = AlgorandClient.from_clients(
-        AlgodClient(algod_token, algod_url),
+        AlgodClient(algod_token, algod_url, timeout=algod_timeout),
         _IdxClient("", os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")),
     )
     return client.client.get_app_client_by_id(

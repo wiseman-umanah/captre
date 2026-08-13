@@ -1,0 +1,786 @@
+{% extends "base.html" %}
+{% block title %}Captre — First-Claim On-Chain Attestation{% endblock %}
+{% block meta_desc %}Create permanent, verifiable first-claim proofs for any content hash. Anchored on Algorand blockchain via x402 micropayments. Agent-native API.{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO — full viewport
+     ══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="container">
+
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        Built on Algorand &nbsp;&middot;&nbsp; Powered by x402
+      </div>
+
+      <h1>
+        Prove you were
+        <em>first</em>.
+        On-chain. Forever.
+      </h1>
+
+      <p class="hero-desc">
+        Captre lets agents and humans create a permanent, independently
+        verifiable first-claim record for any content hash — anchored on
+        Algorand, settled via x402 micropayment in under 8 seconds.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/api-reference" class="btn btn-primary">Read the Docs</a>
+        <a href="#try-demo" class="btn btn-amber">Try the Demo</a>
+        <a href="/docs" class="btn btn-outline">OpenAPI ↗</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val amber">$0.05</div>
+          <div class="hero-stat-label">Cost per attestation</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">&lt;8s</div>
+          <div class="hero-stat-label">Target latency</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">∞</div>
+          <div class="hero-stat-label">Permanent record</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val amber">x402</div>
+          <div class="hero-stat-label">Payment protocol</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FEATURES — borderless grid, flush
+     ══════════════════════════════════════════════════════ -->
+<section class="section-alt section-sm">
+  <div class="container">
+    <div class="features">
+
+      <div class="feature">
+        <div class="feature-num">01</div>
+        <div class="feature-title">Immutable first claim</div>
+        <div class="feature-desc">Once a content hash is claimed it can never be re-claimed — even after revocation. The record is permanent.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-num">02</div>
+        <div class="feature-title">Agent-native API</div>
+        <div class="feature-desc">Pay via x402, receive a receipt. No browser wallets, no manual steps — designed for programmatic callers.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-num">03</div>
+        <div class="feature-title">Independent verification</div>
+        <div class="feature-desc">Anyone can verify without the original payment context — free <code>GET /verify</code> reads directly from chain.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-num">04</div>
+        <div class="feature-title">Fully on-chain</div>
+        <div class="feature-desc">Data lives in Algorand Box Storage. No off-chain database, no trust required. Read it from any Algorand node.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     HOW IT WORKS
+     ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="two-col">
+
+      <div>
+        <div class="label">How it works</div>
+        <h2 class="section-h">Three steps.<br/>Done.</h2>
+        <p class="section-sub">
+          Payment settles first via the x402 facilitator, then Captre writes
+          two boxes atomically — the attestation record and the UUID index.
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">01</div>
+          <div>
+            <div class="step-title">POST /attest with your content hash</div>
+            <div class="step-desc">Send <code>content_hash</code> plus optional metadata. The x402 middleware intercepts and issues a 402 payment challenge.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">02</div>
+          <div>
+            <div class="step-title">Pay $0.05 USDC via x402</div>
+            <div class="step-desc">Your x402 client signs and submits the Algorand USDC payment. The GoPlausible facilitator verifies settlement.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">03</div>
+          <div>
+            <div class="step-title">Receive your on-chain receipt</div>
+            <div class="step-desc">Captre writes two boxes to the contract and returns <code>attestation_id</code>, <code>author</code>, and <code>tx_id</code>.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TRY DEMO — interactive simulation panel
+     ══════════════════════════════════════════════════════ -->
+<section class="section-alt section" id="try-demo">
+  <div class="container">
+
+    <div class="label">Interactive demo</div>
+    <h2 class="section-h" style="margin-bottom:var(--sp-3);">Try it live</h2>
+    <p class="section-sub" style="margin-bottom:var(--sp-8);">
+      Simulate the full attestation flow end-to-end — attest, verify, look up by ID, and revoke.
+      The free endpoints hit the real API; paid endpoints are safely mocked.
+    </p>
+
+    <div class="demo-panel">
+
+      <!-- Tabs -->
+      <div class="demo-tabs" role="tablist">
+        <button class="demo-tab active" data-tab="tab-attest"  role="tab">🔏 Attest</button>
+        <button class="demo-tab"        data-tab="tab-verify"  role="tab">🔍 Verify</button>
+        <button class="demo-tab"        data-tab="tab-lookup"  role="tab">🆔 Lookup by ID</button>
+        <button class="demo-tab"        data-tab="tab-revoke"  role="tab">🗑 Revoke</button>
+        <button class="demo-tab"        data-tab="tab-flow"    role="tab">⚡ Full Flow</button>
+      </div>
+
+      <!-- ── ATTEST ── -->
+      <div class="demo-body active" id="tab-attest">
+        <div class="demo-note">
+          <strong>Simulated</strong> — /attest requires a real x402 payment ($0.05 USDC on Algorand).
+          This demo calls a mock that behaves identically to the real endpoint, letting you see
+          exactly what request and response look like without spending funds.
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap">
+            <label class="demo-label" for="attest-hash">content_hash</label>
+            <input class="demo-input" id="attest-hash" type="text"
+              placeholder="sha256:abc123…" value="sha256:demo-captre-0001"/>
+          </div>
+          <div class="demo-input-wrap">
+            <label class="demo-label" for="attest-agent">agent_id (optional)</label>
+            <input class="demo-input" id="attest-agent" type="text"
+              placeholder="my-agent-v1" value="demo-agent-v1"/>
+          </div>
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap">
+            <label class="demo-label" for="attest-type">output_type</label>
+            <select class="demo-input" id="attest-type">
+              <option value="file" selected>file</option>
+              <option value="research">research</option>
+              <option value="decision">decision</option>
+              <option value="code">code</option>
+              <option value="report">report</option>
+              <option value="other">other</option>
+            </select>
+          </div>
+          <div class="demo-input-wrap">
+            <label class="demo-label" for="attest-desc">description (optional)</label>
+            <input class="demo-input" id="attest-desc" type="text"
+              placeholder="What this content represents" value="Demo attestation via Captre UI"/>
+          </div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn btn-amber btn-sm" id="btn-attest">Run simulation →</button>
+          <button class="btn btn-outline btn-sm" id="btn-attest-random">Randomise hash</button>
+        </div>
+        <div class="demo-spinner" id="attest-spinner">
+          <div class="demo-spinner-ring"></div>
+          <span>Simulating x402 payment + box write…</span>
+        </div>
+        <div class="demo-log" id="attest-log"><div class="demo-log-inner"><span class="demo-log-dim">// Waiting for input…</span></div></div>
+        <div class="demo-result" id="attest-result"></div>
+      </div>
+
+      <!-- ── VERIFY ── -->
+      <div class="demo-body" id="tab-verify">
+        <div class="demo-note">
+          <strong>Live</strong> — calls the real <code>GET /verify</code> endpoint on your running server.
+          Free, no payment required.
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap" style="grid-column: 1 / -1;">
+            <label class="demo-label" for="verify-hash">content_hash to verify</label>
+            <input class="demo-input" id="verify-hash" type="text"
+              placeholder="sha256:abc123…"/>
+          </div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn btn-amber btn-sm" id="btn-verify">Verify →</button>
+          <button class="btn btn-outline btn-sm" id="btn-verify-fill">Use last attested hash</button>
+        </div>
+        <div class="demo-spinner" id="verify-spinner">
+          <div class="demo-spinner-ring"></div>
+          <span>Querying on-chain box storage…</span>
+        </div>
+        <div class="demo-log" id="verify-log"><div class="demo-log-inner"><span class="demo-log-dim">// Waiting for input…</span></div></div>
+        <div class="demo-result" id="verify-result"></div>
+      </div>
+
+      <!-- ── LOOKUP BY ID ── -->
+      <div class="demo-body" id="tab-lookup">
+        <div class="demo-note">
+          <strong>Live</strong> — calls the real <code>GET /attestation/{id}</code> endpoint.
+          Accepts a UUID <code>attestation_id</code> or a raw <code>content_hash</code>.
+          Free, no payment required.
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap" style="grid-column: 1 / -1;">
+            <label class="demo-label" for="lookup-id">attestation_id (UUID) or content_hash</label>
+            <input class="demo-input" id="lookup-id" type="text"
+              placeholder="a00fe88e-c4fa-4d4a-92d6-043af786e4b4 or sha256:…"/>
+          </div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn btn-amber btn-sm" id="btn-lookup">Look up →</button>
+          <button class="btn btn-outline btn-sm" id="btn-lookup-fill">Use last attestation ID</button>
+        </div>
+        <div class="demo-spinner" id="lookup-spinner">
+          <div class="demo-spinner-ring"></div>
+          <span>Resolving id_index on chain…</span>
+        </div>
+        <div class="demo-log" id="lookup-log"><div class="demo-log-inner"><span class="demo-log-dim">// Waiting for input…</span></div></div>
+        <div class="demo-result" id="lookup-result"></div>
+      </div>
+
+      <!-- ── REVOKE ── -->
+      <div class="demo-body" id="tab-revoke">
+        <div class="demo-note">
+          <strong>Simulated</strong> — /revoke requires an x402 payment and only the original author
+          can revoke. This demo mocks the payment and uses the attestation_id from your last
+          simulated attest. In production the payer address must exactly match the stored author.
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap" style="grid-column: 1 / -1;">
+            <label class="demo-label" for="revoke-id">attestation_id to revoke</label>
+            <input class="demo-input" id="revoke-id" type="text"
+              placeholder="Paste attestation_id UUID from attest response"/>
+          </div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn btn-sm" style="background:var(--red);color:#fff;border-color:var(--red);" id="btn-revoke">Simulate revoke →</button>
+          <button class="btn btn-outline btn-sm" id="btn-revoke-fill">Use last attestation ID</button>
+        </div>
+        <div class="demo-spinner" id="revoke-spinner">
+          <div class="demo-spinner-ring"></div>
+          <span>Simulating x402 payment + revoke box update…</span>
+        </div>
+        <div class="demo-log" id="revoke-log"><div class="demo-log-inner"><span class="demo-log-dim">// Waiting for input…</span></div></div>
+        <div class="demo-result" id="revoke-result"></div>
+      </div>
+
+      <!-- ── FULL FLOW ── -->
+      <div class="demo-body" id="tab-flow">
+        <div class="demo-note">
+          <strong>Full simulation</strong> — runs the complete lifecycle automatically:
+          Agent A attests a hash → Agent B looks up the proof → Agent B verifies it → Agent A revokes.
+          Watch the log to see each step with realistic timing.
+        </div>
+        <div class="demo-row">
+          <div class="demo-input-wrap">
+            <label class="demo-label" for="flow-hash">content_hash (leave blank to auto-generate)</label>
+            <input class="demo-input" id="flow-hash" type="text"
+              placeholder="sha256:auto-generated"/>
+          </div>
+          <div class="demo-input-wrap">
+            <label class="demo-label">Simulate revoke at end?</label>
+            <select class="demo-input" id="flow-revoke">
+              <option value="yes" selected>Yes — full lifecycle</option>
+              <option value="no">No — leave active</option>
+            </select>
+          </div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn btn-amber btn-sm" id="btn-flow">Run full flow →</button>
+          <button class="btn btn-outline btn-sm" id="btn-flow-reset">Reset</button>
+        </div>
+        <div class="demo-spinner" id="flow-spinner">
+          <div class="demo-spinner-ring"></div>
+          <span id="flow-spinner-msg">Running…</span>
+        </div>
+        <div class="demo-log" id="flow-log"><div class="demo-log-inner"><span class="demo-log-dim">// Press "Run full flow" to start the simulation.</span></div></div>
+        <div class="demo-result" id="flow-result"></div>
+      </div>
+
+    </div><!-- /demo-panel -->
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     QUICK START — dark section
+     ══════════════════════════════════════════════════════ -->
+<section class="section section-dark">
+  <div class="container">
+
+    <div class="label">Quick start</div>
+    <h2 class="section-h" style="margin-bottom:var(--sp-10);">Try it with curl</h2>
+
+    <div class="two-col-code">
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Verify by content hash — Free</div>
+          <pre>curl "{{ request.base_url }}verify\
+  ?content_hash=sha256:YOUR_HASH"</pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Retrieve by UUID — Free</div>
+          <pre>curl "{{ request.base_url }}attestation\
+  /YOUR_ATTESTATION_ID"</pre>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:var(--sp-8);">
+      <a href="/api-reference" class="btn btn-amber">Full API Reference →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     HONESTY NOTE
+     ══════════════════════════════════════════════════════ -->
+<section class="section-sm">
+  <div class="container-tight">
+    <div class="alert alert-warn">
+      <strong>Honest positioning —</strong>
+      Captre proves <em>first on-chain claim</em> to a content hash by a specific Algorand account.
+      It does <strong>not</strong> prove original creation or authorship of the underlying content.
+      Once a hash is claimed the record is permanent — revocation does not reopen it to new claimants.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     DEMO JAVASCRIPT
+     ══════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── shared state ─────────────────────────────────────────────
+  var lastHash = '';
+  var lastAttestId = '';
+
+  // ── helpers ──────────────────────────────────────────────────
+  function ts() {
+    var d = new Date();
+    return d.toTimeString().slice(0, 8);
+  }
+
+  function rand8() {
+    var chars = '0123456789abcdef';
+    var out = 'sha256:demo-';
+    for (var i = 0; i < 16; i++) out += chars[Math.floor(Math.random() * 16)];
+    return out;
+  }
+
+  function fakeUUID() {
+    // RFC-4122 v4 lite
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
+  function fakeAlgoAddr() {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    var out = '';
+    for (var i = 0; i < 58; i++) out += chars[Math.floor(Math.random() * 32)];
+    return out;
+  }
+
+  function fakeTxId() {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    var out = '';
+    for (var i = 0; i < 52; i++) out += chars[Math.floor(Math.random() * 32)];
+    return out;
+  }
+
+  function setLog(logEl, lines) {
+    logEl.innerHTML = '<div class="demo-log-inner">' +
+      lines.map(function(l) {
+        return '<div class="demo-log-line"><span class="demo-log-ts">' + l.ts + '</span>' +
+               '<span class="demo-log-' + l.kind + '">' + escHtml(l.msg) + '</span></div>';
+      }).join('') +
+    '</div>';
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function appendLog(logEl, line) {
+    var inner = logEl.querySelector('.demo-log-inner');
+    if (!inner) { inner = document.createElement('div'); inner.className = 'demo-log-inner'; logEl.appendChild(inner); }
+    var d = document.createElement('div'); d.className = 'demo-log-line';
+    d.innerHTML = '<span class="demo-log-ts">' + line.ts + '</span><span class="demo-log-' + line.kind + '">' + escHtml(line.msg) + '</span>';
+    inner.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function showResult(el, data) {
+    el.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    el.classList.add('show');
+  }
+
+  function hideResult(el) { el.classList.remove('show'); }
+
+  function showSpinner(el, show) {
+    el.classList.toggle('show', show);
+  }
+
+  function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+  // ── Tab switching ─────────────────────────────────────────────
+  document.querySelectorAll('.demo-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.demo-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.demo-body').forEach(function(b) { b.classList.remove('active'); });
+      tab.classList.add('active');
+      var target = document.getElementById(tab.getAttribute('data-tab'));
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ── ATTEST simulation ─────────────────────────────────────────
+  document.getElementById('btn-attest-random').addEventListener('click', function() {
+    document.getElementById('attest-hash').value = rand8();
+  });
+
+  document.getElementById('btn-attest').addEventListener('click', async function() {
+    var hash    = document.getElementById('attest-hash').value.trim() || rand8();
+    var agent   = document.getElementById('attest-agent').value.trim() || 'demo-agent';
+    var otype   = document.getElementById('attest-type').value;
+    var desc    = document.getElementById('attest-desc').value.trim();
+    var logEl   = document.getElementById('attest-log');
+    var resEl   = document.getElementById('attest-result');
+    var spinner = document.getElementById('attest-spinner');
+
+    hideResult(resEl);
+    showSpinner(spinner, true);
+    var lines = [];
+
+    function log(kind, msg) { lines.push({ts: ts(), kind: kind, msg: msg}); setLog(logEl, lines); }
+
+    log('info', '→ Agent sends POST /attest');
+    log('dim',  '  content_hash: ' + hash);
+    log('dim',  '  agent_id: ' + agent + '  output_type: ' + otype);
+    await sleep(420);
+
+    log('info', '← 402 Payment Required — x402 challenge issued');
+    log('dim',  '  scheme: exact  network: algorand:testnet  price: $0.05 USDC');
+    await sleep(380);
+
+    log('info', '→ Agent signs & submits Algorand USDC payment');
+    var txId = fakeTxId();
+    log('dim',  '  tx_group: ' + txId.slice(0, 20) + '…');
+    await sleep(700);
+
+    log('info', '✓ GoPlausible facilitator verifies settlement');
+    await sleep(320);
+
+    log('info', '→ Captre writes attestation box on-chain');
+    var attestId = fakeUUID();
+    var author   = fakeAlgoAddr();
+    await sleep(550);
+
+    log('ok',  '✓ Box written — attestation_id: ' + attestId.slice(0, 18) + '…');
+    log('ok',  '  author: ' + author.slice(0, 20) + '…');
+
+    lastHash     = hash;
+    lastAttestId = attestId;
+
+    showSpinner(spinner, false);
+    showResult(resEl, {
+      attestation: {
+        attestation_id: attestId,
+        author: author,
+        content_hash: hash,
+        status: 'active',
+        created_at: new Date().toISOString(),
+        tx_id: txId,
+        agent_id: agent,
+        output_type: otype,
+        description: desc || undefined,
+      },
+      message: 'Attestation created successfully'
+    });
+  });
+
+  // ── VERIFY (live) ─────────────────────────────────────────────
+  document.getElementById('btn-verify-fill').addEventListener('click', function() {
+    if (lastHash) document.getElementById('verify-hash').value = lastHash;
+  });
+
+  document.getElementById('btn-verify').addEventListener('click', async function() {
+    var hash    = document.getElementById('verify-hash').value.trim();
+    var logEl   = document.getElementById('verify-log');
+    var resEl   = document.getElementById('verify-result');
+    var spinner = document.getElementById('verify-spinner');
+    if (!hash) { setLog(logEl, [{ts: ts(), kind: 'err', msg: '✗ Please enter a content_hash'}]); return; }
+
+    hideResult(resEl);
+    showSpinner(spinner, true);
+    var lines = [];
+    function log(kind, msg) { lines.push({ts: ts(), kind: kind, msg: msg}); setLog(logEl, lines); }
+
+    log('info', '→ GET /verify?content_hash=' + hash.slice(0, 30) + '…');
+    log('dim',  '  (reading directly from Algorand box storage)');
+
+    try {
+      var url = '/verify?content_hash=' + encodeURIComponent(hash);
+      var resp = await fetch(url);
+      var data = await resp.json();
+      if (resp.ok) {
+        log('ok', '✓ ' + resp.status + ' Attestation found');
+        log('dim', '  status: ' + (data.attestation && data.attestation.status));
+        showResult(resEl, data);
+      } else {
+        log('err', '✗ ' + resp.status + ' ' + (data.detail || 'Not found'));
+        showResult(resEl, data);
+      }
+    } catch(e) {
+      log('err', '✗ Network error — is the server running? ' + e.message);
+    } finally {
+      showSpinner(spinner, false);
+    }
+  });
+
+  // ── LOOKUP (live) ─────────────────────────────────────────────
+  document.getElementById('btn-lookup-fill').addEventListener('click', function() {
+    if (lastAttestId) document.getElementById('lookup-id').value = lastAttestId;
+  });
+
+  document.getElementById('btn-lookup').addEventListener('click', async function() {
+    var id      = document.getElementById('lookup-id').value.trim();
+    var logEl   = document.getElementById('lookup-log');
+    var resEl   = document.getElementById('lookup-result');
+    var spinner = document.getElementById('lookup-spinner');
+    if (!id) { setLog(logEl, [{ts: ts(), kind: 'err', msg: '✗ Please enter an attestation_id or content_hash'}]); return; }
+
+    hideResult(resEl);
+    showSpinner(spinner, true);
+    var lines = [];
+    function log(kind, msg) { lines.push({ts: ts(), kind: kind, msg: msg}); setLog(logEl, lines); }
+
+    log('info', '→ GET /attestation/' + id.slice(0, 30) + '…');
+    log('dim',  '  resolving via on-chain id_index BoxMap');
+
+    try {
+      var resp = await fetch('/attestation/' + encodeURIComponent(id));
+      var data = await resp.json();
+      if (resp.ok) {
+        log('ok', '✓ ' + resp.status + ' Record found');
+        log('dim', '  attestation_id: ' + (data.attestation && data.attestation.attestation_id));
+        showResult(resEl, data);
+      } else {
+        log('err', '✗ ' + resp.status + ' ' + (data.detail || 'Not found'));
+        showResult(resEl, data);
+      }
+    } catch(e) {
+      log('err', '✗ Network error — ' + e.message);
+    } finally {
+      showSpinner(spinner, false);
+    }
+  });
+
+  // ── REVOKE simulation ─────────────────────────────────────────
+  document.getElementById('btn-revoke-fill').addEventListener('click', function() {
+    if (lastAttestId) document.getElementById('revoke-id').value = lastAttestId;
+  });
+
+  document.getElementById('btn-revoke').addEventListener('click', async function() {
+    var id      = document.getElementById('revoke-id').value.trim();
+    var logEl   = document.getElementById('revoke-log');
+    var resEl   = document.getElementById('revoke-result');
+    var spinner = document.getElementById('revoke-spinner');
+    if (!id) { setLog(logEl, [{ts: ts(), kind: 'err', msg: '✗ Please enter an attestation_id'}]); return; }
+
+    hideResult(resEl);
+    showSpinner(spinner, true);
+    var lines = [];
+    function log(kind, msg) { lines.push({ts: ts(), kind: kind, msg: msg}); setLog(logEl, lines); }
+
+    log('info', '→ Agent sends POST /revoke');
+    log('dim',  '  attestation_id: ' + id.slice(0, 30) + '…');
+    await sleep(400);
+
+    log('info', '← 402 Payment Required — x402 challenge issued');
+    await sleep(350);
+
+    log('info', '→ Agent signs & submits revoke payment');
+    var txId = fakeTxId();
+    await sleep(680);
+
+    log('info', '✓ Payment verified by facilitator');
+    await sleep(300);
+
+    log('info', '→ Captre checks payer == original author');
+    await sleep(280);
+
+    log('ok',  '✓ Authorization confirmed');
+    await sleep(400);
+
+    log('info', '→ Captre updates attestation box (status → revoked)');
+    await sleep(500);
+
+    log('ok',  '✓ Attestation revoked');
+    log('dim', '  Hash remains permanently closed to new claimants');
+
+    showSpinner(spinner, false);
+    showResult(resEl, {
+      attestation: { attestation_id: id, status: 'revoked' },
+      message: 'Attestation revoked successfully'
+    });
+  });
+
+  // ── FULL FLOW simulation ──────────────────────────────────────
+  document.getElementById('btn-flow-reset').addEventListener('click', function() {
+    var logEl = document.getElementById('flow-log');
+    logEl.innerHTML = '<div class="demo-log-inner"><span class="demo-log-dim">// Press "Run full flow" to start the simulation.</span></div>';
+    hideResult(document.getElementById('flow-result'));
+    document.getElementById('flow-hash').value = '';
+  });
+
+  document.getElementById('btn-flow').addEventListener('click', async function() {
+    var inputHash = document.getElementById('flow-hash').value.trim();
+    var doRevoke  = document.getElementById('flow-revoke').value === 'yes';
+    var hash      = inputHash || rand8();
+    var logEl     = document.getElementById('flow-log');
+    var resEl     = document.getElementById('flow-result');
+    var spinner   = document.getElementById('flow-spinner');
+    var spinMsg   = document.getElementById('flow-spinner-msg');
+    var btn       = document.getElementById('btn-flow');
+    btn.disabled  = true;
+
+    hideResult(resEl);
+    logEl.innerHTML = '<div class="demo-log-inner"></div>';
+    var inner = logEl.querySelector('.demo-log-inner');
+
+    function log(kind, msg) {
+      appendLog(logEl, {ts: ts(), kind: kind, msg: msg});
+    }
+
+    function spin(msg) { spinMsg.textContent = msg; showSpinner(spinner, true); }
+    function unspin()  { showSpinner(spinner, false); }
+
+    var attestId = fakeUUID();
+    var author   = fakeAlgoAddr();
+    var txAttest = fakeTxId();
+    var txRevoke = fakeTxId();
+
+    // ── Step 1: Agent A attests ──────────────────────────────
+    spin('Step 1/4 — Agent A attesting…');
+    log('info', '━━ Step 1 — Agent A attests the content hash');
+    log('dim',  '   Agent A address: ' + author.slice(0,20) + '…');
+    log('dim',  '   content_hash: ' + hash);
+    await sleep(350);
+
+    log('info', '→ POST /attest { content_hash: "' + hash.slice(0,22) + '…" }');
+    await sleep(400);
+    log('info', '← 402 Payment Required');
+    await sleep(380);
+    log('info', '→ Agent A signs Algorand USDC payment ($0.05)');
+    await sleep(700);
+    log('ok',  '✓ x402 payment settled  tx: ' + txAttest.slice(0,18) + '…');
+    await sleep(350);
+    log('info', '→ Captre writes 2 on-chain boxes atomically');
+    await sleep(550);
+    log('ok',  '✓ attestation_id: ' + attestId.slice(0,22) + '…  status: active');
+    await sleep(300);
+
+    // ── Step 2: Agent B looks up by ID ──────────────────────
+    unspin(); spin('Step 2/4 — Agent B looking up proof…');
+    log('info', '━━ Step 2 — Agent B receives attestation_id, looks up proof');
+    var agentB = fakeAlgoAddr();
+    log('dim',  '   Agent B address: ' + agentB.slice(0,20) + '…');
+    await sleep(350);
+
+    log('info', '→ GET /attestation/' + attestId.slice(0,18) + '…');
+    await sleep(320);
+    log('info', '  resolving via id_index BoxMap on-chain');
+    await sleep(380);
+    log('ok',  '✓ content_hash resolved → ' + hash.slice(0,22) + '…');
+    await sleep(300);
+    log('ok',  '✓ Attestation record returned  status: active');
+    await sleep(300);
+
+    // ── Step 3: Agent B verifies independently ───────────────
+    unspin(); spin('Step 3/4 — Agent B verifying…');
+    log('info', '━━ Step 3 — Agent B independently verifies (free)');
+    log('info', '→ GET /verify?content_hash=' + hash.slice(0,22) + '…');
+    await sleep(420);
+    log('info', '  reading directly from Algorand node — no Captre trust needed');
+    await sleep(480);
+    log('ok',  '✓ verified: true  author: ' + author.slice(0,20) + '…');
+    log('ok',  '✓ Proof confirmed — Agent A made the first claim');
+    await sleep(300);
+
+    if (doRevoke) {
+      // ── Step 4: Agent A revokes ──────────────────────────
+      unspin(); spin('Step 4/4 — Agent A revoking…');
+      log('info', '━━ Step 4 — Agent A revokes the attestation');
+      await sleep(380);
+      log('info', '→ POST /revoke { attestation_id: "' + attestId.slice(0,18) + '…" }');
+      await sleep(350);
+      log('info', '← 402 Payment Required');
+      await sleep(380);
+      log('info', '→ Agent A signs revoke payment ($0.05)');
+      await sleep(680);
+      log('ok',  '✓ Payment settled  tx: ' + txRevoke.slice(0,18) + '…');
+      await sleep(300);
+      log('info', '→ Captre verifies payer == original author');
+      await sleep(320);
+      log('ok',  '✓ Authorized — updating box on-chain');
+      await sleep(500);
+      log('ok',  '✓ status: revoked  (hash permanently closed)');
+      await sleep(200);
+    }
+
+    unspin();
+    log('ok',  '━━ Full lifecycle complete.');
+
+    showResult(resEl, {
+      summary: 'Full flow complete',
+      content_hash: hash,
+      attestation_id: attestId,
+      author: author,
+      status: doRevoke ? 'revoked' : 'active',
+      steps: doRevoke
+        ? ['attest', 'lookup-by-id', 'verify', 'revoke']
+        : ['attest', 'lookup-by-id', 'verify'],
+    });
+
+    btn.disabled = false;
+  });
+
+})();
+</script>
+
+{% endblock %}

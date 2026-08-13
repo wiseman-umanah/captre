@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}API Reference — Captre{% endblock %}
+{% block meta_desc %}Full API reference for the Captre on-chain attestation service. Endpoints, request/response schemas, curl examples, and x402 payment flow documentation.{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="section-alt section-sm" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="label">Documentation</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; letter-spacing:-.025em; margin-bottom:var(--sp-4);">
+      API Reference
+    </h1>
+    <p style="color:var(--muted); font-size:15px; margin-bottom:var(--sp-4);">
+      Base URL: <code>{{ request.base_url }}</code>
+      &nbsp;&middot;&nbsp;
+      <a href="/docs" style="color:var(--amber-600);">Interactive OpenAPI ↗</a>
+    </p>
+    <div class="alert alert-warn" style="max-width:680px;">
+      <strong>Paid endpoints</strong> (<code>POST /attest</code>, <code>POST /revoke</code>) require an
+      x402-enabled HTTP client. The server returns <code>402 Payment Required</code>
+      and the client must settle $0.05 USDC on Algorand before the request is fulfilled.
+      Free endpoints work with plain curl.
+    </div>
+  </div>
+</section>
+
+<!-- ENDPOINT TABLE -->
+<section class="section-sm" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="label">Endpoints</div>
+    <div class="tbl-wrap" style="margin-top:var(--sp-5);">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Payment</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-post">POST</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/attest</td>
+            <td><span class="badge badge-paid">$0.05 USDC</span></td>
+            <td style="color:var(--muted);">Create a first-claim attestation</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-get">GET</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/verify</td>
+            <td><span class="badge badge-free">Free</span></td>
+            <td style="color:var(--muted);">Verify by content_hash query param</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-get">GET</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/attestation/{id}</td>
+            <td><span class="badge badge-free">Free</span></td>
+            <td style="color:var(--muted);">Retrieve by UUID or content_hash</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-post">POST</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/revoke</td>
+            <td><span class="badge badge-paid">$0.05 USDC</span></td>
+            <td style="color:var(--muted);">Revoke — original author only</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT FLOW — dark -->
+<section class="section section-dark">
+  <div class="container">
+
+    <div class="label">Payment flow</div>
+    <h2 class="section-h" style="margin-bottom:var(--sp-8);">How x402 works</h2>
+
+    <div class="flow">
+      <div class="flow-node">
+        <div class="flow-node-label">01 / Client</div>
+        <div class="flow-node-desc">Sends POST /attest with content_hash</div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-node-label">02 / Middleware</div>
+        <div class="flow-node-desc">Returns 402 + payment requirements</div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-node-label">03 / Client</div>
+        <div class="flow-node-desc">Signs &amp; submits Algorand USDC tx</div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-node-label">04 / Facilitator</div>
+        <div class="flow-node-desc">Verifies settlement, issues receipt</div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-node-label">05 / Captre</div>
+        <div class="flow-node-desc">Writes box on-chain, returns attestation</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px; color:var(--stone-500); margin-top:var(--sp-5);">
+      Facilitator:
+      <a href="https://facilitator.goplausible.xyz" target="_blank" rel="noopener" style="color:var(--stone-400);">
+        https://facilitator.goplausible.xyz
+      </a>
+      &nbsp;&middot;&nbsp; Network: <strong style="color:var(--stone-300);">{{ network }}</strong>
+    </p>
+
+  </div>
+</section>
+
+<!-- POST /attest -->
+<section class="section" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-post">POST</span>
+      <code style="font-size:16px; font-weight:700;">/attest</code>
+      <span class="badge badge-paid">$0.05 USDC</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Create first-claim attestation</div>
+    <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-8);">
+      A <code>content_hash</code> can only ever be claimed once —
+      revocation does not reopen it to new claimants.
+    </p>
+
+    <div class="two-col-code">
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Request body (JSON)</div>
+          <pre>{
+  "content_hash":  "sha256:abc…", // required
+  "agent_id":      "my-agent",    // optional
+  "output_type":   "file",        // optional
+  "description":   "…",           // optional
+  "model":         "gpt-4o",      // optional
+  "tags":          ["v1"],        // optional
+  "extra":         {}             // optional
+}</pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Response 200</div>
+          <pre>{
+  "attestation": {
+    "attestation_id": "a00fe88e-…",
+    "author":   "GFYF3KDN…",
+    "status":   "active",
+    "tx_id":    "QK5ATJTD…"
+  },
+  "message": "Attestation created successfully"
+}</pre>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:var(--sp-3); margin-top:var(--sp-6);">
+      <div class="alert alert-warn"><code>402</code> Payment required (x402 challenge)</div>
+      <div class="alert alert-warn"><code>409</code> content_hash already claimed — returns existing</div>
+      <div class="alert alert-error"><code>500</code> Box write failed after payment settled (retry safe)</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GET /verify -->
+<section class="section section-alt" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-get">GET</span>
+      <code style="font-size:16px; font-weight:700;">/verify</code>
+      <span class="badge badge-free">Free</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Verify by content hash</div>
+
+    <div class="pre-wrap" style="max-width:680px;">
+      <div class="pre-label">curl example</div>
+      <pre>curl "{{ request.base_url }}verify?content_hash=sha256:YOUR_HASH"</pre>
+    </div>
+
+  </div>
+</section>
+
+<!-- GET /attestation/:id -->
+<section class="section" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-get">GET</span>
+      <code style="font-size:16px; font-weight:700;">/attestation/{id}</code>
+      <span class="badge badge-free">Free</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Retrieve by UUID or content hash</div>
+    <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-6);">
+      UUIDs are resolved via the on-chain <code>id_index</code> BoxMap.
+      You can also pass the raw <code>content_hash</code> directly.
+    </p>
+
+    <div class="two-col-code">
+      <div class="pre-wrap">
+        <div class="pre-label">By UUID</div>
+        <pre>curl "{{ request.base_url }}attestation/a00fe88e-c4fa-4d4a-92d6-043af786e4b4"</pre>
+      </div>
+      <div class="pre-wrap">
+        <div class="pre-label">By content hash</div>
+        <pre>curl "{{ request.base_url }}attestation/sha256%3Aabc123..."</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- POST /revoke -->
+<section class="section section-alt" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-post">POST</span>
+      <code style="font-size:16px; font-weight:700;">/revoke</code>
+      <span class="badge badge-paid">$0.05 USDC</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Revoke — original author only</div>
+    <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-6);">
+      The x402 payer address of the revoke request must <strong>exactly match</strong>
+      the <code>author</code> stored in the original attestation.
+      Revocation is permanent — the hash is never reopened.
+    </p>
+
+    <div class="pre-wrap" style="max-width:420px; margin-bottom:var(--sp-6);">
+      <div class="pre-label">Request body</div>
+      <pre>{ "attestation_id": "a00fe88e-…" }</pre>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:var(--sp-3);">
+      <div class="alert alert-warn"><code>402</code> Payment required</div>
+      <div class="alert alert-error"><code>403</code> Payer is not the original author</div>
+      <div class="alert alert-warn"><code>404</code> Attestation not found</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AUTHOR BINDING -->
+<section class="section">
+  <div class="container-tight">
+    <div class="label">Security</div>
+    <h2 class="section-h" style="margin-bottom:var(--sp-5);">Author binding</h2>
+    <div class="alert alert-warn" style="margin-bottom:var(--sp-5);">
+      The <code>author</code> field is always the Algorand address that <strong>paid</strong>
+      via x402 — extracted from the signed payment transaction group.
+      It is never the Captre service account. You cannot spoof authorship by changing a header.
+    </div>
+    <p style="color:var(--muted); font-size:14px; line-height:1.7;">
+      The same logic applies to revocation: Captre decodes the payer address from
+      the x402 payment payload and compares it to the stored <code>author</code>
+      before submitting any on-chain write.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

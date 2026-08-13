@@ -8,6 +8,7 @@ Authorization:
 """
 
 import logging
+from algosdk.error import AlgodResponseError
 
 from fastapi import APIRouter, HTTPException, Request, status
 
@@ -18,6 +19,8 @@ from captre.settlement.write_attestation import (
     resolve_id_from_chain,
     revoke_attestation,
 )
+
+_CHAIN_ERRORS = (AlgodResponseError, TimeoutError, OSError, ConnectionError)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -76,13 +79,23 @@ async def revoke(request: Request, body: RevokeRequest) -> RevokeResponse:
     payer_address, payment_tx_id = _extract_payer(payment_payload)
 
     # Resolve content_hash: try as content_hash directly, then resolve via on-chain id_index.
-    content_hash = body.attestation_id
-    existing = read_attestation_from_box(content_hash)
-    if existing is None:
-        resolved = resolve_id_from_chain(body.attestation_id)
-        if resolved:
-            content_hash = resolved
-            existing = read_attestation_from_box(content_hash)
+    try:
+        content_hash = body.attestation_id
+        existing = read_attestation_from_box(content_hash)
+        if existing is None:
+            resolved = resolve_id_from_chain(body.attestation_id)
+            if resolved:
+                content_hash = resolved
+                existing = read_attestation_from_box(content_hash)
+    except _CHAIN_ERRORS as exc:
+        logger.error("algod connectivity error on /revoke lookup: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Unable to reach the Algorand node — the request timed out or the node is "
+                "temporarily unavailable. Try again in a few seconds."
+            ),
+        ) from exc
     if existing is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

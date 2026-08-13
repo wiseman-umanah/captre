@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if attestation %}Attestation {{ attestation.attestation_id[:8] }}… — Captre
+  {% else %}Not Found — Captre{% endif %}
+{% endblock %}
+
+{% block meta_desc %}
+  {% if attestation %}On-chain attestation by {{ attestation.author[:12] }}… — status: {{ attestation.status }}.
+  {% else %}Attestation not found in the Captre on-chain registry.{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<section class="section-sm" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="/explore">Explore</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>{{ lookup_id[:24] }}{% if lookup_id|length > 24 %}…{% endif %}</span>
+    </div>
+
+    {% if error %}
+      <div class="alert alert-error" style="margin-bottom:var(--sp-6);">
+        <strong>Error reading from chain:</strong> {{ error }}
+      </div>
+    {% endif %}
+
+    {% if attestation %}
+
+      <!-- Title row -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-4); flex-wrap:wrap; margin-bottom:var(--sp-8);">
+        <div>
+          <div class="label">Attestation Record</div>
+          <h1 style="font-size:1rem; font-weight:700; font-family:var(--mono); color:var(--stone-800); margin-top:var(--sp-2); word-break:break-all;">
+            {{ attestation.attestation_id }}
+          </h1>
+        </div>
+        {% if attestation.status == 'active' %}
+          <span class="status-active" style="flex-shrink:0; margin-top:2px;">Active</span>
+        {% else %}
+          <span class="status-revoked" style="flex-shrink:0; margin-top:2px;">Revoked</span>
+        {% endif %}
+      </div>
+
+      <!-- Fields card -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:0 var(--sp-8);">
+
+          <div class="detail-row">
+            <div class="detail-key">Content Hash</div>
+            <div class="detail-val" style="font-family:var(--mono); font-size:13px;">{{ attestation.content_hash }}</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-key">Author</div>
+            <div class="detail-val">
+              <span style="font-family:var(--mono); font-size:13px;">{{ attestation.author }}</span>
+              <span style="display:block; font-size:12px; color:var(--muted); margin-top:3px;">Algorand address of the x402 payer</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-key">Status</div>
+            <div class="detail-val">
+              {% if attestation.status == 'active' %}
+                <span class="status-active">Active</span>
+              {% else %}
+                <span class="status-revoked">Revoked</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-key">Created</div>
+            <div class="detail-val">{{ attestation.created_at }}</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-key">Payment TX</div>
+            <div class="detail-val" style="font-family:var(--mono); font-size:13px;">{{ attestation.tx_id }}</div>
+          </div>
+
+          {% if attestation.agent_id %}
+          <div class="detail-row">
+            <div class="detail-key">Agent ID</div>
+            <div class="detail-val">{{ attestation.agent_id }}</div>
+          </div>
+          {% endif %}
+
+          {% if attestation.output_type %}
+          <div class="detail-row">
+            <div class="detail-key">Output Type</div>
+            <div class="detail-val">{{ attestation.output_type }}</div>
+          </div>
+          {% endif %}
+
+          {% if attestation.description %}
+          <div class="detail-row">
+            <div class="detail-key">Description</div>
+            <div class="detail-val">{{ attestation.description }}</div>
+          </div>
+          {% endif %}
+
+          {% if attestation.model %}
+          <div class="detail-row">
+            <div class="detail-key">Model</div>
+            <div class="detail-val" style="font-family:var(--mono); font-size:13px;">{{ attestation.model }}</div>
+          </div>
+          {% endif %}
+
+          {% if attestation.tags %}
+          <div class="detail-row">
+            <div class="detail-key">Tags</div>
+            <div class="detail-val">
+              {% for tag in attestation.tags %}
+                <span class="tag">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if attestation.previous_attestation %}
+          <div class="detail-row">
+            <div class="detail-key">Previous</div>
+            <div class="detail-val">
+              <a href="/explore/{{ attestation.previous_attestation }}" style="font-family:var(--mono); font-size:13px; color:var(--amber-600);">
+                {{ attestation.previous_attestation }}
+              </a>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if app_id %}
+          <div class="detail-row">
+            <div class="detail-key">Contract</div>
+            <div class="detail-val">
+              <a href="{{ explorer_base }}/{{ app_id }}" target="_blank" rel="noopener" style="color:var(--amber-600);">
+                App #{{ app_id }} on Pera Explorer ↗
+              </a>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; gap:var(--sp-3); flex-wrap:wrap; margin-top:var(--sp-6);">
+        <a href="/explore" class="btn btn-outline">← Back to Explorer</a>
+        <a href="/api-reference" class="btn btn-outline">API Reference</a>
+      </div>
+
+    {% else %}
+
+      <div class="empty-state">
+        <div class="empty-icon">?</div>
+        <div class="empty-title">Attestation not found</div>
+        <p class="empty-desc">
+          No attestation was found on-chain for
+          <code style="display:block; margin-top:var(--sp-2); word-break:break-all;">{{ lookup_id }}</code>
+        </p>
+        <div class="alert alert-warn" style="max-width:480px; margin:0 auto var(--sp-6); text-align:left;">
+          <strong>Possible reasons</strong>
+          <ul style="margin-top:var(--sp-2); padding-left:var(--sp-5); font-size:13px; line-height:1.9;">
+            <li>The ID or hash is incorrect</li>
+            <li>Wrong network — testnet vs mainnet</li>
+            <li>Contract APP_ID changed after a re-deploy</li>
+          </ul>
+        </div>
+        <a href="/explore" class="btn btn-primary">Try another lookup</a>
+      </div>
+
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

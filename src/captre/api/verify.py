@@ -11,11 +11,15 @@ Verify calls do not contribute to leaderboard volume (free endpoints).
 """
 
 import logging
+import os
+from algosdk.error import AlgodResponseError
 
 from fastapi import APIRouter, HTTPException, Query, status
 
 from captre.models import VerifyResponse
 from captre.settlement.write_attestation import read_attestation_from_box, resolve_id_from_chain
+
+_CHAIN_ERRORS = (AlgodResponseError, TimeoutError, OSError, ConnectionError)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -50,7 +54,18 @@ async def verify(
     HTTPException(404)
         If no attestation box exists for the given ``content_hash``.
     """
-    attestation = read_attestation_from_box(content_hash)
+    try:
+        attestation = read_attestation_from_box(content_hash)
+    except _CHAIN_ERRORS as exc:
+        logger.error("algod connectivity error on /verify: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Unable to reach the Algorand node — the request timed out or the node is "
+                "temporarily unavailable. Try again in a few seconds. "
+                f"(ALGOD_URL={os.environ.get('ALGOD_URL', 'unset')})"
+            ),
+        ) from exc
     if attestation is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -92,15 +107,26 @@ async def get_attestation(attestation_id: str) -> VerifyResponse:
         If neither the UUID lookup nor the direct content_hash lookup finds
         a matching attestation box on-chain.
     """
-    # Step 1 — on-chain id_index: resolve attestation_id UUID → content_hash
-    content_hash = resolve_id_from_chain(attestation_id)
-    if content_hash is not None:
-        attestation = read_attestation_from_box(content_hash)
-        if attestation is not None:
-            return VerifyResponse(attestation=attestation)
+    try:
+        # Step 1 — on-chain id_index: resolve attestation_id UUID → content_hash
+        content_hash = resolve_id_from_chain(attestation_id)
+        if content_hash is not None:
+            attestation = read_attestation_from_box(content_hash)
+            if attestation is not None:
+                return VerifyResponse(attestation=attestation)
 
-    # Step 2 — content_hash passed directly as the id param
-    attestation = read_attestation_from_box(attestation_id)
+        # Step 2 — content_hash passed directly as the id param
+        attestation = read_attestation_from_box(attestation_id)
+    except _CHAIN_ERRORS as exc:
+        logger.error("algod connectivity error on /attestation/:id: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Unable to reach the Algorand node — the request timed out or the node is "
+                "temporarily unavailable. Try again in a few seconds."
+            ),
+        ) from exc
+
     if attestation is not None:
         return VerifyResponse(attestation=attestation)
 
