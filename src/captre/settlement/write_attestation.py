@@ -7,7 +7,8 @@ submits the box-write application call using the backend service account.
 CRITICAL:
   - The `author` field is ALWAYS sourced from the x402 payment payload payer address.
   - Txn.sender() on the app call is always Captre's service account — useless for auth.
-  - Box writes are idempotent (keyed by content_hash) — safe to retry on failure.
+  - attest() writes TWO boxes atomically: attestations[content_hash] and id_index[attestation_id].
+  - Both box_references must be passed — one for each box the contract touches.
 """
 
 import json
@@ -24,7 +25,6 @@ from algosdk.mnemonic import to_private_key
 from algosdk.v2client.algod import AlgodClient
 from dotenv import load_dotenv
 
-from captre.index_db import put as index_put
 from captre.models import Attestation, AttestationStatus, AttestRequest
 
 load_dotenv()
@@ -111,13 +111,17 @@ def write_attestation(
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
 
+    attestation_id_bytes = attestation_id.encode()
+
     try:
         app_client.send.call(AppClientMethodCallParams(
             method="attest",
-            args=[content_hash_bytes, payer_address, metadata_json],
-            box_references=[BoxReference(app_id=_get_app_id(), name=content_hash_bytes)],
+            args=[content_hash_bytes, attestation_id_bytes, payer_address, metadata_json],
+            box_references=[
+                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+                BoxReference(app_id=_get_app_id(), name=b"i:" + attestation_id_bytes),
+            ],
         ))
-        index_put(attestation_id, request.content_hash)
         logger.info(
             "attest box written | attestation_id=%s content_hash=%s author=%s",
             attestation_id,
@@ -180,7 +184,9 @@ def revoke_attestation(
         app_client.send.call(AppClientMethodCallParams(
             method="revoke",
             args=[content_hash_bytes, payer_address, updated_json],
-            box_references=[BoxReference(app_id=_get_app_id(), name=content_hash_bytes)],
+            box_references=[
+                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+            ],
         ))
         logger.info(
             "revoke box updated | attestation_id=%s author=%s",
@@ -216,7 +222,9 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     result = app_client.send.call(AppClientMethodCallParams(
         method="get_attestation",
         args=[content_hash_bytes],
-        box_references=[BoxReference(app_id=_get_app_id(), name=content_hash_bytes)],
+        box_references=[
+            BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+        ],
     ))
     abi_val = result.abi_return
     if not abi_val:
@@ -229,3 +237,30 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     if not raw:
         return None
     return Attestation.model_validate(json.loads(raw.decode()))
+
+
+def resolve_id_from_chain(attestation_id: str) -> str | None:
+    """
+    Look up content_hash for an attestation_id using the on-chain id_index BoxMap.
+    Returns the content_hash string, or None if not found.
+    """
+    service_account = _get_service_account()
+    app_client = _get_app_client(service_account)
+
+    attestation_id_bytes = attestation_id.encode()
+
+    result = app_client.send.call(AppClientMethodCallParams(
+        method="resolve_id",
+        args=[attestation_id_bytes],
+        box_references=[
+            BoxReference(app_id=_get_app_id(), name=b"i:" + attestation_id_bytes),
+        ],
+    ))
+    abi_val = result.abi_return
+    if not abi_val:
+        return None
+    if isinstance(abi_val, (list, bytes, bytearray)):
+        raw = bytes(abi_val)
+    else:
+        raw = cast(bytes, abi_val)
+    return raw.decode() if raw else None

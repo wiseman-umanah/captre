@@ -72,7 +72,7 @@ def deploy() -> int:
 
     result, _ = app_factory.deploy(
         on_schema_break=OnSchemaBreak.ReplaceApp,
-        on_update=OnUpdate.UpdateApp,
+        on_update=OnUpdate.ReplaceApp,
     )
     app_id = result.app_id
     print(f"[deploy] CaptreApp deployed. APP_ID={app_id}  APP_ADDRESS={result.app_address}")

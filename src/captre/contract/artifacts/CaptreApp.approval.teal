@@ -4,22 +4,22 @@
 // algopy.arc4.ARC4Contract.approval_program() -> uint64:
 main:
     intcblock 0 2 1
-    bytecblock 0x151f7c75
-    // contract/captre_app.py:20
+    bytecblock 0x613a 0x151f7c75 0x693a 0x
+    // /tmp/captre-compile/captre_app.py:25
     // class CaptreApp(ARC4Contract):
     txn NumAppArgs
-    bz main___algopy_default_create@13
+    bz main___algopy_default_create@14
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0xb81b18b4 0xe8710099 0xe87a1174 0x5eef1ef5 // method "attest(byte[],string,byte[])void", method "revoke(byte[],string,byte[])void", method "get_attestation(byte[])byte[]", method "exists(byte[])bool"
+    pushbytess 0x9c56ac44 0xe8710099 0xe87a1174 0x8578ee98 0x5eef1ef5 // method "attest(byte[],byte[],string,byte[])void", method "revoke(byte[],string,byte[])void", method "get_attestation(byte[])byte[]", method "resolve_id(byte[])byte[]", method "exists(byte[])bool"
     txna ApplicationArgs 0
-    match attest revoke get_attestation exists
+    match attest revoke get_attestation resolve_id exists
     err
 
-main___algopy_default_create@13:
+main___algopy_default_create@14:
     txn OnCompletion
     !
     txn ApplicationID
@@ -30,7 +30,7 @@ main___algopy_default_create@13:
 
 // captre_app.CaptreApp.attest[routing]() -> void:
 attest:
-    // contract/captre_app.py:25
+    // /tmp/captre-compile/captre_app.py:31
     // @arc4.abimethod
     txna ApplicationArgs 1
     dup
@@ -65,35 +65,65 @@ attest:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // contract/captre_app.py:32
+    txna ApplicationArgs 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // /tmp/captre-compile/captre_app.py:39
     // assert content_hash not in self.attestations, "ERR_ALREADY_CLAIMED"
-    dig 2
+    bytec_0 // 0x613a
+    dig 4
+    concat
+    dup
     box_len
     bury 1
     !
     assert // ERR_ALREADY_CLAIMED
-    // contract/captre_app.py:33
+    // /tmp/captre-compile/captre_app.py:40
     // assert content_hash.length > UInt64(0), "ERR_EMPTY_HASH"
-    dig 2
+    dig 4
     len
     assert // ERR_EMPTY_HASH
-    // contract/captre_app.py:34
+    // /tmp/captre-compile/captre_app.py:41
+    // assert attestation_id.length > UInt64(0), "ERR_EMPTY_ID"
+    dig 3
+    len
+    assert // ERR_EMPTY_ID
+    // /tmp/captre-compile/captre_app.py:42
     // assert author.bytes.length > UInt64(0), "ERR_EMPTY_AUTHOR"
-    swap
+    uncover 2
     len
     assert // ERR_EMPTY_AUTHOR
-    // contract/captre_app.py:35
+    // /tmp/captre-compile/captre_app.py:43
     // assert metadata_json.length > UInt64(0), "ERR_EMPTY_METADATA"
-    dup
+    dig 1
     len
     assert // ERR_EMPTY_METADATA
-    // contract/captre_app.py:36
+    // /tmp/captre-compile/captre_app.py:44
     // self.attestations[content_hash] = metadata_json
-    dig 1
+    dup
     box_del
     pop
+    swap
     box_put
-    // contract/captre_app.py:25
+    // /tmp/captre-compile/captre_app.py:45
+    // self.id_index[attestation_id] = content_hash
+    bytec_2 // 0x693a
+    swap
+    concat
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // /tmp/captre-compile/captre_app.py:31
     // @arc4.abimethod
     intc_2 // 1
     return
@@ -101,7 +131,7 @@ attest:
 
 // captre_app.CaptreApp.revoke[routing]() -> void:
 revoke:
-    // contract/captre_app.py:38
+    // /tmp/captre-compile/captre_app.py:47
     // @arc4.abimethod
     txna ApplicationArgs 1
     dup
@@ -135,24 +165,28 @@ revoke:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // contract/captre_app.py:45
+    // /tmp/captre-compile/captre_app.py:54
     // assert content_hash in self.attestations, "ERR_NOT_FOUND"
-    dig 1
+    bytec_0 // 0x613a
+    uncover 2
+    concat
+    dup
     box_len
     bury 1
     assert // ERR_NOT_FOUND
-    // contract/captre_app.py:46
+    // /tmp/captre-compile/captre_app.py:55
     // assert updated_metadata_json.length > UInt64(0), "ERR_EMPTY_METADATA"
-    dup
+    dig 1
     len
     assert // ERR_EMPTY_METADATA
-    // contract/captre_app.py:47
+    // /tmp/captre-compile/captre_app.py:56
     // self.attestations[content_hash] = updated_metadata_json
-    dig 1
+    dup
     box_del
     pop
+    swap
     box_put
-    // contract/captre_app.py:38
+    // /tmp/captre-compile/captre_app.py:47
     // @arc4.abimethod
     intc_2 // 1
     return
@@ -160,7 +194,7 @@ revoke:
 
 // captre_app.CaptreApp.get_attestation[routing]() -> void:
 get_attestation:
-    // contract/captre_app.py:49
+    // /tmp/captre-compile/captre_app.py:58
     // @arc4.abimethod(readonly=True)
     txna ApplicationArgs 1
     dup
@@ -173,19 +207,22 @@ get_attestation:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    dup
-    // contract/captre_app.py:51
+    // /tmp/captre-compile/captre_app.py:60
     // if content_hash in self.attestations:
+    bytec_0 // 0x613a
+    swap
+    concat
+    dup
     box_len
     bury 1
     bz get_attestation_after_if_else@3
-    // contract/captre_app.py:52
+    // /tmp/captre-compile/captre_app.py:61
     // return self.attestations[content_hash]
     box_get
     assert // check self.attestations entry exists
 
 get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4:
-    // contract/captre_app.py:49
+    // /tmp/captre-compile/captre_app.py:58
     // @arc4.abimethod(readonly=True)
     dup
     len
@@ -193,7 +230,7 @@ get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4:
     extract 6 2
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
@@ -202,17 +239,17 @@ get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4:
 
 get_attestation_after_if_else@3:
     pop
-    // contract/captre_app.py:53
+    // /tmp/captre-compile/captre_app.py:62
     // return Bytes(b"")
-    pushbytes 0x
-    // contract/captre_app.py:49
+    bytec_3 // 0x
+    // /tmp/captre-compile/captre_app.py:58
     // @arc4.abimethod(readonly=True)
     b get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4
 
 
-// captre_app.CaptreApp.exists[routing]() -> void:
-exists:
-    // contract/captre_app.py:55
+// captre_app.CaptreApp.resolve_id[routing]() -> void:
+resolve_id:
+    // /tmp/captre-compile/captre_app.py:64
     // @arc4.abimethod(readonly=True)
     txna ApplicationArgs 1
     dup
@@ -225,17 +262,75 @@ exists:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // contract/captre_app.py:57
-    // return content_hash in self.attestations
+    // /tmp/captre-compile/captre_app.py:67
+    // if attestation_id in self.id_index:
+    bytec_2 // 0x693a
+    swap
+    concat
+    dup
     box_len
     bury 1
-    // contract/captre_app.py:55
+    bz resolve_id_after_if_else@3
+    // /tmp/captre-compile/captre_app.py:68
+    // return self.id_index[attestation_id]
+    box_get
+    assert // check self.id_index entry exists
+
+resolve_id_after_inlined_captre_app.CaptreApp.resolve_id@4:
+    // /tmp/captre-compile/captre_app.py:64
+    // @arc4.abimethod(readonly=True)
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+resolve_id_after_if_else@3:
+    pop
+    // /tmp/captre-compile/captre_app.py:69
+    // return Bytes(b"")
+    bytec_3 // 0x
+    // /tmp/captre-compile/captre_app.py:64
+    // @arc4.abimethod(readonly=True)
+    b resolve_id_after_inlined_captre_app.CaptreApp.resolve_id@4
+
+
+// captre_app.CaptreApp.exists[routing]() -> void:
+exists:
+    // /tmp/captre-compile/captre_app.py:71
+    // @arc4.abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // /tmp/captre-compile/captre_app.py:73
+    // return content_hash in self.attestations
+    bytec_0 // 0x613a
+    swap
+    concat
+    box_len
+    bury 1
+    // /tmp/captre-compile/captre_app.py:71
     // @arc4.abimethod(readonly=True)
     pushbytes 0x00
     intc_0 // 0
     uncover 2
     setbit
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log

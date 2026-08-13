@@ -4,13 +4,20 @@ Lightweight SQLite index: attestation_id → content_hash
 Survives server restarts. Written on every successful attest/revoke.
 Read by GET /attestation/:id.
 
-DB location: data/index.db (created automatically beside src/)
+DB location (in priority order):
+  1. INDEX_DB_PATH env var  — set this on Render to a persistent-disk path, e.g. /data/index.db
+  2. <project_root>/data/index.db  — used in local dev
 """
 
+import os
 import sqlite3
 from pathlib import Path
 
-_DB_PATH = Path(__file__).parent.parent.parent.parent / "data" / "index.db"
+# Project root is 3 levels up from src/captre/index_db.py
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+_env_db = os.environ.get("INDEX_DB_PATH", "").strip()
+_DB_PATH = Path(_env_db) if _env_db else _PROJECT_ROOT / "data" / "index.db"
 
 
 def _conn() -> sqlite3.Connection:
