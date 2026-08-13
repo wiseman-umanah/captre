@@ -1,7 +1,7 @@
 [project]
 name = "captre"
 version = "0.1.0"
-description = "Add your description here"
+description = "On-chain attestation service — first-claim proofs anchored on Algorand via x402"
 readme = "README.md"
 authors = [
     { name = "wiseman-umanah", email = "wisemanumanah@gmail.com" }
@@ -17,8 +17,21 @@ dependencies = [
     "x402-avm[avm,extensions,fastapi]>=2.0.2",
 ]
 
+# ---------------------------------------------------------------------------
+# Entry-point scripts  (uv run <name>  or  just  <name>  after install)
+# ---------------------------------------------------------------------------
+# uv run captre     — start the API server (hot-reload, port 8000)
+# uv run captre-test — run the full unit test suite
+# uv run captre-lint — ruff lint check
+# uv run captre-fmt  — ruff auto-format
+# uv run captre-deploy — deploy / re-use the Algorand smart contract
+# ---------------------------------------------------------------------------
 [project.scripts]
-captre = "captre:main"
+captre        = "captre:main"
+captre-test   = "captre._scripts:test"
+captre-lint   = "captre._scripts:lint"
+captre-fmt    = "captre._scripts:fmt"
+captre-deploy = "captre._scripts:deploy"
 
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]
@@ -34,3 +47,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "ruff>=0.16.2",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+testpaths   = ["tests"]
