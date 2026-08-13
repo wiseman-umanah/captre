@@ -28,7 +28,9 @@ build-backend = "uv_build"
 dev = [
     "algokit-utils>=4.2.3",
     "algorand-python>=3.5.1",
+    "httpx>=0.28.1",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
     "ruff>=0.16.2",
 ]

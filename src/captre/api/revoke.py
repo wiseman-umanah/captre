@@ -10,13 +10,12 @@ Authorization:
 import logging
 
 from fastapi import APIRouter, HTTPException, Request, status
-from x402.mechanisms.avm import decode_payment_group
 
 from captre.api.attest import _extract_payer
-from captre.index_db import get as index_get
 from captre.models import ErrorResponse, RevokeRequest, RevokeResponse
 from captre.settlement.write_attestation import (
     read_attestation_from_box,
+    resolve_id_from_chain,
     revoke_attestation,
 )
 
@@ -48,13 +47,11 @@ async def revoke(request: Request, body: RevokeRequest) -> RevokeResponse:
 
     payer_address, payment_tx_id = _extract_payer(payment_payload)
 
-    # Resolve content_hash: RevokeRequest carries attestation_id.
-    # Try it as a content_hash first (direct), then look up via index.
+    # Resolve content_hash: try as content_hash directly, then resolve via on-chain id_index.
     content_hash = body.attestation_id
     existing = read_attestation_from_box(content_hash)
     if existing is None:
-        # Try resolving as an attestation_id via the index
-        resolved = index_get(body.attestation_id)
+        resolved = resolve_id_from_chain(body.attestation_id)
         if resolved:
             content_hash = resolved
             existing = read_attestation_from_box(content_hash)

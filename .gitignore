@@ -14,3 +14,4 @@ Technical_requirement.md
 AGENTS.md
 .env
 steps.txt
+.pytest_cache
