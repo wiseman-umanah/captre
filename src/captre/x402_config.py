@@ -42,6 +42,30 @@ FACILITATOR_URL: str = os.environ.get(
 # --- Route configs ---
 # RouteConfig takes `accepts=` (not `payment_options=`)
 
+def _discovery(base: dict) -> dict:
+    """
+    Inject the required competition tag into a Bazaar discovery extension dict.
+
+    The ``x402-global-challenge`` tag is mandatory for the endpoint to appear
+    on the GoPlausible competition leaderboard. It is added at the top level of
+    the ``"bazaar"`` object because the library types use ``extra="allow"``.
+
+    Parameters
+    ----------
+    base : dict
+        The dict returned by ``declare_discovery_extension()``, shaped as
+        ``{"bazaar": {...}}``.
+
+    Returns
+    -------
+    dict
+        The same dict with ``base["bazaar"]["tags"]`` set to
+        ``["x402-global-challenge"]``.
+    """
+    base["bazaar"]["tags"] = ["x402-global-challenge"]
+    return base
+
+
 ATTEST_ROUTE_CONFIG = RouteConfig(
     accepts=PaymentOption(
         scheme="exact",
@@ -50,7 +74,7 @@ ATTEST_ROUTE_CONFIG = RouteConfig(
         network=NETWORK,
     ),
     description="Create a first-claim attestation on Algorand",
-    extensions=declare_discovery_extension(
+    extensions=_discovery(declare_discovery_extension(
         input={
             "content_hash": "sha256:abc123...",
             "agent_id": "my-agent-v1",
@@ -86,7 +110,7 @@ ATTEST_ROUTE_CONFIG = RouteConfig(
                 "message": "Attestation created successfully",
             }
         ),
-    ),
+    )),
 )
 
 REVOKE_ROUTE_CONFIG = RouteConfig(
@@ -97,7 +121,7 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
         network=NETWORK,
     ),
     description="Revoke an existing attestation (original author only)",
-    extensions=declare_discovery_extension(
+    extensions=_discovery(declare_discovery_extension(
         input={
             "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
         },
@@ -120,7 +144,7 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
                 "message": "Attestation revoked successfully",
             }
         ),
-    ),
+    )),
 )
 
 ROUTES_CONFIG = {
