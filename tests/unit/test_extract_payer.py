@@ -8,8 +8,6 @@ We mock decode_payment_group so no real AVM transaction bytes are needed.
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import pytest
-
 from captre.api.attest import _extract_payer
 from tests.conftest import FAKE_AUTHOR, FAKE_TX_ID
 

@@ -14,10 +14,11 @@ Requirements:
 Skipped automatically if APP_ID or SERVICE_MNEMONIC is not set.
 """
 
+import hashlib
 import json
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -34,12 +35,12 @@ def chain_client():
     from dotenv import load_dotenv
     load_dotenv()
 
-    from algokit_utils import AlgorandClient, BoxReference, SigningAccount
-    from algokit_utils.applications.app_client import AppClientMethodCallParams
+    from pathlib import Path
+
+    from algokit_utils import AlgorandClient, SigningAccount
     from algosdk.mnemonic import to_private_key
     from algosdk.v2client.algod import AlgodClient
     from algosdk.v2client.indexer import IndexerClient
-    from pathlib import Path
 
     app_id = int(os.environ["APP_ID"])
     svc = SigningAccount(private_key=to_private_key(os.environ["SERVICE_MNEMONIC"]))
@@ -48,10 +49,12 @@ def chain_client():
         AlgodClient(os.environ.get("ALGOD_TOKEN", ""), os.environ["ALGOD_URL"]),
         IndexerClient("", os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")),
     )
-    spec = json.load(
-        open(Path(__file__).parent.parent.parent /
-             "src/captre/contract/artifacts/CaptreApp.arc56.json")
+    arc56_path = (
+        Path(__file__).parent.parent.parent
+        / "src/captre/contract/artifacts/CaptreApp.arc56.json"
     )
+    with arc56_path.open() as fh:
+        spec = json.load(fh)
     app = client.client.get_app_client_by_id(
         app_spec=spec,
         app_id=app_id,
@@ -86,17 +89,18 @@ def test_attest_writes_both_boxes(chain_client, unique_hash):
         "author": author,
         "content_hash": unique_hash,
         "status": "active",
-        "created_at": datetime.now(tz=timezone.utc).isoformat(),
+        "created_at": datetime.now(tz=UTC).isoformat(),
     }).encode()
 
-    ch_b = unique_hash.encode()
+    ch_key = hashlib.sha256(unique_hash.encode()).digest()   # 32-byte box key
+    ch_str = unique_hash.encode()                            # stored in id_index
     aid_b = attestation_id.encode()
 
     app.send.call(AppClientMethodCallParams(
         method="attest",
-        args=[ch_b, aid_b, author, metadata],
+        args=[ch_key, ch_str, aid_b, author, metadata],
         box_references=[
-            BoxReference(app_id=app_id, name=b"a:" + ch_b),
+            BoxReference(app_id=app_id, name=b"a:" + ch_key),
             BoxReference(app_id=app_id, name=b"i:" + aid_b),
         ],
     ))
@@ -104,15 +108,15 @@ def test_attest_writes_both_boxes(chain_client, unique_hash):
     # Verify attestations box
     r = app.send.call(AppClientMethodCallParams(
         method="get_attestation",
-        args=[ch_b],
-        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_b)],
+        args=[ch_key],
+        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_key)],
     ))
     stored = json.loads(bytes(r.abi_return).decode())
     assert stored["attestation_id"] == attestation_id
     assert stored["content_hash"] == unique_hash
     assert stored["status"] == "active"
 
-    # Verify id_index box
+    # Verify id_index box — resolve_id returns content_hash_str (original string)
     r2 = app.send.call(AppClientMethodCallParams(
         method="resolve_id",
         args=[aid_b],
@@ -130,7 +134,7 @@ def test_get_attestation_missing_returns_empty(chain_client):
     app = chain_client["app"]
     app_id = chain_client["app_id"]
 
-    no_such = b"sha256:does-not-exist-" + uuid.uuid4().hex.encode()
+    no_such = hashlib.sha256(b"no-such-" + uuid.uuid4().bytes).digest()
 
     r = app.send.call(AppClientMethodCallParams(
         method="get_attestation",
@@ -169,15 +173,16 @@ def test_duplicate_attest_raises_already_claimed(chain_client, unique_hash):
 
     def do_attest():
         aid_b = str(uuid.uuid4()).encode()
-        ch_b = unique_hash.encode()
+        ch_key = hashlib.sha256(unique_hash.encode()).digest()
+        ch_str = unique_hash.encode()
         meta = json.dumps({"attestation_id": aid_b.decode(), "author": author,
                            "content_hash": unique_hash, "status": "active",
-                           "created_at": datetime.now(tz=timezone.utc).isoformat()}).encode()
+                           "created_at": datetime.now(tz=UTC).isoformat()}).encode()
         app.send.call(AppClientMethodCallParams(
             method="attest",
-            args=[ch_b, aid_b, author, meta],
+            args=[ch_key, ch_str, aid_b, author, meta],
             box_references=[
-                BoxReference(app_id=app_id, name=b"a:" + ch_b),
+                BoxReference(app_id=app_id, name=b"a:" + ch_key),
                 BoxReference(app_id=app_id, name=b"i:" + aid_b),
             ],
         ))
@@ -205,21 +210,22 @@ def test_revoke_updates_box(chain_client, unique_hash):
     author = chain_client["svc"].address
 
     attestation_id = str(uuid.uuid4())
-    ch_b = unique_hash.encode()
+    ch_key = hashlib.sha256(unique_hash.encode()).digest()
+    ch_str = unique_hash.encode()
     aid_b = attestation_id.encode()
 
     meta_active = json.dumps({
         "attestation_id": attestation_id, "author": author,
         "content_hash": unique_hash, "status": "active",
-        "created_at": datetime.now(tz=timezone.utc).isoformat(),
+        "created_at": datetime.now(tz=UTC).isoformat(),
     }).encode()
 
     # Attest first
     app.send.call(AppClientMethodCallParams(
         method="attest",
-        args=[ch_b, aid_b, author, meta_active],
+        args=[ch_key, ch_str, aid_b, author, meta_active],
         box_references=[
-            BoxReference(app_id=app_id, name=b"a:" + ch_b),
+            BoxReference(app_id=app_id, name=b"a:" + ch_key),
             BoxReference(app_id=app_id, name=b"i:" + aid_b),
         ],
     ))
@@ -228,20 +234,20 @@ def test_revoke_updates_box(chain_client, unique_hash):
     meta_revoked = json.dumps({
         "attestation_id": attestation_id, "author": author,
         "content_hash": unique_hash, "status": "revoked",
-        "created_at": datetime.now(tz=timezone.utc).isoformat(),
+        "created_at": datetime.now(tz=UTC).isoformat(),
     }).encode()
 
     app.send.call(AppClientMethodCallParams(
         method="revoke",
-        args=[ch_b, author, meta_revoked],
-        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_b)],
+        args=[ch_key, author, meta_revoked],
+        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_key)],
     ))
 
     # Read back — must be revoked
     r = app.send.call(AppClientMethodCallParams(
         method="get_attestation",
-        args=[ch_b],
-        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_b)],
+        args=[ch_key],
+        box_references=[BoxReference(app_id=app_id, name=b"a:" + ch_key)],
     ))
     stored = json.loads(bytes(r.abi_return).decode())
     assert stored["status"] == "revoked"
@@ -255,7 +261,7 @@ def test_full_http_cycle(unique_hash):
     from dotenv import load_dotenv
     load_dotenv()
 
-    from captre.models import AttestRequest, AttestationStatus
+    from captre.models import AttestationStatus, AttestRequest
     from captre.settlement.write_attestation import (
         read_attestation_from_box,
         resolve_id_from_chain,

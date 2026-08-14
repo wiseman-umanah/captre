@@ -9,13 +9,16 @@ CRITICAL:
   - Txn.sender() on the app call is always Captre's service account — useless for auth.
   - attest() writes TWO boxes atomically: attestations[content_hash] and id_index[attestation_id].
   - Both box_references must be passed — one for each box the contract touches.
+  - Box key for attestations is SHA-256(content_hash_string) — 32 bytes, always within the
+    64-byte Algorand box name limit. The raw content_hash string is too long to use directly.
 """
 
+import hashlib
 import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
@@ -23,7 +26,6 @@ from algokit_utils import AlgorandClient, BoxReference, SigningAccount
 from algokit_utils.applications.app_client import AppClientMethodCallParams
 from algosdk.mnemonic import to_private_key
 from algosdk.v2client.algod import AlgodClient
-from algosdk.error import AlgodResponseError
 from dotenv import load_dotenv
 
 from captre.models import Attestation, AttestationStatus, AttestRequest
@@ -32,6 +34,33 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 SERVICE_MNEMONIC = os.environ["SERVICE_MNEMONIC"]
+
+
+def _content_hash_key(content_hash: str) -> bytes:
+    """
+    Derive the 32-byte box key for a ``content_hash`` string.
+
+    The raw ``content_hash`` string (e.g. ``"sha256:<64 hex chars>"``) is 71+
+    bytes. With the ``"a:"`` BoxMap prefix that exceeds Algorand's 64-byte box
+    name limit. Hashing to a 32-byte SHA-256 digest keeps the box name at
+    exactly 34 bytes (``"a:"`` + 32 bytes).
+
+    This digest is used **both** as the ABI argument passed to the contract
+    method and as the ``BoxReference`` name component — they must always be
+    identical or the contract will look up the wrong box.
+
+    Parameters
+    ----------
+    content_hash : str
+        The original content hash string from the request (e.g.
+        ``"sha256:abc123..."``).
+
+    Returns
+    -------
+    bytes
+        32-byte SHA-256 digest of the UTF-8 encoded ``content_hash``.
+    """
+    return hashlib.sha256(content_hash.encode()).digest()
 
 
 def _get_app_id() -> int:
@@ -91,10 +120,9 @@ def _get_app_client(service_account: SigningAccount):
     """
     algod_url = os.environ["ALGOD_URL"]
     algod_token = os.environ.get("ALGOD_TOKEN", "")
-    algod_timeout = int(os.environ.get("ALGOD_TIMEOUT", "15"))
     from algosdk.v2client.indexer import IndexerClient as _IdxClient
     client = AlgorandClient.from_clients(
-        AlgodClient(algod_token, algod_url, timeout=algod_timeout),
+        AlgodClient(algod_token, algod_url),
         _IdxClient("", os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")),
     )
     return client.client.get_app_client_by_id(
@@ -145,7 +173,7 @@ def write_attestation(
         manual follow-up. Re-submitting is safe — the write is idempotent.
     """
     attestation_id = str(uuid.uuid4())
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
 
     attestation = Attestation(
         attestation_id=attestation_id,
@@ -164,7 +192,10 @@ def write_attestation(
     )
 
     metadata_json = attestation.model_dump_json().encode()
-    content_hash_bytes = request.content_hash.encode()
+    content_hash_key = _content_hash_key(request.content_hash)
+    # content_hash_str is stored in id_index so resolve_id() can return the human-
+    # readable original string; only the attestations box key uses the digest.
+    content_hash_str = request.content_hash.encode()
 
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
@@ -174,9 +205,9 @@ def write_attestation(
     try:
         app_client.send.call(AppClientMethodCallParams(
             method="attest",
-            args=[content_hash_bytes, attestation_id_bytes, payer_address, metadata_json],
+            args=[content_hash_key, content_hash_str, attestation_id_bytes, payer_address, metadata_json],
             box_references=[
-                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
                 BoxReference(app_id=_get_app_id(), name=b"i:" + attestation_id_bytes),
             ],
         ))
@@ -255,7 +286,7 @@ def revoke_attestation(
         update={"status": AttestationStatus.revoked}
     )
     updated_json = updated.model_dump_json().encode()
-    content_hash_bytes = content_hash.encode()
+    content_hash_key = _content_hash_key(content_hash)
 
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
@@ -263,9 +294,9 @@ def revoke_attestation(
     try:
         app_client.send.call(AppClientMethodCallParams(
             method="revoke",
-            args=[content_hash_bytes, payer_address, updated_json],
+            args=[content_hash_key, payer_address, updated_json],
             box_references=[
-                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
             ],
         ))
         logger.info(
@@ -308,21 +339,23 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
 
-    content_hash_bytes = content_hash.encode()
+    content_hash_key = _content_hash_key(content_hash)
 
     result = app_client.send.call(AppClientMethodCallParams(
         method="get_attestation",
-        args=[content_hash_bytes],
+        args=[content_hash_key],
         box_references=[
-            BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_bytes),
+            BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
         ],
     ))
     abi_val = result.abi_return
     if not abi_val:
         return None
-    # ABI returns Bytes as list[int]; cast to bytes
-    if isinstance(abi_val, (list, bytes, bytearray)):
+    # ABI returns Bytes as list[int] from algokit; narrow explicitly before bytes()
+    if isinstance(abi_val, (bytes, bytearray)):
         raw = bytes(abi_val)
+    elif isinstance(abi_val, list):
+        raw = bytes(cast(list[int], abi_val))
     else:
         raw = cast(bytes, abi_val)
     if not raw:
@@ -363,8 +396,10 @@ def resolve_id_from_chain(attestation_id: str) -> str | None:
     abi_val = result.abi_return
     if not abi_val:
         return None
-    if isinstance(abi_val, (list, bytes, bytearray)):
+    if isinstance(abi_val, (bytes, bytearray)):
         raw = bytes(abi_val)
+    elif isinstance(abi_val, list):
+        raw = bytes(cast(list[int], abi_val))
     else:
         raw = cast(bytes, abi_val)
     return raw.decode() if raw else None

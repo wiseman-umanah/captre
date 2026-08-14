@@ -14,7 +14,7 @@ and cross-agent verification without payment.
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from shared.captre_client import DuplicateClaimError, attest, get_attestation, revoke
@@ -65,7 +65,7 @@ class CriticAgent:
         registry.setdefault("critic", [])
         log(self.name, "INFO", f"Starting — wallet {self.wallet.address[:12]}…")
 
-        ts1 = datetime.now(tz=timezone.utc).isoformat()
+        ts1 = datetime.now(tz=UTC).isoformat()
         initial_decision = (
             f"DECISION {ts1}: Deploy model version 3.1 to production. "
             "Confidence: HIGH based on 94% test accuracy."
@@ -96,7 +96,7 @@ class CriticAgent:
         except DuplicateClaimError as exc:
             log(self.name, "INFO", "Initial decision already claimed (re-run). Skipping.")
             initial_record = exc.existing
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             log(self.name, "ERROR", f"Failed to attest initial decision: {exc}")
 
         time.sleep(3)
@@ -112,13 +112,13 @@ class CriticAgent:
                 revoke(wallet=self.wallet, attestation_id=initial_record["attestation_id"])
                 log(self.name, "SUCCESS", "Revocation confirmed. Decision invalidated on-chain.")
                 initial_record["status"] = "revoked"
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 log(self.name, "ERROR", f"Revocation failed: {exc}")
 
         time.sleep(2)
 
         # ── Attest corrected decision ────────────────────────────────────
-        ts2 = datetime.now(tz=timezone.utc).isoformat()
+        ts2 = datetime.now(tz=UTC).isoformat()
         corrected_decision = (
             f"DECISION {ts2}: DO NOT deploy model v3.1. "
             "Validation failure detected: 23% regression on edge-case benchmark. "
@@ -149,7 +149,7 @@ class CriticAgent:
             )
         except DuplicateClaimError:
             log(self.name, "INFO", "Corrected decision already on-chain.")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             log(self.name, "ERROR", f"Failed to attest correction: {exc}")
 
         time.sleep(2)

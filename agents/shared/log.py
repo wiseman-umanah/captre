@@ -9,7 +9,7 @@ as they interleave in the terminal.
 from __future__ import annotations
 
 import threading
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from rich.console import Console
@@ -62,7 +62,7 @@ def log(
     detail : str or None
         Optional short detail appended in dim grey (e.g. attestation_id, hash).
     """
-    now = datetime.now(tz=timezone.utc).strftime("%H:%M:%S")
+    now = datetime.now(tz=UTC).strftime("%H:%M:%S")
     icon, action_colour = _ACTION_STYLE.get(action, ("•", "white"))
     agent_colour = _PALETTE.get(agent.upper(), _DEFAULT_COLOUR)
 

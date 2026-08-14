@@ -2,17 +2,20 @@
 Captre smart contract — Algorand Python (AlgoKit / Puya)
 
 Two BoxMaps:
-  attestations : content_hash  → JSON metadata blob (key_prefix b"a:")
-  id_index     : attestation_id → content_hash      (key_prefix b"i:")
+  attestations : content_hash_key (32-byte SHA-256 digest of content_hash string)
+                   → JSON metadata blob (key_prefix b"a:")
+  id_index     : attestation_id → content_hash_str (original string, key_prefix b"i:")
 
-This makes the SQLite index redundant — both lookups are fully on-chain.
+Box key layout:
+  attestations box name: b"a:" + sha256(content_hash_string)  →  34 bytes (well under 64-byte limit)
+  id_index box name:     b"i:" + attestation_id_uuid          →  38 bytes
 
 Methods:
-  attest(content_hash, attestation_id, author, metadata_json) -> None
-  revoke(content_hash, author, updated_metadata_json) -> None
-  get_attestation(content_hash) -> bytes
-  resolve_id(attestation_id) -> bytes   # returns content_hash bytes, or b""
-  exists(content_hash) -> bool
+  attest(content_hash_key, content_hash_str, attestation_id, author, metadata_json) -> None
+  revoke(content_hash_key, author, updated_metadata_json) -> None
+  get_attestation(content_hash_key) -> bytes
+  resolve_id(attestation_id) -> bytes   # returns content_hash_str bytes, or b""
+  exists(content_hash_key) -> bool
 
 Compile with (from project root):
   algokit compile python src/captre/contract/captre_app.py \\
@@ -32,10 +35,12 @@ class CaptreApp(ARC4Contract):
     Attributes
     ----------
     attestations : BoxMap[Bytes, Bytes]
-        Maps ``content_hash`` → serialised JSON metadata blob.
-        Box key prefix: ``b"a:"``.
+        Maps ``content_hash_key`` (32-byte SHA-256 digest of the original
+        content_hash string) → serialised JSON metadata blob.
+        Box key prefix: ``b"a:"``. Box name is always 34 bytes.
     id_index : BoxMap[Bytes, Bytes]
-        Maps ``attestation_id`` → ``content_hash``.
+        Maps ``attestation_id`` → ``content_hash_str`` (the original human-
+        readable content_hash string, e.g. ``"sha256:<hex>"``).
         Box key prefix: ``b"i:"``.
     """
 
@@ -46,20 +51,25 @@ class CaptreApp(ARC4Contract):
     @arc4.abimethod
     def attest(
         self,
-        content_hash: Bytes,
+        content_hash_key: Bytes,
+        content_hash_str: Bytes,
         attestation_id: Bytes,
         author: String,
         metadata_json: Bytes,
     ) -> None:
         """
-        Write a new attestation. Fails if the ``content_hash`` is already claimed.
+        Write a new attestation. Fails if the ``content_hash_key`` is already claimed.
 
         Parameters
         ----------
-        content_hash : Bytes
-            SHA-256 hash of the content being attested. Used as the primary
-            box key. Must not already exist in ``attestations`` —
+        content_hash_key : Bytes
+            32-byte SHA-256 digest of the original content_hash string. Used
+            as the ``attestations`` box key. Must not already exist —
             aborts with ``ERR_ALREADY_CLAIMED`` if so.
+        content_hash_str : Bytes
+            The original content_hash string (e.g. ``b"sha256:abc123..."``),
+            UTF-8 encoded. Stored in ``id_index`` so callers can recover it
+            via ``resolve_id()``.
         attestation_id : Bytes
             Server-generated UUID for this attestation (UTF-8 encoded).
             Used as the key in ``id_index``.
@@ -73,9 +83,11 @@ class CaptreApp(ARC4Contract):
         Raises
         ------
         Assert(ERR_ALREADY_CLAIMED)
-            If ``content_hash`` already has a box in ``attestations``.
+            If ``content_hash_key`` already has a box in ``attestations``.
         Assert(ERR_EMPTY_HASH)
-            If ``content_hash`` is zero-length.
+            If ``content_hash_key`` is zero-length.
+        Assert(ERR_EMPTY_HASH_STR)
+            If ``content_hash_str`` is zero-length.
         Assert(ERR_EMPTY_ID)
             If ``attestation_id`` is zero-length.
         Assert(ERR_EMPTY_AUTHOR)
@@ -83,18 +95,19 @@ class CaptreApp(ARC4Contract):
         Assert(ERR_EMPTY_METADATA)
             If ``metadata_json`` is zero-length.
         """
-        assert content_hash not in self.attestations, "ERR_ALREADY_CLAIMED"
-        assert content_hash.length > UInt64(0), "ERR_EMPTY_HASH"
+        assert content_hash_key not in self.attestations, "ERR_ALREADY_CLAIMED"
+        assert content_hash_key.length > UInt64(0), "ERR_EMPTY_HASH"
+        assert content_hash_str.length > UInt64(0), "ERR_EMPTY_HASH_STR"
         assert attestation_id.length > UInt64(0), "ERR_EMPTY_ID"
         assert author.bytes.length > UInt64(0), "ERR_EMPTY_AUTHOR"
         assert metadata_json.length > UInt64(0), "ERR_EMPTY_METADATA"
-        self.attestations[content_hash] = metadata_json
-        self.id_index[attestation_id] = content_hash
+        self.attestations[content_hash_key] = metadata_json
+        self.id_index[attestation_id] = content_hash_str
 
     @arc4.abimethod
     def revoke(
         self,
-        content_hash: Bytes,
+        content_hash_key: Bytes,
         author: String,
         updated_metadata_json: Bytes,
     ) -> None:
@@ -103,9 +116,9 @@ class CaptreApp(ARC4Contract):
 
         Parameters
         ----------
-        content_hash : Bytes
-            Key of the attestation box to update. Must already exist —
-            aborts with ``ERR_NOT_FOUND`` if not.
+        content_hash_key : Bytes
+            32-byte SHA-256 digest key of the attestation box to update.
+            Must already exist — aborts with ``ERR_NOT_FOUND`` if not.
         author : String
             Algorand address of the revoking payer (included for audit; not
             re-validated on-chain — authorization is enforced off-chain in
@@ -116,32 +129,32 @@ class CaptreApp(ARC4Contract):
         Raises
         ------
         Assert(ERR_NOT_FOUND)
-            If no box exists for ``content_hash``.
+            If no box exists for ``content_hash_key``.
         Assert(ERR_EMPTY_METADATA)
             If ``updated_metadata_json`` is zero-length.
         """
-        assert content_hash in self.attestations, "ERR_NOT_FOUND"
+        assert content_hash_key in self.attestations, "ERR_NOT_FOUND"
         assert updated_metadata_json.length > UInt64(0), "ERR_EMPTY_METADATA"
-        self.attestations[content_hash] = updated_metadata_json
+        self.attestations[content_hash_key] = updated_metadata_json
 
     @arc4.abimethod(readonly=True)
-    def get_attestation(self, content_hash: Bytes) -> Bytes:
+    def get_attestation(self, content_hash_key: Bytes) -> Bytes:
         """
-        Read an attestation record by ``content_hash``.
+        Read an attestation record by ``content_hash_key``.
 
         Parameters
         ----------
-        content_hash : Bytes
-            The hash to look up.
+        content_hash_key : Bytes
+            The 32-byte SHA-256 digest key to look up.
 
         Returns
         -------
         Bytes
             The raw JSON metadata blob stored in the box, or ``b""`` if no
-            box exists for this hash.
+            box exists for this key.
         """
-        if content_hash in self.attestations:
-            return self.attestations[content_hash]
+        if content_hash_key in self.attestations:
+            return self.attestations[content_hash_key]
         return Bytes(b"")
 
     @arc4.abimethod(readonly=True)
@@ -166,18 +179,18 @@ class CaptreApp(ARC4Contract):
         return Bytes(b"")
 
     @arc4.abimethod(readonly=True)
-    def exists(self, content_hash: Bytes) -> bool:
+    def exists(self, content_hash_key: Bytes) -> bool:
         """
-        Check whether a ``content_hash`` has already been attested.
+        Check whether a ``content_hash_key`` has already been attested.
 
         Parameters
         ----------
-        content_hash : Bytes
-            The hash to check.
+        content_hash_key : Bytes
+            The 32-byte SHA-256 digest key to check.
 
         Returns
         -------
         bool
-            ``True`` if a box exists for this hash, ``False`` otherwise.
+            ``True`` if a box exists for this key, ``False`` otherwise.
         """
-        return content_hash in self.attestations
+        return content_hash_key in self.attestations

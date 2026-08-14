@@ -11,7 +11,6 @@ No chain, no USDC.
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 
-import pytest
 from fastapi.testclient import TestClient
 
 from captre.models import AttestationStatus
@@ -66,7 +65,7 @@ def test_revoke_no_payment_returns_402():
 
 
 def test_revoke_not_found_returns_404():
-    with _test_client() as (client, _):
+    with _test_client() as (client, _):  # noqa: SIM117
         with patch("captre.api.revoke.read_attestation_from_box", return_value=None), \
              patch("captre.api.revoke.resolve_id_from_chain", return_value=None):
             resp = client.post("/revoke", json={"attestation_id": "no-such-id"})
@@ -74,7 +73,7 @@ def test_revoke_not_found_returns_404():
 
 
 def test_revoke_wrong_author_returns_403(fake_attestation):
-    with _test_client(payer=DIFFERENT_ADDRESS) as (client, _):
+    with _test_client(payer=DIFFERENT_ADDRESS) as (client, _):  # noqa: SIM117
         with patch("captre.api.revoke.read_attestation_from_box", return_value=fake_attestation), \
              patch("captre.api.revoke.revoke_attestation", side_effect=PermissionError("not the original author")):
             resp = client.post("/revoke", json={"attestation_id": FAKE_ATTESTATION_ID})
@@ -84,7 +83,7 @@ def test_revoke_wrong_author_returns_403(fake_attestation):
 
 def test_revoke_success(fake_attestation):
     revoked = fake_attestation.model_copy(update={"status": AttestationStatus.revoked})
-    with _test_client() as (client, _):
+    with _test_client() as (client, _):  # noqa: SIM117
         with patch("captre.api.revoke.read_attestation_from_box", return_value=fake_attestation), \
              patch("captre.api.revoke.revoke_attestation", return_value=revoked):
             resp = client.post("/revoke", json={"attestation_id": FAKE_ATTESTATION_ID})
@@ -97,7 +96,7 @@ def test_revoke_success(fake_attestation):
 def test_revoke_resolves_uuid_via_chain(fake_attestation):
     """UUID in request → resolve_id_from_chain → read box."""
     revoked = fake_attestation.model_copy(update={"status": AttestationStatus.revoked})
-    with _test_client() as (client, _):
+    with _test_client() as (client, _):  # noqa: SIM117
         with patch("captre.api.revoke.read_attestation_from_box", side_effect=[None, fake_attestation]), \
              patch("captre.api.revoke.resolve_id_from_chain", return_value=FAKE_CONTENT_HASH), \
              patch("captre.api.revoke.revoke_attestation", return_value=revoked):

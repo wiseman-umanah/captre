@@ -13,10 +13,8 @@ No chain, no USDC needed.
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 
-import pytest
 from fastapi.testclient import TestClient
 
-from captre.models import AttestationStatus
 from tests.conftest import (
     FAKE_ATTESTATION_ID,
     FAKE_AUTHOR,
@@ -69,7 +67,7 @@ def test_attest_no_payment_returns_402():
 
 
 def test_attest_success_returns_200(fake_attestation):
-    with _test_client() as (client, payer):
+    with _test_client() as (client, _payer):  # noqa: SIM117
         with patch("captre.api.attest.write_attestation", return_value=fake_attestation):
             resp = client.post("/attest", json={"content_hash": FAKE_CONTENT_HASH})
     assert resp.status_code == 200
@@ -80,7 +78,7 @@ def test_attest_success_returns_200(fake_attestation):
 
 
 def test_attest_duplicate_returns_409(fake_attestation):
-    with _test_client() as (client, _):
+    with _test_client() as (client, _):  # noqa: SIM117
         with patch("captre.api.attest.write_attestation", side_effect=ValueError("already")), \
              patch("captre.api.attest.read_attestation_from_box", return_value=fake_attestation):
             resp = client.post("/attest", json={"content_hash": FAKE_CONTENT_HASH})
@@ -91,7 +89,7 @@ def test_attest_duplicate_returns_409(fake_attestation):
 
 
 def test_attest_runtime_error_returns_500():
-    with _test_client() as (client, _):
+    with _test_client() as (client, _):  # noqa: SIM117
         with patch("captre.api.attest.write_attestation", side_effect=RuntimeError("boom")):
             resp = client.post("/attest", json={"content_hash": FAKE_CONTENT_HASH})
     assert resp.status_code == 500

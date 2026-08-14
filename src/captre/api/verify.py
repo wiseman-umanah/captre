@@ -12,12 +12,15 @@ Verify calls do not contribute to leaderboard volume (free endpoints).
 
 import logging
 import os
-from algosdk.error import AlgodResponseError
 
+from algosdk.error import AlgodResponseError
 from fastapi import APIRouter, HTTPException, Query, status
 
 from captre.models import VerifyResponse
-from captre.settlement.write_attestation import read_attestation_from_box, resolve_id_from_chain
+from captre.settlement.write_attestation import (
+    read_attestation_from_box,
+    resolve_id_from_chain,
+)
 
 _CHAIN_ERRORS = (AlgodResponseError, TimeoutError, OSError, ConnectionError)
 

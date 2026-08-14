@@ -11,7 +11,7 @@ Simulates an AI research agent that:
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from shared.captre_client import DuplicateClaimError, attest, revoke
@@ -24,18 +24,18 @@ from shared.wallet import AlgorandWallet
 _FINDINGS: list[tuple[str, str]] = [
     (
         "climate-model-v1",
-        "FINDING: Global mean temperature anomaly projected at +1.8°C by 2050 "
-        "(95% CI: 1.4–2.3°C). Based on CMIP6 ensemble, {ts}.",
+        ("FINDING: Global mean temperature anomaly projected at +1.8°C by 2050 "
+        "(95% CI: 1.4–2.3°C). Based on CMIP6 ensemble, {ts}."),
     ),
     (
         "drug-trial-interim",
-        "INTERIM ANALYSIS: Compound XR-7 shows 34% reduction in biomarker at "
-        "week 12 (p=0.003, n=142). Proceeding to Phase III. Run {ts}.",
+        ("INTERIM ANALYSIS: Compound XR-7 shows 34% reduction in biomarker at "
+        "week 12 (p=0.003, n=142). Proceeding to Phase III. Run {ts}."),
     ),
     (
         "market-microstructure",
-        "OBSERVATION: Bid-ask spread on ALGO/USDC narrows by ~18% in the 30 min "
-        "following on-chain attestation events. Sample size: 47 events. {ts}.",
+        ("OBSERVATION: Bid-ask spread on ALGO/USDC narrows by ~18% in the 30 min "
+        "following on-chain attestation events. Sample size: 47 events. {ts}."),
     ),
 ]
 
@@ -84,7 +84,7 @@ class ResearcherAgent:
 
         # ── Attest each finding ──────────────────────────────────────────
         for slug, template in _FINDINGS:
-            ts = datetime.now(tz=timezone.utc).isoformat()
+            ts = datetime.now(tz=UTC).isoformat()
             content = template.format(ts=ts)
             h = sha256(content)
 
@@ -109,7 +109,7 @@ class ResearcherAgent:
                 )
             except DuplicateClaimError as exc:
                 log(self.name, "ERROR", f"Duplicate for {slug} — already claimed", detail=str(exc.existing.get("attestation_id", ""))[:12])
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 log(self.name, "ERROR", f"Failed to attest {slug}: {exc}")
 
             time.sleep(2)
@@ -127,7 +127,7 @@ class ResearcherAgent:
                 log(self.name, "SUCCESS", "Retraction confirmed on-chain.")
                 # update registry record status
                 to_revoke["status"] = "revoked"
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 log(self.name, "ERROR", f"Retraction failed: {exc}")
 
         log(self.name, "INFO", "Done.")

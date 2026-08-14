@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import base64
 
-from algosdk import encoding, mnemonic
 from algosdk import account as algo_account
+from algosdk import encoding, mnemonic
 
 
 class AlgorandWallet:
@@ -50,7 +50,7 @@ class AlgorandWallet:
         self.address: str = algo_account.address_from_private_key(self._private_key)
 
     @classmethod
-    def generate(cls) -> "AlgorandWallet":
+    def generate(cls) -> AlgorandWallet:
         """
         Generate a brand-new random Algorand wallet.
 

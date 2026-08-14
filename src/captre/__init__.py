@@ -16,14 +16,14 @@ from pathlib import Path
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 
+# NOTE: import is `x402`, NOT `x402_avm`
+from x402.http.middleware.fastapi import payment_middleware
+
 from captre.api.attest import router as attest_router
 from captre.api.revoke import router as revoke_router
 from captre.api.verify import router as verify_router
 from captre.ui import router as ui_router
 from captre.x402_config import ROUTES_CONFIG, build_x402_server
-
-# NOTE: import is `x402`, NOT `x402_avm`
-from x402.http.middleware.fastapi import payment_middleware
 
 _STATIC_DIR = Path(__file__).parent / "ui" / "static"
 

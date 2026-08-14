@@ -29,7 +29,6 @@ from algosdk.v2client.algod import AlgodClient
 from shared.log import log
 from shared.wallet import AlgorandWallet
 
-
 # ── Thresholds — only top up when balance drops below these ──────────────────
 
 # Minimum spendable ALGO an agent must have before bank tops up (microALGO).
@@ -149,7 +148,7 @@ def _get_balances(
     """
     try:
         info = client.account_info(address)
-    except Exception:
+    except Exception:  # noqa: BLE001
         # Account doesn't exist on-chain yet (never received ALGO)
         return 0, 0, False
 

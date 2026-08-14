@@ -11,7 +11,7 @@ Simulates an AI coding agent that:
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from shared.captre_client import DuplicateClaimError, attest
@@ -84,7 +84,7 @@ class CoderAgent:
         prev_id: str | None = None
 
         for slug, template, description in _ARTEFACTS:
-            ts = datetime.now(tz=timezone.utc).isoformat()
+            ts = datetime.now(tz=UTC).isoformat()
             content = template.format(ts=ts)
             h = sha256(content)
 
@@ -113,7 +113,7 @@ class CoderAgent:
             except DuplicateClaimError as exc:
                 log(self.name, "ERROR", f"Duplicate for {slug}", detail=str(exc.existing.get("attestation_id", ""))[:12])
                 # Keep prev_id unchanged — still useful for lineage
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 log(self.name, "ERROR", f"Failed to attest {slug}: {exc}")
 
             time.sleep(2)

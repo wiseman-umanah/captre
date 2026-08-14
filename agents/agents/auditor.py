@@ -15,7 +15,7 @@ calls are free — demonstrating the asymmetry of the platform.
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from shared.captre_client import DuplicateClaimError, attest, verify
@@ -110,7 +110,7 @@ class AuditorAgent:
                     all_records.append(result["attestation"])
 
         # ── Attest the audit report ──────────────────────────────────────
-        ts = datetime.now(tz=timezone.utc).isoformat()
+        ts = datetime.now(tz=UTC).isoformat()
         report = (
             f"AUDIT REPORT {ts}: verified={verified_count} revoked={revoked_count} "
             f"missing={missing_count} total_checked={verified_count + revoked_count + missing_count}"
@@ -140,7 +140,7 @@ class AuditorAgent:
             )
         except DuplicateClaimError:
             log(self.name, "INFO", "Audit report already on-chain (duplicate run).")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             log(self.name, "ERROR", f"Failed to attest audit report: {exc}")
 
         log(self.name, "INFO", "Done.")

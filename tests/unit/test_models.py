@@ -3,8 +3,9 @@ Unit tests for Pydantic models — validation, enum coercion, serialisation.
 No chain, no HTTP.
 """
 
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
 from pydantic import ValidationError
 
 from captre.models import (
@@ -18,8 +19,12 @@ from captre.models import (
     RevokeResponse,
     VerifyResponse,
 )
-from tests.conftest import FAKE_ATTESTATION_ID, FAKE_AUTHOR, FAKE_CONTENT_HASH, FAKE_TX_ID
-
+from tests.conftest import (
+    FAKE_ATTESTATION_ID,
+    FAKE_AUTHOR,
+    FAKE_CONTENT_HASH,
+    FAKE_TX_ID,
+)
 
 # ---------------------------------------------------------------------------
 # AttestRequest
@@ -79,7 +84,7 @@ def test_attestation_default_status():
     a = Attestation(
         attestation_id=FAKE_ATTESTATION_ID,
         author=FAKE_AUTHOR,
-        created_at=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        created_at=datetime(2025, 1, 1, tzinfo=UTC),
         tx_id=FAKE_TX_ID,
         content_hash=FAKE_CONTENT_HASH,
     )
@@ -90,7 +95,7 @@ def test_attestation_revoked_status():
     a = Attestation(
         attestation_id=FAKE_ATTESTATION_ID,
         author=FAKE_AUTHOR,
-        created_at=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        created_at=datetime(2025, 1, 1, tzinfo=UTC),
         tx_id=FAKE_TX_ID,
         content_hash=FAKE_CONTENT_HASH,
         status="revoked",

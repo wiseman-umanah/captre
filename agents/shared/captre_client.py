@@ -24,7 +24,6 @@ from x402.mechanisms.avm.exact.register import register_exact_avm_client
 
 from shared.wallet import AlgorandWallet
 
-
 # ─── Exceptions ────────────────────────────────────────────────────────────
 
 class AttestError(Exception):

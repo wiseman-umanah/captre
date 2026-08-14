@@ -3,7 +3,7 @@
   "sources": [
     "../../../../captre_app.py"
   ],
-  "mappings": ";;;;;;;;;;;;;AAmBA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;AAAA;;;;;;;;;AAKK;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAOU;;AAAA;AAAA;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;AAAA;AAAP;AACO;AAAA;AAAP;AACA;;AAAA;;AAAA;AAXH;AAAA;AAaA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAOU;;AAAA;AAAA;;AAAP;AACO;AAAA;AAAP;AACA;;AAAA;;AAAA;AATH;AAAA;AAWA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAEM;AAAA;;AAAX;;;AACmB;AAAA;AAHd;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAIU;;AAJV;;;AAMA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAEU;AAAA;;AAFV;;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA",
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AA2BA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;;;AAAA;;;;;;;;;AAuBK;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AA+CkC;AAAxB;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;;AAAA;AAAP;AACA;AAAA;;AAAA;AAAA;AACA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAtDH;AAAA;AAwDA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AA6B8B;AAApB;;AAAA;AAAA;AAAA;AAAA;;AAAP;AACO;;AAAA;AAAP;AACA;AAAA;;AAAA;AAAA;AA/BH;AAAA;AAiCA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAgB0B;AAApB;AAAA;AAAA;AAAA;AAAA;;AAAX;;;AACmB;AAAA;AAjBd;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAkBU;AAlBV;;;AAoBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAiBwB;AAAlB;AAAA;AAAA;AAAA;AAAA;;AAAX;;;AACmB;AAAA;AAlBd;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAmBU;AAnBV;;;AAqBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAe8B;AAApB;AAAA;AAAA;AAAA;;AAfV;;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA",
   "op_pc_offset": 0,
   "pc_events": {
     "1": {
@@ -14,9 +14,9 @@
       "op": "intcblock 0 2 1"
     },
     "6": {
-      "op": "bytecblock 0x151f7c75"
+      "op": "bytecblock 0x613a 0x151f7c75 0x693a 0x"
     },
-    "13": {
+    "20": {
       "op": "txn NumAppArgs",
       "defined_out": [
         "tmp%0#1"
@@ -25,11 +25,11 @@
         "tmp%0#1"
       ]
     },
-    "15": {
-      "op": "bz main___algopy_default_create@13",
+    "22": {
+      "op": "bz main___algopy_default_create@14",
       "stack_out": []
     },
-    "18": {
+    "25": {
       "op": "txn OnCompletion",
       "defined_out": [
         "tmp%2#0"
@@ -38,7 +38,7 @@
         "tmp%2#0"
       ]
     },
-    "20": {
+    "27": {
       "op": "!",
       "defined_out": [
         "tmp%3#0"
@@ -47,11 +47,11 @@
         "tmp%3#0"
       ]
     },
-    "21": {
+    "28": {
       "op": "assert",
       "stack_out": []
     },
-    "22": {
+    "29": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%4#0"
@@ -60,51 +60,55 @@
         "tmp%4#0"
       ]
     },
-    "24": {
+    "31": {
       "op": "assert",
       "stack_out": []
     },
-    "25": {
-      "op": "pushbytess 0xb81b18b4 0xe8710099 0xe87a1174 0x5eef1ef5 // method \"attest(byte[],string,byte[])void\", method \"revoke(byte[],string,byte[])void\", method \"get_attestation(byte[])byte[]\", method \"exists(byte[])bool\"",
+    "32": {
+      "op": "pushbytess 0x37861735 0xe8710099 0xe87a1174 0x8578ee98 0x5eef1ef5 // method \"attest(byte[],byte[],byte[],string,byte[])void\", method \"revoke(byte[],string,byte[])void\", method \"get_attestation(byte[])byte[]\", method \"resolve_id(byte[])byte[]\", method \"exists(byte[])bool\"",
       "defined_out": [
-        "Method(attest(byte[],string,byte[])void)",
+        "Method(attest(byte[],byte[],byte[],string,byte[])void)",
         "Method(exists(byte[])bool)",
         "Method(get_attestation(byte[])byte[])",
+        "Method(resolve_id(byte[])byte[])",
         "Method(revoke(byte[],string,byte[])void)"
       ],
       "stack_out": [
-        "Method(attest(byte[],string,byte[])void)",
+        "Method(attest(byte[],byte[],byte[],string,byte[])void)",
         "Method(revoke(byte[],string,byte[])void)",
         "Method(get_attestation(byte[])byte[])",
+        "Method(resolve_id(byte[])byte[])",
         "Method(exists(byte[])bool)"
       ]
     },
-    "47": {
+    "59": {
       "op": "txna ApplicationArgs 0",
       "defined_out": [
-        "Method(attest(byte[],string,byte[])void)",
+        "Method(attest(byte[],byte[],byte[],string,byte[])void)",
         "Method(exists(byte[])bool)",
         "Method(get_attestation(byte[])byte[])",
+        "Method(resolve_id(byte[])byte[])",
         "Method(revoke(byte[],string,byte[])void)",
         "tmp%6#0"
       ],
       "stack_out": [
-        "Method(attest(byte[],string,byte[])void)",
+        "Method(attest(byte[],byte[],byte[],string,byte[])void)",
         "Method(revoke(byte[],string,byte[])void)",
         "Method(get_attestation(byte[])byte[])",
+        "Method(resolve_id(byte[])byte[])",
         "Method(exists(byte[])bool)",
         "tmp%6#0"
       ]
     },
-    "50": {
-      "op": "match attest revoke get_attestation exists",
+    "62": {
+      "op": "match attest revoke get_attestation resolve_id exists",
       "stack_out": []
     },
-    "60": {
+    "74": {
       "op": "err"
     },
-    "61": {
-      "block": "main___algopy_default_create@13",
+    "75": {
+      "block": "main___algopy_default_create@14",
       "stack_in": [],
       "op": "txn OnCompletion",
       "defined_out": [
@@ -114,7 +118,7 @@
         "tmp%7#0"
       ]
     },
-    "63": {
+    "77": {
       "op": "!",
       "defined_out": [
         "tmp%8#0"
@@ -123,7 +127,7 @@
         "tmp%8#0"
       ]
     },
-    "64": {
+    "78": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%8#0",
@@ -134,7 +138,7 @@
         "tmp%9#0"
       ]
     },
-    "66": {
+    "80": {
       "op": "!",
       "defined_out": [
         "tmp%10#0",
@@ -145,7 +149,7 @@
         "tmp%10#0"
       ]
     },
-    "67": {
+    "81": {
       "op": "&&",
       "defined_out": [
         "tmp%11#0"
@@ -154,12 +158,12 @@
         "tmp%11#0"
       ]
     },
-    "68": {
+    "82": {
       "op": "return",
       "defined_out": [],
       "stack_out": []
     },
-    "69": {
+    "83": {
       "subroutine": "captre_app.CaptreApp.attest[routing]",
       "params": {},
       "block": "attest",
@@ -172,7 +176,7 @@
         "tmp%0#0"
       ]
     },
-    "72": {
+    "86": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -183,7 +187,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "73": {
+    "87": {
       "op": "intc_0 // 0",
       "defined_out": [
         "0",
@@ -196,7 +200,7 @@
         "0"
       ]
     },
-    "74": {
+    "88": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -208,7 +212,7 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "75": {
+    "89": {
       "op": "intc_1 // 2",
       "defined_out": [
         "2",
@@ -221,7 +225,7 @@
         "2"
       ]
     },
-    "76": {
+    "90": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -232,7 +236,7 @@
         "add%0#0"
       ]
     },
-    "77": {
+    "91": {
       "op": "dig 1",
       "stack_out": [
         "tmp%0#0",
@@ -240,7 +244,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "79": {
+    "93": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -253,7 +257,7 @@
         "len%0#0"
       ]
     },
-    "80": {
+    "94": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -264,484 +268,1122 @@
         "eq%0#0"
       ]
     },
-    "81": {
+    "95": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "82": {
+    "96": {
       "op": "extract 2 0",
       "defined_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ],
       "stack_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ]
     },
-    "85": {
+    "99": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ]
     },
-    "88": {
+    "102": {
       "op": "dup",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)"
       ]
     },
-    "89": {
+    "103": {
       "op": "intc_0 // 0",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)",
         "0"
       ]
     },
-    "90": {
+    "104": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
         "aggregate%array_length%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "aggregate%array_length%1#0"
       ]
     },
-    "91": {
+    "105": {
       "op": "intc_1 // 2",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "aggregate%array_length%1#0",
         "2"
       ]
     },
-    "92": {
+    "106": {
       "op": "+",
       "defined_out": [
         "add%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "add%1#0"
       ]
     },
-    "93": {
+    "107": {
       "op": "dig 1",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "add%1#0",
         "tmp%2#0 (copy)"
       ]
     },
-    "95": {
+    "109": {
       "op": "len",
       "defined_out": [
         "add%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "len%1#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "add%1#0",
         "len%1#0"
       ]
     },
-    "96": {
+    "110": {
       "op": "==",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "eq%1#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "eq%1#0"
       ]
     },
-    "97": {
+    "111": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ]
     },
-    "98": {
+    "112": {
       "op": "extract 2 0",
       "defined_out": [
-        "author#0",
-        "content_hash#0"
+        "content_hash_key#0",
+        "content_hash_str#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0"
+        "content_hash_key#0",
+        "content_hash_str#0"
       ]
     },
-    "101": {
+    "115": {
       "op": "txna ApplicationArgs 3",
       "defined_out": [
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0"
       ]
     },
-    "104": {
+    "118": {
       "op": "dup",
       "defined_out": [
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "tmp%4#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "tmp%4#0 (copy)"
       ]
     },
-    "105": {
+    "119": {
       "op": "intc_0 // 0",
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "tmp%4#0 (copy)",
         "0"
       ]
     },
-    "106": {
+    "120": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
         "aggregate%array_length%2#0",
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "aggregate%array_length%2#0"
       ]
     },
-    "107": {
+    "121": {
       "op": "intc_1 // 2",
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "aggregate%array_length%2#0",
         "2"
       ]
     },
-    "108": {
+    "122": {
       "op": "+",
       "defined_out": [
         "add%2#0",
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "add%2#0"
       ]
     },
-    "109": {
+    "123": {
       "op": "dig 1",
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "add%2#0",
         "tmp%4#0 (copy)"
       ]
     },
-    "111": {
+    "125": {
       "op": "len",
       "defined_out": [
         "add%2#0",
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "len%2#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "add%2#0",
         "len%2#0"
       ]
     },
-    "112": {
+    "126": {
       "op": "==",
       "defined_out": [
-        "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "eq%2#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0",
         "eq%2#0"
       ]
     },
-    "113": {
+    "127": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
-        "content_hash#0",
-        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "tmp%4#0"
       ]
     },
-    "114": {
+    "128": {
       "op": "extract 2 0",
       "defined_out": [
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0"
+      ]
+    },
+    "131": {
+      "op": "txna ApplicationArgs 4",
+      "defined_out": [
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0"
+      ]
+    },
+    "134": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "135": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)",
+        "0"
+      ]
+    },
+    "136": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%3#0",
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "aggregate%array_length%3#0"
+      ]
+    },
+    "137": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "aggregate%array_length%3#0",
+        "2"
+      ]
+    },
+    "138": {
+      "op": "+",
+      "defined_out": [
+        "add%3#0",
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "add%3#0"
+      ]
+    },
+    "139": {
+      "op": "dig 1",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "add%3#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "141": {
+      "op": "len",
+      "defined_out": [
+        "add%3#0",
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "len%3#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "add%3#0",
+        "len%3#0"
+      ]
+    },
+    "142": {
+      "op": "==",
+      "defined_out": [
+        "attestation_id#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "eq%3#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0",
+        "eq%3#0"
+      ]
+    },
+    "143": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "tmp%6#0"
+      ]
+    },
+    "144": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_id#0",
         "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0"
+      ]
+    },
+    "147": {
+      "op": "txna ApplicationArgs 5",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0"
+      ]
+    },
+    "150": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "151": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)",
+        "0"
+      ]
+    },
+    "152": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%4#0",
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "aggregate%array_length%4#0"
+      ]
+    },
+    "153": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "aggregate%array_length%4#0",
+        "2"
+      ]
+    },
+    "154": {
+      "op": "+",
+      "defined_out": [
+        "add%4#0",
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "add%4#0"
+      ]
+    },
+    "155": {
+      "op": "dig 1",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "add%4#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "157": {
+      "op": "len",
+      "defined_out": [
+        "add%4#0",
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "len%4#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "add%4#0",
+        "len%4#0"
+      ]
+    },
+    "158": {
+      "op": "==",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "eq%4#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0",
+        "eq%4#0"
+      ]
+    },
+    "159": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "tmp%8#0"
+      ]
+    },
+    "160": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0"
       ]
     },
-    "117": {
-      "op": "dig 2",
+    "163": {
+      "op": "bytec_0 // 0x613a",
       "defined_out": [
+        "0x613a",
+        "attestation_id#0",
         "author#0",
-        "content_hash#0",
-        "content_hash#0 (copy)",
+        "content_hash_key#0",
+        "content_hash_str#0",
         "metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
-        "content_hash#0 (copy)"
+        "0x613a"
       ]
     },
-    "119": {
+    "164": {
+      "op": "dig 5",
+      "defined_out": [
+        "0x613a",
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_key#0 (copy)",
+        "content_hash_str#0",
+        "metadata_json#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "0x613a",
+        "content_hash_key#0 (copy)"
+      ]
+    },
+    "166": {
+      "op": "concat",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "167": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)",
+        "metadata_json#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "168": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
+        "attestation_id#0",
         "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0",
         "metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "_%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "120": {
+    "169": {
       "op": "bury 1",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "122": {
+    "171": {
       "op": "!",
       "defined_out": [
+        "attestation_id#0",
         "author#0",
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
         "tmp%0#1"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "tmp%0#1"
       ]
     },
-    "123": {
+    "172": {
       "error": "ERR_ALREADY_CLAIMED",
       "op": "assert // ERR_ALREADY_CLAIMED",
       "stack_out": [
-        "content_hash#0",
-        "author#0",
-        "metadata_json#0"
-      ]
-    },
-    "124": {
-      "op": "dig 2",
-      "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
-        "content_hash#0 (copy)"
+        "map_prefixed_key%0#0"
       ]
     },
-    "126": {
+    "173": {
+      "op": "uncover 5",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "content_hash_key#0"
+      ]
+    },
+    "175": {
       "op": "len",
       "defined_out": [
+        "attestation_id#0",
         "author#0",
-        "content_hash#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
         "tmp%1#1"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "tmp%1#1"
       ]
     },
-    "127": {
+    "176": {
       "error": "ERR_EMPTY_HASH",
       "op": "assert // ERR_EMPTY_HASH",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "author#0",
-        "metadata_json#0"
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
       ]
     },
-    "128": {
-      "op": "swap",
+    "177": {
+      "op": "dig 4",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_str#0",
+        "content_hash_str#0 (copy)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0"
+      ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "content_hash_str#0 (copy)"
+      ]
+    },
+    "179": {
+      "op": "len",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%3#1"
+      ]
+    },
+    "180": {
+      "error": "ERR_EMPTY_HASH_STR",
+      "op": "assert // ERR_EMPTY_HASH_STR",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "181": {
+      "op": "dig 3",
+      "defined_out": [
+        "attestation_id#0",
+        "attestation_id#0 (copy)",
+        "author#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_id#0 (copy)"
+      ]
+    },
+    "183": {
+      "op": "len",
+      "defined_out": [
+        "attestation_id#0",
+        "author#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "tmp%5#1"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%5#1"
+      ]
+    },
+    "184": {
+      "error": "ERR_EMPTY_ID",
+      "op": "assert // ERR_EMPTY_ID",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "author#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "185": {
+      "op": "uncover 2",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
         "author#0"
       ]
     },
-    "129": {
+    "187": {
       "op": "len",
       "defined_out": [
-        "content_hash#0",
+        "attestation_id#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
-        "tmp%3#1"
+        "tmp%7#1"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "metadata_json#0",
-        "tmp%3#1"
+        "map_prefixed_key%0#0",
+        "tmp%7#1"
       ]
     },
-    "130": {
+    "188": {
       "error": "ERR_EMPTY_AUTHOR",
       "op": "assert // ERR_EMPTY_AUTHOR",
       "stack_out": [
-        "content_hash#0",
-        "metadata_json#0"
+        "content_hash_str#0",
+        "attestation_id#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
       ]
     },
-    "131": {
-      "op": "dup",
+    "189": {
+      "op": "dig 1",
       "defined_out": [
-        "content_hash#0",
+        "attestation_id#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
         "metadata_json#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0 (copy)"
       ]
     },
-    "132": {
+    "191": {
       "op": "len",
       "defined_out": [
-        "content_hash#0",
+        "attestation_id#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
-        "tmp%5#1"
+        "tmp%9#1"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "metadata_json#0",
-        "tmp%5#1"
+        "map_prefixed_key%0#0",
+        "tmp%9#1"
       ]
     },
-    "133": {
+    "192": {
       "error": "ERR_EMPTY_METADATA",
       "op": "assert // ERR_EMPTY_METADATA",
       "stack_out": [
-        "content_hash#0",
-        "metadata_json#0"
-      ]
-    },
-    "134": {
-      "op": "dig 1",
-      "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "metadata_json#0",
-        "content_hash#0 (copy)"
+        "map_prefixed_key%0#0"
       ]
     },
-    "136": {
+    "193": {
+      "op": "dup",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "194": {
       "op": "box_del",
       "defined_out": [
-        "content_hash#0",
+        "attestation_id#0",
+        "content_hash_str#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0",
         "{box_del}"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
         "metadata_json#0",
+        "map_prefixed_key%0#0",
         "{box_del}"
       ]
     },
-    "137": {
+    "195": {
       "op": "pop",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_str#0",
+        "attestation_id#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "196": {
+      "op": "swap",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "map_prefixed_key%0#0",
         "metadata_json#0"
       ]
     },
-    "138": {
+    "197": {
+      "op": "box_put",
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0"
+      ]
+    },
+    "198": {
+      "op": "bytec_2 // 0x693a",
+      "defined_out": [
+        "0x693a",
+        "attestation_id#0",
+        "content_hash_str#0"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "attestation_id#0",
+        "0x693a"
+      ]
+    },
+    "199": {
+      "op": "swap",
+      "stack_out": [
+        "content_hash_str#0",
+        "0x693a",
+        "attestation_id#0"
+      ]
+    },
+    "200": {
+      "op": "concat",
+      "defined_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0"
+      ]
+    },
+    "201": {
+      "op": "dup",
+      "defined_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0",
+        "map_prefixed_key%2#0 (copy)"
+      ],
+      "stack_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0",
+        "map_prefixed_key%2#0 (copy)"
+      ]
+    },
+    "202": {
+      "op": "box_del",
+      "stack_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0",
+        "{box_del}"
+      ]
+    },
+    "203": {
+      "op": "pop",
+      "stack_out": [
+        "content_hash_str#0",
+        "map_prefixed_key%2#0"
+      ]
+    },
+    "204": {
+      "op": "swap",
+      "stack_out": [
+        "map_prefixed_key%2#0",
+        "content_hash_str#0"
+      ]
+    },
+    "205": {
       "op": "box_put",
       "stack_out": []
     },
-    "139": {
+    "206": {
       "op": "intc_2 // 1",
       "defined_out": [
         "1"
@@ -750,11 +1392,11 @@
         "1"
       ]
     },
-    "140": {
+    "207": {
       "op": "return",
       "stack_out": []
     },
-    "141": {
+    "208": {
       "subroutine": "captre_app.CaptreApp.revoke[routing]",
       "params": {},
       "block": "revoke",
@@ -767,7 +1409,7 @@
         "tmp%0#0"
       ]
     },
-    "144": {
+    "211": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -778,7 +1420,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "145": {
+    "212": {
       "op": "intc_0 // 0",
       "defined_out": [
         "0",
@@ -791,7 +1433,7 @@
         "0"
       ]
     },
-    "146": {
+    "213": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -803,7 +1445,7 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "147": {
+    "214": {
       "op": "intc_1 // 2",
       "defined_out": [
         "2",
@@ -816,7 +1458,7 @@
         "2"
       ]
     },
-    "148": {
+    "215": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -827,7 +1469,7 @@
         "add%0#0"
       ]
     },
-    "149": {
+    "216": {
       "op": "dig 1",
       "stack_out": [
         "tmp%0#0",
@@ -835,7 +1477,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "151": {
+    "218": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -848,7 +1490,7 @@
         "len%0#0"
       ]
     },
-    "152": {
+    "219": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -859,366 +1501,405 @@
         "eq%0#0"
       ]
     },
-    "153": {
+    "220": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "154": {
+    "221": {
       "op": "extract 2 0",
       "defined_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ],
       "stack_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ]
     },
-    "157": {
+    "224": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ]
     },
-    "160": {
+    "227": {
       "op": "dup",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)"
       ]
     },
-    "161": {
+    "228": {
       "op": "intc_0 // 0",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "tmp%2#0 (copy)",
         "0"
       ]
     },
-    "162": {
+    "229": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
         "aggregate%array_length%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "aggregate%array_length%1#0"
       ]
     },
-    "163": {
+    "230": {
       "op": "intc_1 // 2",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "aggregate%array_length%1#0",
         "2"
       ]
     },
-    "164": {
+    "231": {
       "op": "+",
       "defined_out": [
         "add%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%2#0",
         "add%1#0"
       ]
     },
-    "165": {
+    "232": {
       "op": "swap",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "add%1#0",
         "tmp%2#0"
       ]
     },
-    "166": {
+    "233": {
       "op": "len",
       "defined_out": [
         "add%1#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "len%1#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "add%1#0",
         "len%1#0"
       ]
     },
-    "167": {
+    "234": {
       "op": "==",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "eq%1#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "eq%1#0"
       ]
     },
-    "168": {
+    "235": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ]
     },
-    "169": {
+    "236": {
       "op": "txna ApplicationArgs 3",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0"
       ]
     },
-    "172": {
+    "239": {
       "op": "dup",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "tmp%4#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "tmp%4#0 (copy)"
       ]
     },
-    "173": {
+    "240": {
       "op": "intc_0 // 0",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "tmp%4#0 (copy)",
         "0"
       ]
     },
-    "174": {
+    "241": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
         "aggregate%array_length%2#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "aggregate%array_length%2#0"
       ]
     },
-    "175": {
+    "242": {
       "op": "intc_1 // 2",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "aggregate%array_length%2#0",
         "2"
       ]
     },
-    "176": {
+    "243": {
       "op": "+",
       "defined_out": [
         "add%2#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "add%2#0"
       ]
     },
-    "177": {
+    "244": {
       "op": "dig 1",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "add%2#0",
         "tmp%4#0 (copy)"
       ]
     },
-    "179": {
+    "246": {
       "op": "len",
       "defined_out": [
         "add%2#0",
-        "content_hash#0",
+        "content_hash_key#0",
         "len%2#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "add%2#0",
         "len%2#0"
       ]
     },
-    "180": {
+    "247": {
       "op": "==",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "eq%2#0",
         "tmp%4#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0",
         "eq%2#0"
       ]
     },
-    "181": {
+    "248": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "tmp%4#0"
       ]
     },
-    "182": {
+    "249": {
       "op": "extract 2 0",
       "defined_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "updated_metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "updated_metadata_json#0"
       ]
     },
-    "185": {
-      "op": "dig 1",
+    "252": {
+      "op": "bytec_0 // 0x613a",
       "defined_out": [
-        "content_hash#0",
-        "content_hash#0 (copy)",
+        "0x613a",
+        "content_hash_key#0",
         "updated_metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "content_hash_key#0",
         "updated_metadata_json#0",
-        "content_hash#0 (copy)"
+        "0x613a"
       ]
     },
-    "187": {
+    "253": {
+      "op": "uncover 2",
+      "stack_out": [
+        "updated_metadata_json#0",
+        "0x613a",
+        "content_hash_key#0"
+      ]
+    },
+    "255": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "updated_metadata_json#0"
+      ],
+      "stack_out": [
+        "updated_metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "256": {
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)",
+        "updated_metadata_json#0"
+      ],
+      "stack_out": [
+        "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "257": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0",
         "updated_metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
         "_%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "188": {
+    "258": {
       "op": "bury 1",
       "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "190": {
+    "260": {
       "error": "ERR_NOT_FOUND",
       "op": "assert // ERR_NOT_FOUND",
       "stack_out": [
-        "content_hash#0",
-        "updated_metadata_json#0"
+        "updated_metadata_json#0",
+        "map_prefixed_key%0#0"
       ]
     },
-    "191": {
-      "op": "dup",
+    "261": {
+      "op": "dig 1",
       "defined_out": [
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "updated_metadata_json#0",
         "updated_metadata_json#0 (copy)"
       ],
       "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
         "updated_metadata_json#0 (copy)"
       ]
     },
-    "192": {
+    "263": {
       "op": "len",
       "defined_out": [
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "tmp%0#1",
         "updated_metadata_json#0"
       ],
       "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
         "tmp%0#1"
       ]
     },
-    "193": {
+    "264": {
       "error": "ERR_EMPTY_METADATA",
       "op": "assert // ERR_EMPTY_METADATA",
       "stack_out": [
-        "content_hash#0",
-        "updated_metadata_json#0"
-      ]
-    },
-    "194": {
-      "op": "dig 1",
-      "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
-        "content_hash#0 (copy)"
+        "map_prefixed_key%0#0"
       ]
     },
-    "196": {
+    "265": {
+      "op": "dup",
+      "stack_out": [
+        "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "266": {
       "op": "box_del",
       "defined_out": [
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "updated_metadata_json#0",
         "{box_del}"
       ],
       "stack_out": [
-        "content_hash#0",
         "updated_metadata_json#0",
+        "map_prefixed_key%0#0",
         "{box_del}"
       ]
     },
-    "197": {
+    "267": {
       "op": "pop",
       "stack_out": [
-        "content_hash#0",
+        "updated_metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "268": {
+      "op": "swap",
+      "stack_out": [
+        "map_prefixed_key%0#0",
         "updated_metadata_json#0"
       ]
     },
-    "198": {
+    "269": {
       "op": "box_put",
       "stack_out": []
     },
-    "199": {
+    "270": {
       "op": "intc_2 // 1",
       "defined_out": [
         "1"
@@ -1227,11 +1908,11 @@
         "1"
       ]
     },
-    "200": {
+    "271": {
       "op": "return",
       "stack_out": []
     },
-    "201": {
+    "272": {
       "subroutine": "captre_app.CaptreApp.get_attestation[routing]",
       "params": {},
       "block": "get_attestation",
@@ -1244,7 +1925,7 @@
         "tmp%0#0"
       ]
     },
-    "204": {
+    "275": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -1255,7 +1936,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "205": {
+    "276": {
       "op": "intc_0 // 0",
       "defined_out": [
         "0",
@@ -1268,7 +1949,7 @@
         "0"
       ]
     },
-    "206": {
+    "277": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -1280,7 +1961,7 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "207": {
+    "278": {
       "op": "intc_1 // 2",
       "defined_out": [
         "2",
@@ -1293,7 +1974,7 @@
         "2"
       ]
     },
-    "208": {
+    "279": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -1304,7 +1985,7 @@
         "add%0#0"
       ]
     },
-    "209": {
+    "280": {
       "op": "dig 1",
       "stack_out": [
         "tmp%0#0",
@@ -1312,7 +1993,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "211": {
+    "282": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -1325,7 +2006,7 @@
         "len%0#0"
       ]
     },
-    "212": {
+    "283": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -1336,59 +2017,86 @@
         "eq%0#0"
       ]
     },
-    "213": {
+    "284": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "214": {
+    "285": {
       "op": "extract 2 0",
       "defined_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ],
       "stack_out": [
-        "content_hash#0"
+        "content_hash_key#0"
       ]
     },
-    "217": {
+    "288": {
+      "op": "bytec_0 // 0x613a",
+      "defined_out": [
+        "0x613a",
+        "content_hash_key#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "0x613a"
+      ]
+    },
+    "289": {
+      "op": "swap",
+      "stack_out": [
+        "0x613a",
+        "content_hash_key#0"
+      ]
+    },
+    "290": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "291": {
       "op": "dup",
       "defined_out": [
-        "content_hash#0"
+        "map_prefixed_key%0#0"
       ],
       "stack_out": [
-        "content_hash#0",
-        "content_hash#0"
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0"
       ]
     },
-    "218": {
+    "292": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0"
       ],
       "stack_out": [
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "_%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "219": {
+    "293": {
       "op": "bury 1",
       "stack_out": [
-        "content_hash#0",
+        "map_prefixed_key%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "221": {
+    "295": {
       "op": "bz get_attestation_after_if_else@3",
       "stack_out": [
-        "content_hash#0"
+        "map_prefixed_key%0#0"
       ]
     },
-    "224": {
+    "298": {
       "op": "box_get",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -1399,7 +2107,7 @@
         "aggregate%box_get%1#0"
       ]
     },
-    "225": {
+    "299": {
       "error": "check self.attestations entry exists",
       "op": "assert // check self.attestations entry exists",
       "defined_out": [
@@ -1409,7 +2117,7 @@
         "tmp%2#0"
       ]
     },
-    "226": {
+    "300": {
       "block": "get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4",
       "stack_in": [
         "tmp%2#0"
@@ -1424,7 +2132,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "227": {
+    "301": {
       "op": "len",
       "defined_out": [
         "aggregate%length%0#0",
@@ -1435,7 +2143,7 @@
         "aggregate%length%0#0"
       ]
     },
-    "228": {
+    "302": {
       "op": "itob",
       "defined_out": [
         "aggregate%as_bytes%0#0",
@@ -1446,7 +2154,7 @@
         "aggregate%as_bytes%0#0"
       ]
     },
-    "229": {
+    "303": {
       "op": "extract 6 2",
       "defined_out": [
         "aggregate%length_uint16%0#0",
@@ -1457,14 +2165,14 @@
         "aggregate%length_uint16%0#0"
       ]
     },
-    "232": {
+    "306": {
       "op": "swap",
       "stack_out": [
         "aggregate%length_uint16%0#0",
         "tmp%2#0"
       ]
     },
-    "233": {
+    "307": {
       "op": "concat",
       "defined_out": [
         "aggregate%encoded_value%0#0"
@@ -1473,8 +2181,8 @@
         "aggregate%encoded_value%0#0"
       ]
     },
-    "234": {
-      "op": "bytec_0 // 0x151f7c75",
+    "308": {
+      "op": "bytec_1 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%encoded_value%0#0"
@@ -1484,14 +2192,14 @@
         "0x151f7c75"
       ]
     },
-    "235": {
+    "309": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_value%0#0"
       ]
     },
-    "236": {
+    "310": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -1500,11 +2208,11 @@
         "tmp%4#0"
       ]
     },
-    "237": {
+    "311": {
       "op": "log",
       "stack_out": []
     },
-    "238": {
+    "312": {
       "op": "intc_2 // 1",
       "defined_out": [
         "1"
@@ -1513,21 +2221,21 @@
         "1"
       ]
     },
-    "239": {
+    "313": {
       "op": "return",
       "stack_out": []
     },
-    "240": {
+    "314": {
       "block": "get_attestation_after_if_else@3",
       "stack_in": [
-        "content_hash#0"
+        "map_prefixed_key%0#0"
       ],
       "op": "pop",
       "defined_out": [],
       "stack_out": []
     },
-    "241": {
-      "op": "pushbytes 0x",
+    "315": {
+      "op": "bytec_3 // 0x",
       "defined_out": [
         "tmp%2#0"
       ],
@@ -1535,13 +2243,13 @@
         "tmp%2#0"
       ]
     },
-    "243": {
+    "316": {
       "op": "b get_attestation_after_inlined_captre_app.CaptreApp.get_attestation@4"
     },
-    "246": {
-      "subroutine": "captre_app.CaptreApp.exists[routing]",
+    "319": {
+      "subroutine": "captre_app.CaptreApp.resolve_id[routing]",
       "params": {},
-      "block": "exists",
+      "block": "resolve_id",
       "stack_in": [],
       "op": "txna ApplicationArgs 1",
       "defined_out": [
@@ -1551,7 +2259,7 @@
         "tmp%0#0"
       ]
     },
-    "249": {
+    "322": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -1562,7 +2270,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "250": {
+    "323": {
       "op": "intc_0 // 0",
       "defined_out": [
         "0",
@@ -1575,7 +2283,7 @@
         "0"
       ]
     },
-    "251": {
+    "324": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -1587,7 +2295,7 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "252": {
+    "325": {
       "op": "intc_1 // 2",
       "defined_out": [
         "2",
@@ -1600,7 +2308,7 @@
         "2"
       ]
     },
-    "253": {
+    "326": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -1611,7 +2319,7 @@
         "add%0#0"
       ]
     },
-    "254": {
+    "327": {
       "op": "dig 1",
       "stack_out": [
         "tmp%0#0",
@@ -1619,7 +2327,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "256": {
+    "329": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -1632,7 +2340,7 @@
         "len%0#0"
       ]
     },
-    "257": {
+    "330": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -1643,23 +2351,384 @@
         "eq%0#0"
       ]
     },
-    "258": {
+    "331": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "259": {
+    "332": {
       "op": "extract 2 0",
       "defined_out": [
-        "content_hash#0"
+        "attestation_id#0"
       ],
       "stack_out": [
-        "content_hash#0"
+        "attestation_id#0"
       ]
     },
-    "262": {
+    "335": {
+      "op": "bytec_2 // 0x693a",
+      "defined_out": [
+        "0x693a",
+        "attestation_id#0"
+      ],
+      "stack_out": [
+        "attestation_id#0",
+        "0x693a"
+      ]
+    },
+    "336": {
+      "op": "swap",
+      "stack_out": [
+        "0x693a",
+        "attestation_id#0"
+      ]
+    },
+    "337": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "338": {
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "339": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "340": {
+      "op": "bury 1",
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "342": {
+      "op": "bz resolve_id_after_if_else@3",
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "345": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ],
+      "stack_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "346": {
+      "error": "check self.id_index entry exists",
+      "op": "assert // check self.id_index entry exists",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "347": {
+      "block": "resolve_id_after_inlined_captre_app.CaptreApp.resolve_id@4",
+      "stack_in": [
+        "tmp%2#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "348": {
+      "op": "len",
+      "defined_out": [
+        "aggregate%length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%length%0#0"
+      ]
+    },
+    "349": {
+      "op": "itob",
+      "defined_out": [
+        "aggregate%as_bytes%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%as_bytes%0#0"
+      ]
+    },
+    "350": {
+      "op": "extract 6 2",
+      "defined_out": [
+        "aggregate%length_uint16%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%length_uint16%0#0"
+      ]
+    },
+    "353": {
+      "op": "swap",
+      "stack_out": [
+        "aggregate%length_uint16%0#0",
+        "tmp%2#0"
+      ]
+    },
+    "354": {
+      "op": "concat",
+      "defined_out": [
+        "aggregate%encoded_value%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_value%0#0"
+      ]
+    },
+    "355": {
+      "op": "bytec_1 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "aggregate%encoded_value%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_value%0#0",
+        "0x151f7c75"
+      ]
+    },
+    "356": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "aggregate%encoded_value%0#0"
+      ]
+    },
+    "357": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "358": {
+      "op": "log",
+      "stack_out": []
+    },
+    "359": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "360": {
+      "op": "return",
+      "stack_out": []
+    },
+    "361": {
+      "block": "resolve_id_after_if_else@3",
+      "stack_in": [
+        "map_prefixed_key%0#0"
+      ],
+      "op": "pop",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "362": {
+      "op": "bytec_3 // 0x",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "363": {
+      "op": "b resolve_id_after_inlined_captre_app.CaptreApp.resolve_id@4"
+    },
+    "366": {
+      "subroutine": "captre_app.CaptreApp.exists[routing]",
+      "params": {},
+      "block": "exists",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "369": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "370": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "371": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "372": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "373": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "374": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "376": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "377": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "378": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "379": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "content_hash_key#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0"
+      ]
+    },
+    "382": {
+      "op": "bytec_0 // 0x613a",
+      "defined_out": [
+        "0x613a",
+        "content_hash_key#0"
+      ],
+      "stack_out": [
+        "content_hash_key#0",
+        "0x613a"
+      ]
+    },
+    "383": {
+      "op": "swap",
+      "stack_out": [
+        "0x613a",
+        "content_hash_key#0"
+      ]
+    },
+    "384": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "385": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -1670,13 +2739,13 @@
         "maybe_exists%0#0"
       ]
     },
-    "263": {
+    "386": {
       "op": "bury 1",
       "stack_out": [
         "maybe_exists%0#0"
       ]
     },
-    "265": {
+    "388": {
       "op": "pushbytes 0x00",
       "defined_out": [
         "0x00",
@@ -1687,7 +2756,7 @@
         "0x00"
       ]
     },
-    "268": {
+    "391": {
       "op": "intc_0 // 0",
       "stack_out": [
         "maybe_exists%0#0",
@@ -1695,7 +2764,7 @@
         "0"
       ]
     },
-    "269": {
+    "392": {
       "op": "uncover 2",
       "stack_out": [
         "0x00",
@@ -1703,7 +2772,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "271": {
+    "394": {
       "op": "setbit",
       "defined_out": [
         "aggregate%encoded_bool%0#0"
@@ -1712,8 +2781,8 @@
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "272": {
-      "op": "bytec_0 // 0x151f7c75",
+    "395": {
+      "op": "bytec_1 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
@@ -1723,14 +2792,14 @@
         "0x151f7c75"
       ]
     },
-    "273": {
+    "396": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "274": {
+    "397": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -1739,11 +2808,11 @@
         "tmp%4#0"
       ]
     },
-    "275": {
+    "398": {
       "op": "log",
       "stack_out": []
     },
-    "276": {
+    "399": {
       "op": "intc_2 // 1",
       "defined_out": [
         "1"
@@ -1752,7 +2821,7 @@
         "1"
       ]
     },
-    "277": {
+    "400": {
       "op": "return",
       "stack_out": []
     }

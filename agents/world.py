@@ -34,12 +34,11 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
-
 from agents.auditor import AuditorAgent
 from agents.coder import CoderAgent
 from agents.critic import CriticAgent
 from agents.researcher import ResearcherAgent
+from dotenv import load_dotenv
 from shared.bank import fund_agents
 from shared.log import banner, log
 from shared.wallet import AlgorandWallet
@@ -101,7 +100,7 @@ def _run_agent(agent: Any, registry: dict[str, list[dict[str, Any]]]) -> None:
     """
     try:
         agent.run(registry)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log(agent.name, "ERROR", f"Uncaught exception: {exc}")
 
 

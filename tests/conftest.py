@@ -2,13 +2,12 @@
 Shared pytest fixtures used across unit and integration tests.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 
 import pytest
 
 from captre.models import Attestation, AttestationStatus, OutputType
-
 
 # ---------------------------------------------------------------------------
 # Canonical fake attestation — reuse everywhere
@@ -34,7 +33,7 @@ def fake_attestation() -> Attestation:
     return Attestation(
         attestation_id=FAKE_ATTESTATION_ID,
         author=FAKE_AUTHOR,
-        created_at=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        created_at=datetime(2025, 1, 1, tzinfo=UTC),
         tx_id=FAKE_TX_ID,
         status=AttestationStatus.active,
         content_hash=FAKE_CONTENT_HASH,

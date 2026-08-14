@@ -14,7 +14,10 @@ Correct API (v2.0.2):
 import os
 
 from dotenv import load_dotenv
-from x402.extensions.bazaar.resource_service import OutputConfig, declare_discovery_extension
+from x402.extensions.bazaar.resource_service import (
+    OutputConfig,
+    declare_discovery_extension,
+)
 from x402.http.types import PaymentOption, RouteConfig
 from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
 

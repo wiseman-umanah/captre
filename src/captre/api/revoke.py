@@ -8,8 +8,8 @@ Authorization:
 """
 
 import logging
-from algosdk.error import AlgodResponseError
 
+from algosdk.error import AlgodResponseError
 from fastapi import APIRouter, HTTPException, Request, status
 
 from captre.api.attest import _extract_payer
