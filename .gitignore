@@ -16,3 +16,4 @@ AGENTS.md
 steps.txt
 .pytest_cache
 .ruff_cache
+agents.json
