@@ -15,7 +15,6 @@ No tokens are wasted on agents that still have enough to operate.
 from __future__ import annotations
 
 import time
-
 from typing import Any, cast
 
 from algosdk import encoding

@@ -42,7 +42,7 @@ def test_attest_request_full():
     req = AttestRequest(
         content_hash="sha256:abc",
         agent_id="agent-1",
-        output_type="code",
+        output_type=OutputType.code,
         description="desc",
         model="gpt-4",
         previous_attestation="sha256:prev",
@@ -55,12 +55,12 @@ def test_attest_request_full():
 
 def test_attest_request_invalid_output_type():
     with pytest.raises(ValidationError):
-        AttestRequest(content_hash="sha256:abc", output_type="nonsense")
+        AttestRequest.model_validate({"content_hash": "sha256:abc", "output_type": "nonsense"})
 
 
 def test_attest_request_missing_content_hash():
     with pytest.raises(ValidationError):
-        AttestRequest()
+        AttestRequest.model_validate({})
 
 
 # ---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ def test_attest_request_missing_content_hash():
 
 def test_revoke_request_requires_attestation_id():
     with pytest.raises(ValidationError):
-        RevokeRequest()
+        RevokeRequest.model_validate({})
 
 def test_revoke_request_valid():
     r = RevokeRequest(attestation_id=FAKE_ATTESTATION_ID)
@@ -98,7 +98,7 @@ def test_attestation_revoked_status():
         created_at=datetime(2025, 1, 1, tzinfo=UTC),
         tx_id=FAKE_TX_ID,
         content_hash=FAKE_CONTENT_HASH,
-        status="revoked",
+        status=AttestationStatus.revoked,
     )
     assert a.status == AttestationStatus.revoked
 

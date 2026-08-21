@@ -451,10 +451,16 @@ def resolve_id_from_chain(attestation_id: str) -> str | None:
         The ``content_hash`` string if the id_index box exists for this UUID,
         or ``None`` if not found (the UUID has never been attested).
     """
+    # A UUID is 36 bytes (b"i:" + 36 = 38 bytes) — well within the 64-byte limit.
+    # A raw content_hash string (e.g. "sha256:<64 hex>") is 71+ bytes; with the
+    # "i:" prefix that exceeds 64 bytes and the algod node will reject the call.
+    # content_hash strings are never stored in id_index, so return None immediately.
+    attestation_id_bytes = attestation_id.encode()
+    if len(attestation_id_bytes) + 2 > 64:  # +2 for the "i:" key_prefix
+        return None
+
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
-
-    attestation_id_bytes = attestation_id.encode()
 
     result = app_client.send.call(AppClientMethodCallParams(
         method="resolve_id",

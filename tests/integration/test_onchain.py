@@ -269,11 +269,13 @@ def test_full_http_cycle(unique_hash):
         write_attestation,
     )
 
-    author = os.environ.get(
+    _author = os.environ.get(
         "RECEIVER_ADDRESS",
         # fall back to service account address derived from mnemonic
         __import__("algosdk").mnemonic.to_public_key(os.environ["SERVICE_MNEMONIC"]),
     )
+    assert _author is not None, "RECEIVER_ADDRESS or SERVICE_MNEMONIC must be set"
+    author: str = _author
 
     # 1. Attest
     req = AttestRequest(
@@ -306,4 +308,5 @@ def test_full_http_cycle(unique_hash):
 
     # 5. Confirm revoked status is on-chain
     after_revoke = read_attestation_from_box(unique_hash)
+    assert after_revoke is not None
     assert after_revoke.status == AttestationStatus.revoked

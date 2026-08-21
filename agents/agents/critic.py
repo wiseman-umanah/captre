@@ -86,6 +86,7 @@ class CriticAgent:
                 extra={"confidence": "HIGH", "model_version": "3.1"},
             )
             initial_record = resp["attestation"]
+            assert initial_record is not None
             self._attestations.append(initial_record)
             registry["critic"].append(initial_record)
             log(
