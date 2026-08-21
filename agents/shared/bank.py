@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import time
 
+from typing import Any, cast
+
 from algosdk import encoding
 from algosdk.transaction import (
     AssetOptInTxn,
@@ -147,7 +149,8 @@ def _get_balances(
         ``is_opted_in`` is True if the account holds the ASA at any balance.
     """
     try:
-        info = client.account_info(address)
+        # algosdk stubs type account_info() as bytes; cast to dict for pyright
+        info = cast(dict[str, Any], client.account_info(address))
     except Exception:  # noqa: BLE001
         # Account doesn't exist on-chain yet (never received ALGO)
         return 0, 0, False

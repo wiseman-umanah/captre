@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Explore Attestations — Captre{% endblock %}
-{% block meta_desc %}Browse and look up on-chain attestations stored in the Captre registry on Algorand. Verify any content hash or attestation ID.{% endblock %}
+{% block meta_desc %}Browse every on-chain attestation stored in the Captre registry on Algorand. Newest first. No database.{% endblock %}
 
 {% block content %}
 
@@ -12,8 +12,8 @@
       Explore Attestations
     </h1>
     <p style="color:var(--muted); font-size:15px; max-width:520px; line-height:1.7; margin-bottom:var(--sp-8);">
-      Look up any attestation by its UUID or content hash. Records are stored
-      directly in Algorand Box Storage — no intermediary required.
+      Every attestation stored directly in Algorand Box Storage — enumerated live,
+      no database, newest first.
     </p>
 
     <!-- Search bar -->
@@ -41,103 +41,100 @@
   </div>
 </section>
 
-<!-- HOW TO FIND ATTESTATIONS -->
+<!-- LIVE FEED -->
 <section class="section">
   <div class="container">
 
-    <div class="label">How to browse</div>
-    <h2 class="section-h" style="margin-bottom:var(--sp-4);">Finding records</h2>
-    <p style="color:var(--muted); font-size:14px; max-width:560px; margin-bottom:var(--sp-10); line-height:1.7;">
-      Algorand Box Storage does not support enumeration — boxes are addressed by key.
-      To retrieve an attestation you need its <code>attestation_id</code> or
-      <code>content_hash</code>, both of which are returned when you call
-      <code>POST /attest</code>.
-    </p>
-
-    <div class="features" style="max-width:720px;">
-
-      <div class="feature">
-        <div class="feature-num">UUID</div>
-        <div class="feature-title">By attestation ID</div>
-        <div class="feature-desc" style="margin-bottom:var(--sp-4);">
-          Use the UUID in the <code>attestation_id</code> field of the POST /attest response.
-        </div>
-        <div class="pre-wrap">
-          <pre style="font-size:12px;">GET /attestation/{id}</pre>
-        </div>
+    {% if error %}
+      <div class="alert alert-error" style="margin-bottom:var(--sp-6);">
+        <strong>Could not reach the Algorand node:</strong> {{ error }}
       </div>
+    {% endif %}
 
-      <div class="feature" style="border-right:none;">
-        <div class="feature-num">HASH</div>
-        <div class="feature-title">By content hash</div>
-        <div class="feature-desc" style="margin-bottom:var(--sp-4);">
-          Pass the exact hash string used when attesting to check current status.
-        </div>
-        <div class="pre-wrap">
-          <pre style="font-size:12px;">GET /verify?content_hash=sha256:…</pre>
-        </div>
-      </div>
+    {% if attestations %}
 
-    </div>
-
-  </div>
-</section>
-
-<!-- RESPONSE SHAPE — dark -->
-<section class="section section-dark">
-  <div class="container">
-
-    <div class="label">Response shape</div>
-    <h2 class="section-h" style="margin-bottom:var(--sp-8);">What an attestation looks like</h2>
-
-    <div class="two-col-code" style="align-items:start;">
-
-      <div class="pre-wrap">
-        <div class="pre-label">JSON response</div>
-        <pre>{
-  "attestation": {
-    "attestation_id": "a00fe88e-…",
-    "author":         "GFYF3KDN…",
-    "content_hash":   "sha256:abc…",
-    "status":         "active",
-    "created_at":     "2025-01-01T00:00:00Z",
-    "tx_id":          "QK5ATJTD…",
-    "agent_id":       "my-agent-v1",
-    "output_type":    "file",
-    "tags":           ["research"]
-  },
-  "verified": true
-}</pre>
-      </div>
-
-      <div>
-        <div style="margin-bottom:var(--sp-6);">
-          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--amber-400); margin-bottom:var(--sp-3);">Author binding</div>
-          <p style="font-size:13px; color:var(--stone-400); line-height:1.65;">
-            The <code>author</code> field is the Algorand address that
-            <strong style="color:var(--stone-200);">paid</strong> for the attestation via x402 —
-            cryptographically bound to the payment transaction. It is never the Captre service account.
-          </p>
-        </div>
-
+      <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:var(--sp-6); flex-wrap:wrap; gap:var(--sp-3);">
         <div>
-          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--amber-400); margin-bottom:var(--sp-3);">Trust model</div>
-          <p style="font-size:13px; color:var(--stone-400); line-height:1.65;">
-            You can verify any attestation directly against any Algorand node
-            without going through Captre — the data is in Box Storage, readable by anyone.
-          </p>
+          <div class="label">Live feed</div>
+          <h2 class="section-h" style="margin:0;">{{ attestations | length }} attestation{% if attestations | length != 1 %}s{% endif %} on-chain</h2>
         </div>
-
-        {% if app_id %}
-        <div style="margin-top:var(--sp-8);">
-          <a href="{{ explorer_base }}/{{ app_id }}" target="_blank" rel="noopener" class="btn btn-outline" style="border-color:var(--stone-600); color:var(--stone-300);">
-            View Contract #{{ app_id }} on Pera Explorer ↗
-          </a>
-        </div>
-        {% endif %}
+        <span style="font-size:12px; color:var(--muted);">Newest first · read directly from box storage</span>
       </div>
 
-    </div>
+      <div style="display:flex; flex-direction:column; gap:var(--sp-3);">
+        {% for att in attestations %}
+        <a href="/explore/{{ att.attestation_id }}" style="text-decoration:none; color:inherit;">
+          <div class="card" style="padding:var(--sp-5) var(--sp-6); transition:border-color .15s;">
+
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-4); flex-wrap:wrap;">
+
+              <!-- Left: id + hash -->
+              <div style="min-width:0; flex:1;">
+                <div style="display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-2);">
+                  <span style="font-family:var(--mono); font-size:12px; font-weight:700; color:var(--amber-600);">
+                    {{ att.attestation_id[:8] }}…{{ att.attestation_id[-4:] }}
+                  </span>
+                  {% if att.output_type %}
+                    <span class="tag" style="font-size:11px;">{{ att.output_type }}</span>
+                  {% endif %}
+                  {% for tag in att.tags[:3] %}
+                    <span class="tag" style="font-size:11px;">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+
+                <!-- Full content_hash -->
+                <div style="font-family:var(--mono); font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:var(--sp-2);">
+                  {{ att.content_hash }}
+                </div>
+
+                {% if att.description %}
+                  <div style="font-size:13px; color:var(--text); line-height:1.5; margin-top:var(--sp-1);">
+                    {{ att.description[:120] }}{% if att.description | length > 120 %}…{% endif %}
+                  </div>
+                {% endif %}
+
+                <div style="font-size:12px; color:var(--muted); margin-top:var(--sp-2);">
+                  <span style="font-family:var(--mono);">{{ att.author[:16] }}…</span>
+                  {% if att.agent_id %}
+                    &nbsp;·&nbsp; {{ att.agent_id }}
+                  {% endif %}
+                  &nbsp;·&nbsp; {{ att.created_at | string | truncate(19, True, '') }} UTC
+                </div>
+              </div>
+
+              <!-- Right: status badge -->
+              <div style="flex-shrink:0; padding-top:2px;">
+                {% if att.status == 'active' %}
+                  <span class="status-active">Active</span>
+                {% else %}
+                  <span class="status-revoked">Revoked</span>
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if attestations | length == 50 %}
+        <p style="font-size:13px; color:var(--muted); margin-top:var(--sp-6); text-align:center;">
+          Showing the 50 most recent.
+          Use <a href="/attestations?limit=200" style="color:var(--amber-600);">GET /attestations</a> to retrieve more.
+        </p>
+      {% endif %}
+
+    {% elif not error %}
+
+      <!-- Empty state -->
+      <div class="empty-state">
+        <div class="empty-icon">◻</div>
+        <div class="empty-title">No attestations yet</div>
+        <p class="empty-desc">The contract has no boxes — nothing has been attested yet on this network.</p>
+        <a href="/api-reference" class="btn btn-primary">View API docs</a>
+      </div>
+
+    {% endif %}
 
   </div>
 </section>

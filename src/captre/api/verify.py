@@ -1,6 +1,7 @@
 """
 GET /verify          — free, lookup by content_hash query param
 GET /attestation/:id — free, lookup by attestation_id or content_hash
+GET /attestations    — free, paginated list of all attestations (newest first)
 
 Lookup order for GET /attestation/:id:
   1. on-chain id_index box  (resolve_id: attestation_id → content_hash)
@@ -16,8 +17,9 @@ import os
 from algosdk.error import AlgodResponseError
 from fastapi import APIRouter, HTTPException, Query, status
 
-from captre.models import VerifyResponse
+from captre.models import Attestation, VerifyResponse
 from captre.settlement.write_attestation import (
+    list_attestations_from_chain,
     read_attestation_from_box,
     resolve_id_from_chain,
 )
@@ -137,3 +139,50 @@ async def get_attestation(attestation_id: str) -> VerifyResponse:
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"No attestation found for id: {attestation_id}",
     )
+
+
+@router.get(
+    "/attestations",
+    response_model=list[Attestation],
+    summary="List all attestations",
+    description=(
+        "Returns all attestations stored on-chain, newest first. "
+        "Paginates via `limit` and `offset`. No payment required."
+    ),
+)
+async def list_attestations(
+    limit: int = Query(default=50, ge=1, le=200, description="Max records to return"),
+    offset: int = Query(default=0, ge=0, description="Number of records to skip"),
+) -> list[Attestation]:
+    """
+    List all on-chain attestations ordered by creation time (newest first).
+
+    Enumerates box names from the deployed contract via the algod
+    ``application_boxes`` endpoint, filters to attestation boxes (``a:``
+    prefix), reads each value, and returns sorted results.
+
+    Parameters
+    ----------
+    limit : int
+        Maximum number of attestations to return (1–200). Defaults to 50.
+    offset : int
+        Number of sorted records to skip for pagination. Defaults to 0.
+
+    Returns
+    -------
+    list[Attestation]
+        Attestation records sorted newest-first. Empty list if none exist.
+
+    Raises
+    ------
+    HTTPException(503)
+        If the algod node is unreachable.
+    """
+    try:
+        return list_attestations_from_chain(limit=limit, offset=offset)
+    except _CHAIN_ERRORS as exc:
+        logger.error("algod connectivity error on /attestations: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to reach the Algorand node. Try again in a few seconds.",
+        ) from exc

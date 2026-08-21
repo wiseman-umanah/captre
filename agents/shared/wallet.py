@@ -14,9 +14,11 @@ Signing round-trip used by x402:
 from __future__ import annotations
 
 import base64
+from typing import cast
 
 from algosdk import account as algo_account
 from algosdk import encoding, mnemonic
+from algosdk.transaction import Transaction
 
 
 class AlgorandWallet:
@@ -109,7 +111,7 @@ class AlgorandWallet:
         for idx in indexes_to_sign:
             # raw bytes → b64str → Transaction object
             b64str = base64.b64encode(unsigned_txns[idx]).decode()
-            txn = encoding.msgpack_decode(b64str)
+            txn = cast(Transaction, encoding.msgpack_decode(b64str))
             # sign and re-encode to raw bytes
             signed = txn.sign(self._private_key)
             result[idx] = base64.b64decode(encoding.msgpack_encode(signed))

@@ -20,6 +20,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
 from captre.settlement.write_attestation import (
+    list_attestations_from_chain,
     read_attestation_from_box,
     resolve_id_from_chain,
 )
@@ -83,11 +84,11 @@ async def landing(request: Request) -> HTMLResponse:
 @router.get("/explore", response_class=HTMLResponse)
 async def explore(request: Request) -> HTMLResponse:
     """
-    Render the attestation explorer page.
+    Render the attestation explorer page with a live feed of all attestations.
 
-    Shows a static guide to browsing on-chain attestations via the API.
-    Direct on-chain enumeration is not available (BoxMap has no list method),
-    so this page links to the verify/attestation endpoints with instructions.
+    Fetches up to 50 most recent attestations from on-chain box storage via
+    ``list_attestations_from_chain()``. Passes them to the template so the
+    page renders a real-time list without any database.
 
     Parameters
     ----------
@@ -97,9 +98,20 @@ async def explore(request: Request) -> HTMLResponse:
     Returns
     -------
     HTMLResponse
-        The rendered ``explore.html`` template.
+        The rendered ``explore.html`` template with ``attestations`` list in context.
     """
-    return templates.TemplateResponse(request, "explore.html", _ctx(request))
+    attestations: list[Any] = []
+    error: str | None = None
+    try:
+        attestations = list_attestations_from_chain(limit=50)
+    except Exception as exc:  # noqa: BLE001
+        error = str(exc)
+
+    return templates.TemplateResponse(
+        request,
+        "explore.html",
+        _ctx(request, attestations=attestations, error=error),
+    )
 
 
 @router.get("/explore/{attestation_id}", response_class=HTMLResponse)

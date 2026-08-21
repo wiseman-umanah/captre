@@ -13,6 +13,7 @@ CRITICAL:
     64-byte Algorand box name limit. The raw content_hash string is too long to use directly.
 """
 
+import base64
 import hashlib
 import json
 import logging
@@ -20,7 +21,7 @@ import os
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from algokit_utils import AlgorandClient, BoxReference, SigningAccount
 from algokit_utils.applications.app_client import AppClientMethodCallParams
@@ -361,6 +362,75 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     if not raw:
         return None
     return Attestation.model_validate(json.loads(raw.decode()))
+
+
+def list_attestations_from_chain(limit: int = 50, offset: int = 0) -> list[Attestation]:
+    """
+    List attestations from on-chain box storage by enumerating all box names.
+
+    Uses the algod ``application_boxes`` endpoint to retrieve every box name
+    for the deployed contract, filters to those with the ``b"a:"`` prefix
+    (attestation boxes), then reads each box value. Results are sorted newest-
+    first by ``created_at`` after fetching.
+
+    Parameters
+    ----------
+    limit : int
+        Maximum number of attestations to return after sorting. Defaults to 50.
+    offset : int
+        Number of sorted results to skip before returning. Defaults to 0.
+
+    Returns
+    -------
+    list[Attestation]
+        Attestation records sorted by ``created_at`` descending (newest first).
+        Returns an empty list if no boxes exist or the contract is not deployed.
+
+    Raises
+    ------
+    RuntimeError
+        If ``APP_ID`` is not set in the environment.
+    """
+    algod_url = os.environ["ALGOD_URL"]
+    algod_token = os.environ.get("ALGOD_TOKEN", "")
+    algod_client = AlgodClient(algod_token, algod_url)
+    app_id = _get_app_id()
+
+    # list all box names — returns {"boxes": [{"name": base64}, ...]}
+    # algosdk stubs type these as bytes; cast to dict for pyright.
+    try:
+        result = cast(dict[str, Any], algod_client.application_boxes(app_id))
+    except Exception:  # noqa: BLE001
+        return []
+
+    boxes: list[dict[str, Any]] = result.get("boxes", [])
+
+    attestations: list[Attestation] = []
+    for box in boxes:
+        name_b64: str = box.get("name", "")
+        # only process attestation boxes (prefix b"a:"), skip id_index boxes ("i:")
+        raw_name = base64.b64decode(name_b64)
+        if not raw_name.startswith(b"a:"):
+            continue
+
+        # read the box value
+        try:
+            box_data = cast(dict[str, Any], algod_client.application_box_by_name(app_id, raw_name))
+            value_b64: str = box_data.get("value", "")
+            if not value_b64:
+                continue
+            raw_value = base64.b64decode(value_b64)
+            if not raw_value:
+                continue
+            att = Attestation.model_validate(json.loads(raw_value.decode()))
+            attestations.append(att)
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("skipping malformed box %s: %s", name_b64, exc)
+            continue
+
+    # sort newest-first
+    attestations.sort(key=lambda a: a.created_at, reverse=True)
+    return attestations[offset : offset + limit]
 
 
 def resolve_id_from_chain(attestation_id: str) -> str | None:
