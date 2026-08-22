@@ -41,7 +41,7 @@ _ALGO_MIN_BALANCE: int = 200_000
 _ALGO_TOPUP: int = 200_000
 
 # Minimum USDC an agent must have before bank tops up (base units, 6 decimals).
-# $0.15: enough for 3 more attests at $0.05 each.
+# $0.15: enough for 3 more attests at $0.02 each.
 _USDC_MIN_BALANCE: int = 150_000
 
 # How much USDC to send when topping up (base units).
