@@ -37,6 +37,8 @@ _EXPLORER_BASE = (
     if _NETWORK == "mainnet"
     else "https://testnet.explorer.perawallet.app/application"
 )
+_ATTEST_PRICE = os.environ.get("ATTEST_PRICE", "$0.05")
+_REVOKE_PRICE = os.environ.get("REVOKE_PRICE", "$0.05")
 
 
 def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
@@ -59,6 +61,8 @@ def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
         "network": _NETWORK,
         "app_id": _APP_ID,
         "explorer_base": _EXPLORER_BASE,
+        "attest_price": _ATTEST_PRICE,
+        "revoke_price": _REVOKE_PRICE,
         **extra,
     }
 

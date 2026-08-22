@@ -83,7 +83,7 @@ class ResearcherAgent:
         log(self.name, "INFO", f"Starting — wallet {self.wallet.address[:12]}…")
 
         # ── Attest each finding ──────────────────────────────────────────
-        for slug, template in _FINDINGS:
+        for slug, template in _FINDINGS[:1]:
             ts = datetime.now(tz=UTC).isoformat()
             content = template.format(ts=ts)
             h = sha256(content)

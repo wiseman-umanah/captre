@@ -25,17 +25,15 @@ def test_revoke_wrong_author_raises_permission_error(fake_attestation):
         )
 
 
-def test_revoke_correct_author_does_not_raise_permission_error(fake_attestation, monkeypatch):
+def test_revoke_correct_author_does_not_raise_permission_error(fake_attestation):
     """Correct author passes the auth check (chain call mocked out)."""
     from unittest.mock import MagicMock, patch
 
-    mock_result = MagicMock()
-    with patch(
-        "captre.settlement.write_attestation._get_app_client"
-    ) as mock_client_fn:
-        mock_app = MagicMock()
-        mock_app.send.call.return_value = mock_result
-        mock_client_fn.return_value = mock_app
+    mock_app = MagicMock()
+    mock_app.send.call.return_value = MagicMock()
+    with patch("captre.settlement.write_attestation._get_app_id", return_value=1), \
+         patch("captre.settlement.write_attestation._get_service_account", return_value=MagicMock()), \
+         patch("captre.settlement.write_attestation._get_app_client", return_value=mock_app):
 
         updated = revoke_attestation(
             content_hash=FAKE_CONTENT_HASH,
@@ -48,14 +46,15 @@ def test_revoke_correct_author_does_not_raise_permission_error(fake_attestation,
     assert updated.author == FAKE_AUTHOR
 
 
-def test_revoke_preserves_all_other_fields(fake_attestation, monkeypatch):
+def test_revoke_preserves_all_other_fields(fake_attestation):
     """Revocation must only change status — all other fields must be unchanged."""
     from unittest.mock import MagicMock, patch
 
-    with patch("captre.settlement.write_attestation._get_app_client") as mock_client_fn:
-        mock_app = MagicMock()
-        mock_app.send.call.return_value = MagicMock()
-        mock_client_fn.return_value = mock_app
+    mock_app = MagicMock()
+    mock_app.send.call.return_value = MagicMock()
+    with patch("captre.settlement.write_attestation._get_app_id", return_value=1), \
+         patch("captre.settlement.write_attestation._get_service_account", return_value=MagicMock()), \
+         patch("captre.settlement.write_attestation._get_app_client", return_value=mock_app):
 
         updated = revoke_attestation(
             content_hash=FAKE_CONTENT_HASH,

@@ -19,7 +19,7 @@
     <div class="alert alert-warn" style="max-width:680px;">
       <strong>Paid endpoints</strong> (<code>POST /attest</code>, <code>POST /revoke</code>) require an
       x402-enabled HTTP client. The server returns <code>402 Payment Required</code>
-      and the client must settle $0.05 USDC on Algorand before the request is fulfilled.
+      and the client must settle {{ attest_price }} USDC on Algorand before the request is fulfilled.
       Free endpoints work with plain curl.
     </div>
   </div>
@@ -43,7 +43,7 @@
           <tr>
             <td><span class="badge badge-post">POST</span></td>
             <td style="font-family:var(--mono); font-size:13px;">/attest</td>
-            <td><span class="badge badge-paid">$0.05 USDC</span></td>
+            <td><span class="badge badge-paid">{{ attest_price }} USDC</span></td>
             <td style="color:var(--muted);">Create a first-claim attestation</td>
           </tr>
           <tr>
@@ -61,7 +61,7 @@
           <tr>
             <td><span class="badge badge-post">POST</span></td>
             <td style="font-family:var(--mono); font-size:13px;">/revoke</td>
-            <td><span class="badge badge-paid">$0.05 USDC</span></td>
+            <td><span class="badge badge-paid">{{ revoke_price }} USDC</span></td>
             <td style="color:var(--muted);">Revoke — original author only</td>
           </tr>
         </tbody>
@@ -118,7 +118,7 @@
     <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
       <span class="badge badge-post">POST</span>
       <code style="font-size:16px; font-weight:700;">/attest</code>
-      <span class="badge badge-paid">$0.05 USDC</span>
+      <span class="badge badge-paid">{{ attest_price }} USDC</span>
     </div>
     <div class="label" style="margin-bottom:var(--sp-4);">Create first-claim attestation</div>
     <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-8);">
@@ -224,7 +224,7 @@
     <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
       <span class="badge badge-post">POST</span>
       <code style="font-size:16px; font-weight:700;">/revoke</code>
-      <span class="badge badge-paid">$0.05 USDC</span>
+      <span class="badge badge-paid">{{ revoke_price }} USDC</span>
     </div>
     <div class="label" style="margin-bottom:var(--sp-4);">Revoke — original author only</div>
     <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-6);">

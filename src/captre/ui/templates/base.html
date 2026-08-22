@@ -21,7 +21,7 @@
     "description": "On-chain attestation service — first-claim proofs anchored on Algorand via x402",
     "applicationCategory": "DeveloperApplication",
     "url": "{{ request.base_url }}",
-    "offers": { "@type": "Offer", "price": "0.05", "priceCurrency": "USD" }
+    "offers": { "@type": "Offer", "price": "{{ attest_price | replace('$', '') }}", "priceCurrency": "USD" }
   }
   </script>
 

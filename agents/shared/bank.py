@@ -37,8 +37,8 @@ from shared.wallet import AlgorandWallet
 _ALGO_MIN_BALANCE: int = 200_000
 
 # How much ALGO to send when topping up (microALGO).
-# 0.5 ALGO: base MBR (0.1) + ASA opt-in MBR (0.1) + fee buffer (0.3).
-_ALGO_TOPUP: int = 500_000
+# 0.2 ALGO: base MBR (0.1) + ASA opt-in MBR (0.1) + fee buffer (0.3).
+_ALGO_TOPUP: int = 200_000
 
 # Minimum USDC an agent must have before bank tops up (base units, 6 decimals).
 # $0.15: enough for 3 more attests at $0.05 each.
@@ -46,7 +46,7 @@ _USDC_MIN_BALANCE: int = 150_000
 
 # How much USDC to send when topping up (base units).
 # $0.50: covers ~10 attests or 5 attest+revoke pairs.
-_USDC_TOPUP: int = 500_000
+_USDC_TOPUP: int = 200_000
 
 
 def _algod(algod_url: str, algod_token: str) -> AlgodClient:
