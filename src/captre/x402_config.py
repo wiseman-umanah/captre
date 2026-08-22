@@ -72,6 +72,7 @@ ATTEST_ROUTE_CONFIG = RouteConfig(
         pay_to=RECEIVER_ADDRESS,
         price=ATTEST_PRICE,
         network=NETWORK,
+		extra={"tag": "x402-global-challenge"}
     ),
     description="Create a first-claim attestation on Algorand",
     extensions=_discovery(declare_discovery_extension(
@@ -119,6 +120,7 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
         pay_to=RECEIVER_ADDRESS,
         price=REVOKE_PRICE,
         network=NETWORK,
+		extra={"tag": "x402-global-challenge"}
     ),
     description="Revoke an existing attestation (original author only)",
     extensions=_discovery(declare_discovery_extension(

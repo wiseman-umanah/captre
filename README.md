@@ -40,11 +40,14 @@ Verification (`GET /verify`, `GET /attestation/:id`) is always **free**.
 
 | Method | Path | Cost | Description |
 |--------|------|------|-------------|
-| `POST` | `/attest` | $0.05 USDC | Create a first-claim attestation |
-| `POST` | `/revoke` | $0.05 USDC | Revoke (original author only) |
+| `POST` | `/attest` | `$ATTEST_PRICE` USDC | Create a first-claim attestation |
+| `POST` | `/revoke` | `$REVOKE_PRICE` USDC | Revoke (original author only) |
 | `GET` | `/verify?content_hash=…` | free | Lookup by content hash |
 | `GET` | `/attestation/{id}` | free | Lookup by UUID or content hash |
+| `GET` | `/attestations` | free | List all attestations (newest first) |
 | `GET` | `/health` | free | Liveness check |
+
+Price defaults to `$0.05` per call. Override with `ATTEST_PRICE` / `REVOKE_PRICE` in `.env`.
 
 ### Attest
 
@@ -110,17 +113,19 @@ The contract uses two Algorand BoxMaps:
 | `attestations` | `sha256(content_hash_string)` — 32 bytes | Full JSON attestation blob |
 | `id_index` | `attestation_id` UUID — 36 bytes | Original `content_hash` string |
 
-Box names stay well under the 64-byte AVM limit (`b"a:" + 32 bytes` = 34 bytes). Both boxes are written atomically in a single `attest()` call.
+Box names stay well under the 64-byte AVM limit (`b"a:" + 32 bytes` = 34 bytes). Both boxes are written atomically in a single `attest()` call. Each attestation costs **~0.277 ALGO** in minimum balance reserve (MBR) locked in the contract account — budget for this when funding `APP_ADDRESS`.
 
 ---
 
-## Local development
+## Local development (testnet)
+
+Use testnet for development. No real money involved — use the free dispenser for ALGO and Tinyman testnet for USDC.
 
 ### Prerequisites
 
 - Python 3.12+, [uv](https://docs.astral.sh/uv/), [AlgoKit CLI](https://developer.algorand.org/docs/get-details/algokit/)
-- A funded testnet wallet (`DEPLOYER_MNEMONIC` / `SERVICE_MNEMONIC`)
-- The wallet must hold testnet USDC (ASA `10458941`) at `RECEIVER_ADDRESS` — this is where attestation payments land
+- A funded **testnet** wallet (`SERVICE_MNEMONIC`)
+- Testnet USDC opted into `RECEIVER_ADDRESS` (ASA `10458941` on testnet)
 
 ### 1. Install
 
@@ -128,37 +133,43 @@ Box names stay well under the 64-byte AVM limit (`b"a:" + 32 bytes` = 34 bytes).
 uv sync
 ```
 
-### 2. Configure
+### 2. Configure for testnet
 
 ```bash
 cp .env.example .env
-# fill in DEPLOYER_MNEMONIC, SERVICE_MNEMONIC, RECEIVER_ADDRESS
 ```
 
-Key variables:
+Set these in `.env`:
 
-| Variable | Description |
-|----------|-------------|
-| `ALGOD_URL` | Algorand node — defaults to public testnet |
-| `DEPLOYER_MNEMONIC` | 25-word mnemonic used to deploy the contract |
-| `SERVICE_MNEMONIC` | 25-word mnemonic used to submit on-chain app calls |
-| `RECEIVER_ADDRESS` | Algorand address that receives x402 USDC payments |
-| `APP_ID` | Written automatically by deploy script |
-| `ATTEST_PRICE` | Defaults to `$0.05` |
-| `REVOKE_PRICE` | Defaults to `$0.05` |
+```env
+ALGORAND_NETWORK=testnet
+ALGOD_URL=https://testnet-api.algonode.cloud
+ALGOD_TOKEN=
+INDEXER_URL=https://testnet-idx.algonode.cloud
 
-### 3. Deploy the contract
+DEPLOYER_MNEMONIC=<your 25-word testnet mnemonic>
+SERVICE_MNEMONIC=<your 25-word testnet mnemonic>
+RECEIVER_ADDRESS=<Algorand address matching SERVICE_MNEMONIC>
+
+ATTEST_PRICE=$0.05
+REVOKE_PRICE=$0.05
+```
+
+> **Testnet faucets**
+> - ALGO: [bank.testnet.algorand.network](https://bank.testnet.algorand.network/)
+> - USDC (ASA `10458941`): swap on [Tinyman testnet](https://testnet.tinyman.org/)
+
+### 3. Deploy the contract (testnet)
 
 ```bash
 uv run python -m captre.contract.deploy
 ```
 
-This writes `APP_ID` and `APP_ADDRESS` back to `.env`. The contract account must be funded for Box MBR (minimum balance reserve) before any attestation will succeed — top it up with a small ALGO transfer to `APP_ADDRESS`.
-
-If the contract ABI changes and cannot be updated in place, use the fresh-deploy path:
+The script writes `APP_ID` and `APP_ADDRESS` back to `.env`. Then fund the contract account for Box MBR:
 
 ```bash
-uv run python -m captre.contract._fresh_deploy
+# send at least 2 ALGO to APP_ADDRESS (copied from .env after deploy)
+# each attestation locks ~0.277 ALGO — fund more for sustained use
 ```
 
 ### 4. Run the server
@@ -169,20 +180,76 @@ uv run captre          # hot-reload dev server on :8000
 
 ---
 
+## Production deployment (mainnet)
+
+Use mainnet for real users and competition leaderboard volume.
+
+### 1. Configure for mainnet
+
+```env
+ALGORAND_NETWORK=mainnet
+ALGOD_URL=https://mainnet-api.algonode.cloud
+ALGOD_TOKEN=
+INDEXER_URL=https://mainnet-idx.algonode.cloud
+
+DEPLOYER_MNEMONIC=<your 25-word mainnet mnemonic>
+SERVICE_MNEMONIC=<your 25-word mainnet mnemonic>
+RECEIVER_ADDRESS=<Algorand address matching SERVICE_MNEMONIC>
+
+ATTEST_PRICE=$0.05
+REVOKE_PRICE=$0.05
+
+FACILITATOR_URL=https://facilitator.goplausible.xyz
+```
+
+> **Mainnet USDC:** ASA `31566704`. Ensure `RECEIVER_ADDRESS` is opted in before first payment.
+
+### 2. Deploy contract (mainnet)
+
+```bash
+ALGORAND_NETWORK=mainnet uv run python -m captre.contract.deploy
+```
+
+Copy the printed `APP_ID` and `APP_ADDRESS` into your environment variables.
+
+### 3. Fund the contract account (mainnet)
+
+Each attestation permanently locks ~**0.277 ALGO** in the contract account as Box MBR. Budget accordingly:
+
+| Planned attestations | ALGO to send to `APP_ADDRESS` |
+|---|---|
+| 30 | ~9 ALGO |
+| 90 | ~25 ALGO |
+| 300 | ~85 ALGO |
+
+Send the ALGO to `APP_ADDRESS` **before** first attestation. The service will fail with a balance error otherwise.
+
+### 4. Deploy to Render
+
+1. Set all variables above as Render environment variables.
+2. *(Optional)* Add a Persistent Disk at `/data`; set `INDEX_DB_PATH=/data/index.db`.
+3. Start command: `uv run captre`.
+
+---
+
 ## Testing
 
 ```bash
-uv run pytest tests/unit/                           # all unit tests (no chain needed)
+uv run pytest tests/unit/                           # all unit tests (no chain, no .env needed)
 uv run pytest tests/unit/test_attest_endpoint.py    # single file
 uv run pytest tests/unit/test_attest_endpoint.py::test_attest_success_returns_200  # single test
 
-uv run pytest tests/integration/                    # live testnet — requires .env
+uv run pytest tests/integration/                    # live chain — requires .env with APP_ID set
 ```
 
 ```bash
 uv run ruff check .    # lint
 uv run ruff format .   # format
+uv run pyright         # type check
 ```
+
+Unit tests mock all chain and payment calls — no ALGO, no USDC, no network required.
+Integration tests write real boxes to a live contract. They must be run against testnet first.
 
 ---
 
@@ -193,11 +260,10 @@ src/captre/
 ├── api/
 │   ├── attest.py          # POST /attest — x402-paid
 │   ├── revoke.py          # POST /revoke — x402-paid, author-only
-│   └── verify.py          # GET /verify, GET /attestation/:id — free
+│   └── verify.py          # GET /verify, GET /attestation/:id, GET /attestations — free
 ├── contract/
 │   ├── captre_app.py      # Algorand Python smart contract (AlgoKit/Puya)
 │   ├── deploy.py          # Reuse-or-deploy script
-│   ├── _fresh_deploy.py   # Force new app when ABI/schema changes
 │   └── artifacts/         # Compiled ARC-56 + TEAL (generated)
 ├── settlement/
 │   └── write_attestation.py  # Payment settle → box write (sequential)
@@ -211,16 +277,6 @@ src/captre/
 
 ---
 
-## Deployment (Render)
-
-1. Set all `.env` variables as Render environment variables.
-2. Add a Persistent Disk mounted at `/data`; set `INDEX_DB_PATH=/data/index.db`. (optional)
-3. Start command: `uv run captre`.
-4. Deploy contract once, copy `APP_ID` into the Render env vars.
-5. Ensure `APP_ADDRESS` has enough ALGO for Box MBR before first attestation.
-
----
-
 ## Agents demo
 
-See [`agents/README.md`](agents/README.md) for a standalone multi-agent world simulation that exercises every endpoint concurrently across four distinct AI agents.
+See [`agents/README.md`](agents/README.md) for a standalone multi-agent world simulation that exercises every endpoint concurrently across four distinct AI agents — on testnet or mainnet.
