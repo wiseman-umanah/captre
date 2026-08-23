@@ -37,8 +37,13 @@ from shared.wallet import AlgorandWallet
 _ALGO_MIN_BALANCE: int = 200_000
 
 # How much ALGO to send when topping up (microALGO).
-# 0.2 ALGO: base MBR (0.1) + ASA opt-in MBR (0.1) + fee buffer (0.3).
-_ALGO_TOPUP: int = 200_000
+# 0.3 ALGO breakdown:
+#   0.1 ALGO — account minimum balance (protocol requirement, always locked)
+#   0.1 ALGO — USDC ASA opt-in MBR (locked once per wallet)
+#   0.1 ALGO — fee buffer (~100 transaction fees at 0.001 ALGO each)
+# 0.2 ALGO was too tight: after opt-in MBR the spendable balance dropped below
+# the account minimum and the next transaction was rejected with "below min".
+_ALGO_TOPUP: int = 300_000
 
 # Minimum USDC an agent must have before bank tops up (base units, 6 decimals).
 # $0.15: enough for 3 more attests at $0.02 each.
