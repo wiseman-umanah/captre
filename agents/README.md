@@ -139,7 +139,7 @@ uv run python world.py
 | `USDC_ASSET_ID` | `10458941` | `31566704` |
 | `CAPTRE_BASE_URL` | `http://localhost:8000` | `https://captre.onrender.com` |
 | ALGO source | [Free dispenser](https://bank.testnet.algorand.network/) | Buy from exchange |
-| USDC source | [Tinyman testnet](https://testnet.tinyman.org/) | Buy from exchange |
+| USDC source | [Cice testnet](https://faucet.circle.com/) | Buy from exchange |
 | Leaderboard counted | No | Yes |
 
 ---
