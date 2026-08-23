@@ -11,22 +11,39 @@ CRITICAL:
   - Both box_references must be passed — one for each box the contract touches.
   - Box key for attestations is SHA-256(content_hash_string) — 32 bytes, always within the
     64-byte Algorand box name limit. The raw content_hash string is too long to use directly.
+
+Performance notes:
+  - AlgodClient, AlgorandClient, and SigningAccount are all module-level singletons —
+    constructed once at import time, reused across every request.  This avoids a TLS
+    handshake on every algod call.
+  - list_attestations_from_chain() uses a 30-second TTL in-memory cache so the explore
+    page does not hammer algod on every visitor.
+  - Box reads inside list_attestations_from_chain() are parallelised via a
+    ThreadPoolExecutor so all N HTTP calls fire concurrently instead of sequentially.
+  - Public functions that are called from async FastAPI route handlers are wrapped in
+    async variants (*_async) that delegate via asyncio.to_thread so the event loop is
+    never blocked by blocking algosdk I/O.
 """
 
+import asyncio
 import base64
 import hashlib
 import json
 import logging
 import os
+import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
 from pathlib import Path
+from threading import Lock
 from typing import Any, cast
 
 from algokit_utils import AlgorandClient, BoxReference, SigningAccount
 from algokit_utils.applications.app_client import AppClientMethodCallParams
 from algosdk.mnemonic import to_private_key
 from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 from dotenv import load_dotenv
 
 from captre.models import Attestation, AttestationStatus, AttestRequest
@@ -35,6 +52,29 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 SERVICE_MNEMONIC = os.environ["SERVICE_MNEMONIC"]
+
+# ── ARC-56 spec (loaded once at import time) ─────────────────────────────────
+_ARC56_SPEC = json.loads(
+    (Path(__file__).parent.parent / "contract" / "artifacts" / "CaptreApp.arc56.json").read_text()
+)
+
+# ── Module-level singletons — built once, reused on every request ─────────────
+# AlgodClient uses a single persistent HTTP session (urllib3 connection pool).
+# Re-creating it on every call wastes a full TLS handshake each time.
+_algod_client: AlgodClient | None = None
+_algorand_client: AlgorandClient | None = None
+_service_account: SigningAccount | None = None
+_singleton_lock = Lock()
+
+# ── Thread pool for parallel box reads ───────────────────────────────────────
+# max_workers=16 covers the typical 50-attestation explore page in one burst.
+_BOX_EXECUTOR = ThreadPoolExecutor(max_workers=16, thread_name_prefix="captre-box")
+
+# ── TTL cache for list_attestations_from_chain ────────────────────────────────
+_CACHE_TTL_SECONDS = 30
+_cache_lock = Lock()
+_cache_result: list[Attestation] = []
+_cache_expires_at: float = 0.0
 
 
 def _content_hash_key(content_hash: str) -> bytes:
@@ -84,9 +124,34 @@ def _get_app_id() -> int:
     return int(val)
 
 
+def _get_algod_client() -> AlgodClient:
+    """
+    Return the module-level ``AlgodClient`` singleton, creating it on first call.
+
+    The client is constructed once and shared across all subsequent calls,
+    eliminating per-request TLS handshakes to the algod node.
+
+    Returns
+    -------
+    AlgodClient
+        A shared ``AlgodClient`` connected to the configured ``ALGOD_URL``.
+    """
+    global _algod_client
+    if _algod_client is None:
+        with _singleton_lock:
+            if _algod_client is None:
+                algod_url = os.environ["ALGOD_URL"]
+                algod_token = os.environ.get("ALGOD_TOKEN", "")
+                _algod_client = AlgodClient(algod_token, algod_url)
+    return _algod_client
+
+
 def _get_service_account() -> SigningAccount:
     """
-    Construct the backend service ``SigningAccount`` from the environment mnemonic.
+    Return the module-level ``SigningAccount`` singleton, creating it on first call.
+
+    The account is derived from ``SERVICE_MNEMONIC`` once and reused for all
+    subsequent on-chain calls.
 
     Returns
     -------
@@ -94,18 +159,46 @@ def _get_service_account() -> SigningAccount:
         An algokit-utils ``SigningAccount`` whose address is the Captre service
         wallet. All on-chain app calls are submitted from this account.
     """
-    private_key = to_private_key(SERVICE_MNEMONIC)
-    return SigningAccount(private_key=private_key)
+    global _service_account
+    if _service_account is None:
+        with _singleton_lock:
+            if _service_account is None:
+                private_key = to_private_key(SERVICE_MNEMONIC)
+                _service_account = SigningAccount(private_key=private_key)
+    return _service_account
 
 
-_ARC56_SPEC = json.loads(
-    (Path(__file__).parent.parent / "contract" / "artifacts" / "CaptreApp.arc56.json").read_text()
-)
+def _get_algorand_client() -> AlgorandClient:
+    """
+    Return the module-level ``AlgorandClient`` singleton, creating it on first call.
+
+    Shares the same ``AlgodClient`` singleton so all algokit-utils calls and
+    raw algod calls use the same underlying connection pool.
+
+    Returns
+    -------
+    AlgorandClient
+        A shared algokit-utils ``AlgorandClient``.
+    """
+    global _algorand_client
+    if _algorand_client is None:
+        with _singleton_lock:
+            if _algorand_client is None:
+                indexer_url = os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")
+                _algorand_client = AlgorandClient.from_clients(
+                    _get_algod_client(),
+                    IndexerClient("", indexer_url),
+                )
+    return _algorand_client
 
 
 def _get_app_client(service_account: SigningAccount):
     """
     Build an algokit-utils app client for the deployed CaptreApp contract.
+
+    Uses the shared ``AlgorandClient`` singleton so no new connections are
+    opened.  The app client itself is lightweight — it holds a reference to
+    the shared client and the ARC-56 spec; creating it per-call is acceptable.
 
     Parameters
     ----------
@@ -119,19 +212,72 @@ def _get_app_client(service_account: SigningAccount):
         An algokit-utils ``ApplicationClient`` configured with the ARC-56 spec,
         the current ``APP_ID``, and the provided ``service_account``.
     """
-    algod_url = os.environ["ALGOD_URL"]
-    algod_token = os.environ.get("ALGOD_TOKEN", "")
-    from algosdk.v2client.indexer import IndexerClient as _IdxClient
-    client = AlgorandClient.from_clients(
-        AlgodClient(algod_token, algod_url),
-        _IdxClient("", os.environ.get("INDEXER_URL", "https://testnet-idx.algonode.cloud")),
-    )
-    return client.client.get_app_client_by_id(
+    return _get_algorand_client().client.get_app_client_by_id(
         app_spec=_ARC56_SPEC,
         app_id=_get_app_id(),
         default_sender=service_account.address,
         default_signer=service_account.signer,
     )
+
+
+def _invalidate_list_cache() -> None:
+    """
+    Expire the ``list_attestations_from_chain`` TTL cache immediately.
+
+    Called after a successful ``attest()`` or ``revoke()`` so the next
+    explore page load reflects the change without waiting up to 30 seconds.
+
+    Parameters
+    ----------
+    (none)
+
+    Returns
+    -------
+    None
+    """
+    global _cache_expires_at
+    with _cache_lock:
+        _cache_expires_at = 0.0
+
+
+def _read_single_box(
+    algod_client: AlgodClient,
+    app_id: int,
+    raw_name: bytes,
+) -> Attestation | None:
+    """
+    Fetch and deserialise one attestation box value.
+
+    Designed to be called from a ``ThreadPoolExecutor`` worker so multiple
+    boxes can be fetched concurrently.
+
+    Parameters
+    ----------
+    algod_client : AlgodClient
+        The shared algod client.
+    app_id : int
+        The deployed contract application ID.
+    raw_name : bytes
+        The full raw box name including the ``b"a:"`` prefix.
+
+    Returns
+    -------
+    Attestation or None
+        The deserialised ``Attestation`` if the box value is non-empty,
+        ``None`` on any error or empty value.
+    """
+    try:
+        box_data = cast(dict[str, Any], algod_client.application_box_by_name(app_id, raw_name))
+        value_b64: str = box_data.get("value", "")
+        if not value_b64:
+            return None
+        raw_value = base64.b64decode(value_b64)
+        if not raw_value:
+            return None
+        return Attestation.model_validate(json.loads(raw_value.decode()))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("skipping malformed box %s: %s", base64.b64encode(raw_name).decode(), exc)
+        return None
 
 
 def write_attestation(
@@ -145,6 +291,7 @@ def write_attestation(
     Generates a UUID ``attestation_id``, builds the full ``Attestation`` record,
     then submits the ``attest()`` AVM method call which writes two boxes
     atomically: ``attestations[content_hash]`` and ``id_index[attestation_id]``.
+    Invalidates the list cache on success so the next explore load is fresh.
 
     Parameters
     ----------
@@ -202,14 +349,15 @@ def write_attestation(
     app_client = _get_app_client(service_account)
 
     attestation_id_bytes = attestation_id.encode()
+    app_id = _get_app_id()
 
     try:
         app_client.send.call(AppClientMethodCallParams(
             method="attest",
             args=[content_hash_key, content_hash_str, attestation_id_bytes, payer_address, metadata_json],
             box_references=[
-                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
-                BoxReference(app_id=_get_app_id(), name=b"i:" + attestation_id_bytes),
+                BoxReference(app_id=app_id, name=b"a:" + content_hash_key),
+                BoxReference(app_id=app_id, name=b"i:" + attestation_id_bytes),
             ],
         ))
         logger.info(
@@ -218,6 +366,7 @@ def write_attestation(
             request.content_hash,
             payer_address,
         )
+        _invalidate_list_cache()
     except Exception as exc:
         # Walk the full exception chain — algokit wraps LogicError inside ValueError
         full_msg = " ".join(str(e) for e in [exc, exc.__cause__, exc.__context__] if e)
@@ -246,6 +395,8 @@ def revoke_attestation(
     """
     Revoke an existing attestation by overwriting its on-chain box with an
     updated record whose ``status`` is set to ``"revoked"``.
+
+    Invalidates the list cache on success so the next explore load is fresh.
 
     Parameters
     ----------
@@ -291,13 +442,14 @@ def revoke_attestation(
 
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
+    app_id = _get_app_id()
 
     try:
         app_client.send.call(AppClientMethodCallParams(
             method="revoke",
             args=[content_hash_key, payer_address, updated_json],
             box_references=[
-                BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
+                BoxReference(app_id=app_id, name=b"a:" + content_hash_key),
             ],
         ))
         logger.info(
@@ -305,6 +457,7 @@ def revoke_attestation(
             existing.attestation_id,
             payer_address,
         )
+        _invalidate_list_cache()
     except Exception as exc:
         full_msg = " ".join(str(e) for e in [exc, exc.__cause__, exc.__context__] if e)
         if "ERR_NOT_FOUND" in full_msg:
@@ -341,12 +494,13 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     app_client = _get_app_client(service_account)
 
     content_hash_key = _content_hash_key(content_hash)
+    app_id = _get_app_id()
 
     result = app_client.send.call(AppClientMethodCallParams(
         method="get_attestation",
         args=[content_hash_key],
         box_references=[
-            BoxReference(app_id=_get_app_id(), name=b"a:" + content_hash_key),
+            BoxReference(app_id=app_id, name=b"a:" + content_hash_key),
         ],
     ))
     abi_val = result.abi_return
@@ -364,14 +518,37 @@ def read_attestation_from_box(content_hash: str) -> Attestation | None:
     return Attestation.model_validate(json.loads(raw.decode()))
 
 
+async def read_attestation_from_box_async(content_hash: str) -> Attestation | None:
+    """
+    Async wrapper for ``read_attestation_from_box`` — runs in a thread.
+
+    Prevents blocking the FastAPI event loop when called from an async
+    route handler.
+
+    Parameters
+    ----------
+    content_hash : str
+        The ``content_hash`` to look up (e.g. ``sha256:abc123...``).
+
+    Returns
+    -------
+    Attestation or None
+        The deserialized ``Attestation`` if found, ``None`` otherwise.
+    """
+    return await asyncio.to_thread(read_attestation_from_box, content_hash)
+
+
 def list_attestations_from_chain(limit: int = 50, offset: int = 0) -> list[Attestation]:
     """
     List attestations from on-chain box storage by enumerating all box names.
 
-    Uses the algod ``application_boxes`` endpoint to retrieve every box name
-    for the deployed contract, filters to those with the ``b"a:"`` prefix
-    (attestation boxes), then reads each box value. Results are sorted newest-
-    first by ``created_at`` after fetching.
+    Results are cached for ``_CACHE_TTL_SECONDS`` seconds (default 30 s) to
+    avoid hammering the algod node on every explore page load.  The cache is
+    invalidated immediately after any successful ``attest()`` or ``revoke()``.
+
+    Box reads are parallelised via a ``ThreadPoolExecutor`` — all N
+    ``application_box_by_name`` calls fire concurrently rather than
+    sequentially, cutting explorer latency from O(N × RTT) to ~O(RTT).
 
     Parameters
     ----------
@@ -391,9 +568,16 @@ def list_attestations_from_chain(limit: int = 50, offset: int = 0) -> list[Attes
     RuntimeError
         If ``APP_ID`` is not set in the environment.
     """
-    algod_url = os.environ["ALGOD_URL"]
-    algod_token = os.environ.get("ALGOD_TOKEN", "")
-    algod_client = AlgodClient(algod_token, algod_url)
+    global _cache_result, _cache_expires_at
+
+    now = time.monotonic()
+    with _cache_lock:
+        if now < _cache_expires_at and _cache_result:
+            logger.debug("list_attestations_from_chain: cache hit")
+            cached = _cache_result
+            return cached[offset : offset + limit]
+
+    algod_client = _get_algod_client()
     app_id = _get_app_id()
 
     # list all box names — returns {"boxes": [{"name": base64}, ...]}
@@ -405,32 +589,60 @@ def list_attestations_from_chain(limit: int = 50, offset: int = 0) -> list[Attes
 
     boxes: list[dict[str, Any]] = result.get("boxes", [])
 
-    attestations: list[Attestation] = []
+    # Collect only attestation box names (prefix b"a:"); skip id_index boxes ("i:")
+    attestation_box_names: list[bytes] = []
     for box in boxes:
         name_b64: str = box.get("name", "")
-        # only process attestation boxes (prefix b"a:"), skip id_index boxes ("i:")
         raw_name = base64.b64decode(name_b64)
-        if not raw_name.startswith(b"a:"):
-            continue
+        if raw_name.startswith(b"a:"):
+            attestation_box_names.append(raw_name)
 
-        # read the box value
-        try:
-            box_data = cast(dict[str, Any], algod_client.application_box_by_name(app_id, raw_name))
-            value_b64: str = box_data.get("value", "")
-            if not value_b64:
-                continue
-            raw_value = base64.b64decode(value_b64)
-            if not raw_value:
-                continue
-            att = Attestation.model_validate(json.loads(raw_value.decode()))
+    if not attestation_box_names:
+        return []
+
+    # Parallel fetch — fire all box reads concurrently via the shared executor
+    attestations: list[Attestation] = []
+    futures = {
+        _BOX_EXECUTOR.submit(_read_single_box, algod_client, app_id, name): name
+        for name in attestation_box_names
+    }
+    for future in as_completed(futures):
+        att = future.result()
+        if att is not None:
             attestations.append(att)
-        except Exception as exc:  # noqa: BLE001
-            logger.debug("skipping malformed box %s: %s", name_b64, exc)
-            continue
 
     # sort newest-first
     attestations.sort(key=lambda a: a.created_at, reverse=True)
+
+    # store in cache
+    with _cache_lock:
+        _cache_result = attestations
+        _cache_expires_at = time.monotonic() + _CACHE_TTL_SECONDS
+        logger.debug("list_attestations_from_chain: cached %d records", len(attestations))
+
     return attestations[offset : offset + limit]
+
+
+async def list_attestations_async(limit: int = 50, offset: int = 0) -> list[Attestation]:
+    """
+    Async wrapper for ``list_attestations_from_chain`` — runs in a thread.
+
+    Prevents blocking the FastAPI event loop when called from an async
+    route handler.
+
+    Parameters
+    ----------
+    limit : int
+        Maximum number of attestations to return. Defaults to 50.
+    offset : int
+        Number of records to skip. Defaults to 0.
+
+    Returns
+    -------
+    list[Attestation]
+        Attestation records sorted newest-first.
+    """
+    return await asyncio.to_thread(list_attestations_from_chain, limit, offset)
 
 
 def resolve_id_from_chain(attestation_id: str) -> str | None:
@@ -461,12 +673,13 @@ def resolve_id_from_chain(attestation_id: str) -> str | None:
 
     service_account = _get_service_account()
     app_client = _get_app_client(service_account)
+    app_id = _get_app_id()
 
     result = app_client.send.call(AppClientMethodCallParams(
         method="resolve_id",
         args=[attestation_id_bytes],
         box_references=[
-            BoxReference(app_id=_get_app_id(), name=b"i:" + attestation_id_bytes),
+            BoxReference(app_id=app_id, name=b"i:" + attestation_id_bytes),
         ],
     ))
     abi_val = result.abi_return
@@ -479,3 +692,23 @@ def resolve_id_from_chain(attestation_id: str) -> str | None:
     else:
         raw = cast(bytes, abi_val)
     return raw.decode() if raw else None
+
+
+async def resolve_id_from_chain_async(attestation_id: str) -> str | None:
+    """
+    Async wrapper for ``resolve_id_from_chain`` — runs in a thread.
+
+    Prevents blocking the FastAPI event loop when called from an async
+    route handler.
+
+    Parameters
+    ----------
+    attestation_id : str
+        The UUID or value to resolve.
+
+    Returns
+    -------
+    str or None
+        The ``content_hash`` string if found, ``None`` otherwise.
+    """
+    return await asyncio.to_thread(resolve_id_from_chain, attestation_id)

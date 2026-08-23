@@ -30,6 +30,7 @@ dependencies = [
 # ---------------------------------------------------------------------------
 [project.scripts]
 captre        = "captre:main"
+captre-dev    = "captre._scripts:dev"
 captre-test   = "captre._scripts:test"
 captre-lint   = "captre._scripts:lint"
 captre-fmt    = "captre._scripts:fmt"

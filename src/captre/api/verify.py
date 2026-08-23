@@ -19,9 +19,9 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from captre.models import Attestation, VerifyResponse
 from captre.settlement.write_attestation import (
-    list_attestations_from_chain,
-    read_attestation_from_box,
-    resolve_id_from_chain,
+    list_attestations_async,
+    read_attestation_from_box_async,
+    resolve_id_from_chain_async,
 )
 
 _CHAIN_ERRORS = (AlgodResponseError, TimeoutError, OSError, ConnectionError)
@@ -60,7 +60,7 @@ async def verify(
         If no attestation box exists for the given ``content_hash``.
     """
     try:
-        attestation = read_attestation_from_box(content_hash)
+        attestation = await read_attestation_from_box_async(content_hash)
     except _CHAIN_ERRORS as exc:
         logger.error("algod connectivity error on /verify: %s", exc)
         raise HTTPException(
@@ -114,14 +114,14 @@ async def get_attestation(attestation_id: str) -> VerifyResponse:
     """
     try:
         # Step 1 — on-chain id_index: resolve attestation_id UUID → content_hash
-        content_hash = resolve_id_from_chain(attestation_id)
+        content_hash = await resolve_id_from_chain_async(attestation_id)
         if content_hash is not None:
-            attestation = read_attestation_from_box(content_hash)
+            attestation = await read_attestation_from_box_async(content_hash)
             if attestation is not None:
                 return VerifyResponse(attestation=attestation)
 
         # Step 2 — content_hash passed directly as the id param
-        attestation = read_attestation_from_box(attestation_id)
+        attestation = await read_attestation_from_box_async(attestation_id)
     except _CHAIN_ERRORS as exc:
         logger.error("algod connectivity error on /attestation/:id: %s", exc)
         raise HTTPException(
@@ -194,14 +194,14 @@ async def list_attestations(
         if q:
             # Fetch everything (no offset/limit) then filter + slice in Python.
             # This avoids missing matches that were paginated away.
-            all_atts = list_attestations_from_chain(limit=200, offset=0)
+            all_atts = await list_attestations_async(limit=200, offset=0)
             needle = q.lower()
             filtered = [
                 a for a in all_atts
                 if needle in a.content_hash.lower() or needle in a.attestation_id.lower()
             ]
             return filtered[offset : offset + limit]
-        return list_attestations_from_chain(limit=limit, offset=offset)
+        return await list_attestations_async(limit=limit, offset=offset)
     except _CHAIN_ERRORS as exc:
         logger.error("algod connectivity error on /attestations: %s", exc)
         raise HTTPException(

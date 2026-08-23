@@ -20,13 +20,18 @@ from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
 from captre.settlement.write_attestation import (
-    list_attestations_from_chain,
-    read_attestation_from_box,
-    resolve_id_from_chain,
+    list_attestations_async,
+    read_attestation_from_box_async,
+    resolve_id_from_chain_async,
 )
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
+# Disable Jinja2 template auto-reload in production (re-reads disk on every render).
+# Set DEV=1 (via `uv run captre-dev`) to re-enable it during development.
+_DEV_MODE = os.environ.get("DEV", "0") == "1"
 templates = Jinja2Templates(directory=_TEMPLATES_DIR)
+if not _DEV_MODE:
+    templates.env.auto_reload = False
 
 router = APIRouter(include_in_schema=False)
 
@@ -107,7 +112,7 @@ async def explore(request: Request) -> HTMLResponse:
     attestations: list[Any] = []
     error: str | None = None
     try:
-        attestations = list_attestations_from_chain(limit=50)
+        attestations = await list_attestations_async(limit=50)
     except Exception as exc:  # noqa: BLE001
         error = str(exc)
 
@@ -145,11 +150,11 @@ async def explore_detail(request: Request, attestation_id: str) -> HTMLResponse:
     error = None
 
     try:
-        content_hash = resolve_id_from_chain(attestation_id)
+        content_hash = await resolve_id_from_chain_async(attestation_id)
         if content_hash:
-            attestation = read_attestation_from_box(content_hash)
+            attestation = await read_attestation_from_box_async(content_hash)
         if attestation is None:
-            attestation = read_attestation_from_box(attestation_id)
+            attestation = await read_attestation_from_box_async(attestation_id)
     except Exception as exc:  # noqa: BLE001
         error = str(exc)
 

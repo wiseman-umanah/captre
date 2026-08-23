@@ -1,11 +1,10 @@
 """
 Captre FastAPI application entry point.
 
-Run (dev):
-    uv run captre
-    uv run uvicorn captre:create_app --factory --reload
+Run (dev — hot reload, slower):
+    uv run captre-dev
 
-Run (prod):
+Run (prod — no reload, faster):
     uv run captre
     uv run uvicorn captre:create_app --factory --host 0.0.0.0 --port 8000
 """
@@ -87,10 +86,27 @@ def create_app() -> FastAPI:
 
 def main() -> None:
     """
-    Entry point for ``uv run captre``.
+    Entry point for ``uv run captre`` — production / staging mode.
 
-    Starts a uvicorn server in development mode (reload enabled) on
-    ``0.0.0.0:8000``.
+    Starts uvicorn **without** file-watching or template auto-reload so
+    every request is served at full speed.  Use ``uv run captre-dev``
+    during development when you need hot-reload.
     """
     import uvicorn
+    uvicorn.run("captre:create_app", factory=True, host="0.0.0.0", port=8000, reload=False)
+
+
+def dev() -> None:
+    """
+    Entry point for ``uv run captre-dev`` — development mode.
+
+    Enables uvicorn file-watching (``--reload``) so Python changes are
+    picked up automatically.  Jinja2 template auto-reload is also active
+    in this mode (controlled by the ``DEV`` env var set here at runtime).
+    Slower than production mode — do **not** use in production.
+    """
+    import os
+
+    import uvicorn
+    os.environ.setdefault("DEV", "1")
     uvicorn.run("captre:create_app", factory=True, host="0.0.0.0", port=8000, reload=True)
