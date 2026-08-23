@@ -72,7 +72,9 @@ ATTEST_ROUTE_CONFIG = RouteConfig(
         pay_to=RECEIVER_ADDRESS,
         price=ATTEST_PRICE,
         network=NETWORK,
-		extra={"tag": "x402-global-challenge"}
+        # NOTE: PaymentOption.extra is silently dropped by the library —
+        # _build_payment_requirements_from_options never reads it.
+        # The tag is injected via a custom money parser in build_x402_server().
     ),
     description="Create a first-claim attestation on Algorand",
     extensions=_discovery(declare_discovery_extension(
@@ -120,7 +122,8 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
         pay_to=RECEIVER_ADDRESS,
         price=REVOKE_PRICE,
         network=NETWORK,
-		extra={"tag": "x402-global-challenge"}
+        # NOTE: PaymentOption.extra is silently dropped by the library.
+        # Tag injected via custom money parser in build_x402_server().
     ),
     description="Revoke an existing attestation (original author only)",
     extensions=_discovery(declare_discovery_extension(
@@ -158,13 +161,82 @@ ROUTES_CONFIG = {
 def build_x402_server():
     """
     Build the x402ResourceServer with AVM exact scheme registered.
+
+    Registers a custom money parser on the AVM scheme that injects
+    ``"tag": "x402-global-challenge"`` into ``AssetAmount.extra``.
+
+    Why this is necessary
+    ---------------------
+    ``PaymentOption.extra`` is structurally dropped by the library:
+    ``_build_payment_requirements_from_options`` builds a ``ResourceConfig``
+    from each ``PaymentOption`` but never reads ``option.extra``, so anything
+    set there never reaches the wire.
+
+    The only surviving path into ``accepts[0].extra`` in the 402 response is:
+
+        parse_price() → AssetAmount.extra
+            ↓
+        PaymentRequirements.extra  (initial value)
+            ↓
+        enhance_payment_requirements() merges decimals/feePayer/genesis
+            ↓
+        wire: accepts[0].extra = {tag, decimals, feePayer, genesisHash, genesisId}
+
+    The custom parser calls the default conversion first (to get the correct
+    USDC amount and asset), then adds the tag to ``extra`` before returning.
     Called once at app startup.
     """
     from x402 import x402ResourceServer
     from x402.http.facilitator_client import HTTPFacilitatorClient
     from x402.mechanisms.avm.exact.register import register_exact_avm_server
+    from x402.mechanisms.avm.exact.server import ExactAvmScheme
+    from x402.schemas import AssetAmount
 
     facilitator = HTTPFacilitatorClient({"url": FACILITATOR_URL})
     server = x402ResourceServer(facilitator)
     register_exact_avm_server(server)
+
+    # Inject competition tag into AssetAmount.extra — the only path that
+    # survives into accepts[0].extra on the wire.
+    def _tag_money_parser(amount: float, network: str) -> AssetAmount | None:
+        """
+        Custom money parser that adds the competition tag to AssetAmount.extra.
+
+        Parameters
+        ----------
+        amount : float
+            Decimal USD amount parsed from the price string.
+        network : str
+            CAIP-2 network string (e.g. ``"algorand:SGO1..."``).
+
+        Returns
+        -------
+        AssetAmount or None
+            ``AssetAmount`` with ``extra`` containing both AVM defaults and
+            ``"tag": "x402-global-challenge"``. Returns ``None`` for
+            non-Algorand networks so the default parser handles them.
+        """
+        if not network.startswith("algorand:"):
+            return None
+        # Get the scheme instance to call its default conversion
+        from x402.mechanisms.avm.constants import DEFAULT_DECIMALS
+        from x402.mechanisms.avm.utils import get_usdc_asa_id, to_atomic_amount
+        asa_id = get_usdc_asa_id(network)
+        atomic = to_atomic_amount(amount, DEFAULT_DECIMALS)
+        return AssetAmount(
+            amount=str(atomic),
+            asset=str(asa_id),
+            extra={
+                "decimals": DEFAULT_DECIMALS,
+                "tag": "x402-global-challenge",
+            },
+        )
+
+    # Register on every ExactAvmScheme instance that was registered
+    from x402.schemas.helpers import find_schemes_by_network
+    avm_schemes = find_schemes_by_network(server._schemes, "algorand:*") or {}
+    for scheme_obj in avm_schemes.values():
+        if isinstance(scheme_obj, ExactAvmScheme):
+            scheme_obj.register_money_parser(_tag_money_parser)
+
     return server
