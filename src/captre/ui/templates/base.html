@@ -8,10 +8,24 @@
   <meta name="robots" content="index, follow"/>
   <link rel="canonical" href="{% block canonical %}{{ request.url }}{% endblock %}"/>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/static/logo.png"/>
+  <link rel="apple-touch-icon" href="/static/logo.png"/>
+
+  <!-- Open Graph -->
   <meta property="og:type"        content="website"/>
   <meta property="og:title"       content="{% block og_title %}Captre — On-Chain Attestation{% endblock %}"/>
   <meta property="og:description" content="First-claim proofs anchored on Algorand via x402. Permanent. Verifiable. Agent-native."/>
   <meta property="og:url"         content="{{ request.url }}"/>
+  <meta property="og:image"       content="{{ request.base_url }}static/og-image.png"/>
+  <meta property="og:image:alt"   content="Captre — On-Chain Attestation"/>
+  <meta property="og:site_name"   content="Captre"/>
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card"        content="summary_large_image"/>
+  <meta name="twitter:title"       content="{% block twitter_title %}Captre — On-Chain Attestation{% endblock %}"/>
+  <meta name="twitter:description" content="First-claim proofs anchored on Algorand via x402. Permanent. Verifiable. Agent-native."/>
+  <meta name="twitter:image"       content="{{ request.base_url }}static/og-image.png"/>
 
   <script type="application/ld+json">
   {
@@ -21,6 +35,7 @@
     "description": "On-chain attestation service — first-claim proofs anchored on Algorand via x402",
     "applicationCategory": "DeveloperApplication",
     "url": "{{ request.base_url }}",
+    "logo": "{{ request.base_url }}static/logo.png",
     "offers": { "@type": "Offer", "price": "{{ attest_price | replace('$', '') }}", "priceCurrency": "USD" }
   }
   </script>

@@ -147,12 +147,14 @@ async def get_attestation(attestation_id: str) -> VerifyResponse:
     summary="List all attestations",
     description=(
         "Returns all attestations stored on-chain, newest first. "
-        "Paginates via `limit` and `offset`. No payment required."
+        "Optionally filter by partial ``content_hash`` or ``attestation_id`` "
+        "using ``?q=``. Paginates via ``limit`` and ``offset``. No payment required."
     ),
 )
 async def list_attestations(
     limit: int = Query(default=50, ge=1, le=200, description="Max records to return"),
     offset: int = Query(default=0, ge=0, description="Number of records to skip"),
+    q: str | None = Query(default=None, description="Partial content_hash or attestation_id substring filter"),
 ) -> list[Attestation]:
     """
     List all on-chain attestations ordered by creation time (newest first).
@@ -161,17 +163,27 @@ async def list_attestations(
     ``application_boxes`` endpoint, filters to attestation boxes (``a:``
     prefix), reads each value, and returns sorted results.
 
+    When ``q`` is provided, the full list is fetched and then filtered
+    in Python — substring match against both ``content_hash`` and
+    ``attestation_id``. A query like ``a9d1a1f8`` will match any attestation
+    whose hash contains that string. ``limit`` / ``offset`` apply after
+    filtering.
+
     Parameters
     ----------
     limit : int
         Maximum number of attestations to return (1–200). Defaults to 50.
     offset : int
         Number of sorted records to skip for pagination. Defaults to 0.
+    q : str or None
+        Optional substring to filter by. Case-insensitive match against
+        ``content_hash`` and ``attestation_id``. If ``None``, all records
+        are returned (subject to ``limit`` / ``offset``).
 
     Returns
     -------
     list[Attestation]
-        Attestation records sorted newest-first. Empty list if none exist.
+        Attestation records sorted newest-first. Empty list if none match.
 
     Raises
     ------
@@ -179,6 +191,16 @@ async def list_attestations(
         If the algod node is unreachable.
     """
     try:
+        if q:
+            # Fetch everything (no offset/limit) then filter + slice in Python.
+            # This avoids missing matches that were paginated away.
+            all_atts = list_attestations_from_chain(limit=200, offset=0)
+            needle = q.lower()
+            filtered = [
+                a for a in all_atts
+                if needle in a.content_hash.lower() or needle in a.attestation_id.lower()
+            ]
+            return filtered[offset : offset + limit]
         return list_attestations_from_chain(limit=limit, offset=offset)
     except _CHAIN_ERRORS as exc:
         logger.error("algod connectivity error on /attestations: %s", exc)

@@ -2,6 +2,45 @@
 {% block title %}Explore Attestations — Captre{% endblock %}
 {% block meta_desc %}Browse every on-chain attestation stored in the Captre registry on Algorand. Newest first. No database.{% endblock %}
 
+{# ── Card macro — must be defined outside blocks so it is in scope below ── #}
+{% macro _render_card(att) %}
+<a href="/explore/{{ att.attestation_id }}" style="text-decoration:none; color:inherit; display:block; margin-bottom:var(--sp-3);">
+  <div class="card" style="padding:var(--sp-5) var(--sp-6);">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-4); flex-wrap:wrap;">
+      <div style="min-width:0; flex:1;">
+        <div style="display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-2);">
+          <span style="font-family:var(--mono); font-size:12px; font-weight:700; color:var(--amber-600);">
+            {{ att.attestation_id[:8] }}…{{ att.attestation_id[-4:] }}
+          </span>
+          {% if att.output_type %}<span class="tag" style="font-size:11px;">{{ att.output_type }}</span>{% endif %}
+          {% for tag in att.tags[:3] %}<span class="tag" style="font-size:11px;">{{ tag }}</span>{% endfor %}
+        </div>
+        <div style="font-family:var(--mono); font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:var(--sp-2);">
+          {{ att.content_hash }}
+        </div>
+        {% if att.description %}
+          <div style="font-size:13px; color:var(--text); line-height:1.5; margin-top:var(--sp-1);">
+            {{ att.description[:120] }}{% if att.description | length > 120 %}…{% endif %}
+          </div>
+        {% endif %}
+        <div style="font-size:12px; color:var(--muted); margin-top:var(--sp-2);">
+          <span style="font-family:var(--mono);">{{ att.author[:16] }}…</span>
+          {% if att.agent_id %}&nbsp;·&nbsp; {{ att.agent_id }}{% endif %}
+          &nbsp;·&nbsp; <time data-ts="{{ att.created_at | string | truncate(19, True, '') }}Z">{{ att.created_at | string | truncate(19, True, '') }} UTC</time>
+        </div>
+      </div>
+      <div style="flex-shrink:0; padding-top:2px;">
+        {% if att.status == 'active' %}
+          <span class="status-active">Active</span>
+        {% else %}
+          <span class="status-revoked">Revoked</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</a>
+{% endmacro %}
+
 {% block content %}
 
 <!-- PAGE HEADER -->
@@ -17,27 +56,22 @@
     </p>
 
     <!-- Search bar -->
-    <form id="lookup-form">
-      <div class="search-wrap" style="max-width:640px;">
+    <div style="max-width:640px;">
+      <div class="search-wrap">
         <input
           class="search-input"
           type="text"
           id="lookup-input"
-          placeholder="Paste attestation_id (UUID) or content_hash …"
+          placeholder="Type a partial hash, UUID, or full value to search…"
           autocomplete="off"
           spellcheck="false"
         />
-        <button type="submit" class="search-btn">Look up →</button>
+        <button type="button" id="lookup-btn" class="search-btn">Look up →</button>
       </div>
-    </form>
-
-    <script>
-      document.getElementById('lookup-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var val = document.getElementById('lookup-input').value.trim();
-        if (val) window.location.href = '/explore/' + encodeURIComponent(val);
-      });
-    </script>
+      <div id="search-hint" style="font-size:12px; color:var(--muted); margin-top:var(--sp-2); min-height:18px;">
+        Type at least 7 characters — results update automatically
+      </div>
+    </div>
   </div>
 </section>
 
@@ -51,92 +85,224 @@
       </div>
     {% endif %}
 
-    {% if attestations %}
-
-      <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:var(--sp-6); flex-wrap:wrap; gap:var(--sp-3);">
+    <!-- Feed header (updated by JS when searching) -->
+    <div id="feed-header" style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:var(--sp-6); flex-wrap:wrap; gap:var(--sp-3);">
+      {% if attestations %}
         <div>
           <div class="label">Live feed</div>
-          <h2 class="section-h" style="margin:0;">{{ attestations | length }} attestation{% if attestations | length != 1 %}s{% endif %} on-chain</h2>
+          <h2 class="section-h" style="margin:0;" id="feed-count">
+            {{ attestations | length }} attestation{% if attestations | length != 1 %}s{% endif %} on-chain
+          </h2>
         </div>
-        <span style="font-size:12px; color:var(--muted);">Newest first · read directly from box storage</span>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:var(--sp-3);">
-        {% for att in attestations %}
-        <a href="/explore/{{ att.attestation_id }}" style="text-decoration:none; color:inherit;">
-          <div class="card" style="padding:var(--sp-5) var(--sp-6); transition:border-color .15s;">
-
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-4); flex-wrap:wrap;">
-
-              <!-- Left: id + hash -->
-              <div style="min-width:0; flex:1;">
-                <div style="display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-2);">
-                  <span style="font-family:var(--mono); font-size:12px; font-weight:700; color:var(--amber-600);">
-                    {{ att.attestation_id[:8] }}…{{ att.attestation_id[-4:] }}
-                  </span>
-                  {% if att.output_type %}
-                    <span class="tag" style="font-size:11px;">{{ att.output_type }}</span>
-                  {% endif %}
-                  {% for tag in att.tags[:3] %}
-                    <span class="tag" style="font-size:11px;">{{ tag }}</span>
-                  {% endfor %}
-                </div>
-
-                <!-- Full content_hash -->
-                <div style="font-family:var(--mono); font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:var(--sp-2);">
-                  {{ att.content_hash }}
-                </div>
-
-                {% if att.description %}
-                  <div style="font-size:13px; color:var(--text); line-height:1.5; margin-top:var(--sp-1);">
-                    {{ att.description[:120] }}{% if att.description | length > 120 %}…{% endif %}
-                  </div>
-                {% endif %}
-
-                <div style="font-size:12px; color:var(--muted); margin-top:var(--sp-2);">
-                  <span style="font-family:var(--mono);">{{ att.author[:16] }}…</span>
-                  {% if att.agent_id %}
-                    &nbsp;·&nbsp; {{ att.agent_id }}
-                  {% endif %}
-                  &nbsp;·&nbsp; {{ att.created_at | string | truncate(19, True, '') }} UTC
-                </div>
-              </div>
-
-              <!-- Right: status badge -->
-              <div style="flex-shrink:0; padding-top:2px;">
-                {% if att.status == 'active' %}
-                  <span class="status-active">Active</span>
-                {% else %}
-                  <span class="status-revoked">Revoked</span>
-                {% endif %}
-              </div>
-
-            </div>
-          </div>
-        </a>
-        {% endfor %}
-      </div>
-
-      {% if attestations | length == 50 %}
-        <p style="font-size:13px; color:var(--muted); margin-top:var(--sp-6); text-align:center;">
-          Showing the 50 most recent.
-          Use <a href="/attestations?limit=200" style="color:var(--amber-600);">GET /attestations</a> to retrieve more.
-        </p>
+        <span id="feed-meta" style="font-size:12px; color:var(--muted);">Newest first · read directly from box storage</span>
       {% endif %}
+    </div>
 
-    {% elif not error %}
+    <!-- Feed list (server-rendered on load; replaced by JS on search) -->
+    <div id="feed-list">
+      {% if attestations %}
+        {% for att in attestations %}
+          {{ _render_card(att) }}
+        {% endfor %}
 
-      <!-- Empty state -->
-      <div class="empty-state">
-        <div class="empty-icon">◻</div>
-        <div class="empty-title">No attestations yet</div>
-        <p class="empty-desc">The contract has no boxes — nothing has been attested yet on this network.</p>
-        <a href="/api-reference" class="btn btn-primary">View API docs</a>
-      </div>
+        {% if attestations | length == 50 %}
+          <p style="font-size:13px; color:var(--muted); margin-top:var(--sp-6); text-align:center;">
+            Showing the 50 most recent.
+            Use <a href="/attestations?limit=200" style="color:var(--amber-600);">GET /attestations</a> to retrieve more.
+          </p>
+        {% endif %}
 
-    {% endif %}
+      {% elif not error %}
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">◻</div>
+          <div class="empty-title">No attestations yet</div>
+          <p class="empty-desc">The contract has no boxes — nothing has been attested yet on this network.</p>
+          <a href="/api-reference" class="btn btn-primary">View API docs</a>
+        </div>
+      {% endif %}
+    </div>
 
   </div>
 </section>
+
+<script>
+(function () {
+  var input    = document.getElementById('lookup-input');
+  var btn      = document.getElementById('lookup-btn');
+  var hint     = document.getElementById('search-hint');
+  var feedList = document.getElementById('feed-list');
+  var feedHeader = document.getElementById('feed-header');
+  var feedCount  = document.getElementById('feed-count');
+  var feedMeta   = document.getElementById('feed-meta');
+
+  var MIN_CHARS  = 7;      // minimum characters before live search fires
+  var DEBOUNCE   = 800;    // ms of silence before searching
+  var timer      = null;
+  var lastQuery  = '';
+
+  // ── Exact lookup button — full UUID or content_hash ──────────────────────
+  btn.addEventListener('click', function () {
+    var val = input.value.trim();
+    if (val) window.location.href = '/explore/' + encodeURIComponent(val);
+  });
+
+  // ── Enter key: if long/exact value go straight to detail page ────────────
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var val = input.value.trim();
+      if (!val) return;
+      // Full UUID (36 chars) or full sha256: hash → direct detail page
+      if (val.length >= 36 || val.startsWith('sha256:')) {
+        window.location.href = '/explore/' + encodeURIComponent(val);
+      } else if (val.length >= MIN_CHARS) {
+        clearTimeout(timer);
+        runSearch(val);
+      }
+    }
+  });
+
+  // ── Debounced live search on input ────────────────────────────────────────
+  input.addEventListener('input', function () {
+    var val = input.value.trim();
+    clearTimeout(timer);
+
+    if (!val) {
+      // Cleared — restore original server-rendered feed
+      hint.textContent = 'Type at least ' + MIN_CHARS + ' characters — results update automatically';
+      restoreOriginalFeed();
+      return;
+    }
+
+    if (val.length < MIN_CHARS) {
+      hint.textContent = (MIN_CHARS - val.length) + ' more character' + (MIN_CHARS - val.length === 1 ? '' : 's') + ' before searching…';
+      return;
+    }
+
+    hint.textContent = 'Searching…';
+    timer = setTimeout(function () { runSearch(val); }, DEBOUNCE);
+  });
+
+  // ── Build a card HTML string from an attestation JSON object ─────────────
+  function buildCard(att) {
+    var tags = '';
+    if (att.output_type) tags += '<span class="tag" style="font-size:11px;">' + esc(att.output_type) + '</span>';
+    (att.tags || []).slice(0, 3).forEach(function (t) {
+      tags += '<span class="tag" style="font-size:11px;">' + esc(t) + '</span>';
+    });
+
+    var desc = att.description
+      ? '<div style="font-size:13px;color:var(--text);line-height:1.5;margin-top:4px;">' + esc(att.description.slice(0, 120)) + (att.description.length > 120 ? '…' : '') + '</div>'
+      : '';
+
+    var agentBit = att.agent_id ? '&nbsp;·&nbsp; ' + esc(att.agent_id) : '';
+    var ts = localTs((att.created_at || '').slice(0, 19) + 'Z');
+    var status = att.status === 'active'
+      ? '<span class="status-active">Active</span>'
+      : '<span class="status-revoked">Revoked</span>';
+
+    return '<a href="/explore/' + esc(att.attestation_id) + '" style="text-decoration:none;color:inherit;display:block;margin-bottom:12px;">'
+      + '<div class="card" style="padding:16px 20px;">'
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+      + '<div style="min-width:0;flex:1;">'
+      + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'
+      + '<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber-600);">'
+      + esc(att.attestation_id.slice(0, 8)) + '…' + esc(att.attestation_id.slice(-4))
+      + '</span>' + tags + '</div>'
+      + '<div style="font-family:var(--mono);font-size:12px;color:var(--muted);word-break:break-all;margin-bottom:6px;">' + esc(att.content_hash) + '</div>'
+      + desc
+      + '<div style="font-size:12px;color:var(--muted);margin-top:6px;">'
+      + '<span style="font-family:var(--mono);">' + esc(att.author.slice(0, 16)) + '…</span>'
+      + agentBit + '&nbsp;·&nbsp; ' + esc(ts)
+      + '</div>'
+      + '</div>'
+      + '<div style="flex-shrink:0;padding-top:2px;">' + status + '</div>'
+      + '</div></div></a>';
+  }
+
+  // ── Fetch from /attestations?q= and update the feed ──────────────────────
+  function runSearch(q) {
+    if (q === lastQuery) return;
+    lastQuery = q;
+
+    fetch('/attestations?q=' + encodeURIComponent(q) + '&limit=50')
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (atts) {
+        hint.textContent = atts.length
+          ? atts.length + ' result' + (atts.length === 1 ? '' : 's') + ' for "' + q + '"'
+          : 'No results for "' + q + '"';
+
+        if (feedCount) {
+          feedCount.textContent = atts.length + ' attestation' + (atts.length !== 1 ? 's' : '') + ' matching "' + q + '"';
+        }
+        if (feedMeta) feedMeta.textContent = 'Filtered · live from box storage';
+
+        if (!atts.length) {
+          feedList.innerHTML = '<div class="empty-state">'
+            + '<div class="empty-icon">?</div>'
+            + '<div class="empty-title">No matches</div>'
+            + '<p class="empty-desc">No attestation found containing <code>' + esc(q) + '</code>.</p>'
+            + '</div>';
+          return;
+        }
+
+        var html = '';
+        atts.forEach(function (a) { html += buildCard(a); });
+        feedList.innerHTML = html;
+      })
+      .catch(function (err) {
+        hint.textContent = 'Search error — ' + err.message;
+      });
+  }
+
+  // ── Restore the original server-rendered feed when input cleared ──────────
+  var _originalFeed = feedList ? feedList.innerHTML : '';
+  var _originalCount = feedCount ? feedCount.textContent : '';
+  var _originalMeta  = feedMeta  ? feedMeta.textContent  : '';
+
+  function restoreOriginalFeed() {
+    lastQuery = '';
+    if (feedList)  feedList.innerHTML = _originalFeed;
+    if (feedCount) feedCount.textContent = _originalCount;
+    if (feedMeta)  feedMeta.textContent  = _originalMeta;
+  }
+
+  // ── HTML escape ───────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Format an ISO UTC string to the browser's local timezone ─────────────
+  function localTs(isoZ) {
+    try {
+      return new Date(isoZ).toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    } catch (_) {
+      return isoZ.slice(0, 19);
+    }
+  }
+})();
+
+// Convert server-rendered <time data-ts="…"> elements on page load
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('time[data-ts]').forEach(function (el) {
+    try {
+      el.textContent = new Date(el.getAttribute('data-ts')).toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    } catch (_) {}
+  });
+});
+</script>
 
 {% endblock %}
