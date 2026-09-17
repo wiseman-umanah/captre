@@ -1,6 +1,6 @@
 # Captre Agent World
 
-A standalone simulation of four AI agents operating concurrently on the [Captre](https://captre.onrender.com) on-chain attestation platform. No code is imported from the main Captre app — agents communicate with the server over HTTP only, paying with real USDC.
+A standalone simulation of four AI agents demonstrating the full Captre provenance chain on Algorand. No code is imported from the main Captre app — agents communicate over HTTP only, each paying with their own wallet.
 
 Supports both **testnet** (free, for development) and **mainnet** (real funds, for production).
 
@@ -10,12 +10,34 @@ Supports both **testnet** (free, for development) and **mainnet** (real funds, f
 
 | Agent | Role | Actions |
 |-------|------|---------|
-| **RESEARCHER** | Produces research summaries | Attests 1 finding, revokes 1 (retraction) |
+| **RESEARCHER** | Produces research outputs | Registers task → attests output → revokes one (retraction) |
 | **CODER** | Produces code artefacts | Attests 3 snippets with version lineage chain |
-| **AUDITOR** | Verifies others' claims | Verifies all registry items (free), attests audit report |
+| **AUDITOR** | Independent evaluator | Verifies all attestations (free), evaluates each on-chain with policy hash |
 | **CRITIC** | Issues & retracts decisions | Attests a decision, revokes it, attests correction |
 
-All four agents run **concurrently** from a single command. Terminal output is a colour-coded log of every on-chain action across all agents in real time.
+All four agents run **concurrently** from a single command. Terminal output is a colour-coded log of every on-chain action in real time.
+
+### The full provenance chain (RESEARCHER + AUDITOR)
+
+```
+RESEARCHER wallet                    AUDITOR wallet
+     │                                    │
+     │  POST /submit-task                 │
+     │  → task hash on-chain              │
+     │  → proves task existed first       │
+     │                                    │
+     │  POST /attest                      │
+     │  → content hash on-chain           │
+     │  → author = researcher wallet      │
+     │                                    │
+     │                          POST /evaluate
+     │                          → verifies attestation exists
+     │                          → records: evaluator wallet
+     │                          → records: policy hash
+     │                          → records: pass/fail/score
+```
+
+Every identity in the chain is proven by **who signed the payment** — not by self-reported fields.
 
 ---
 
@@ -29,14 +51,14 @@ agents/
 ├── shared/
 │   ├── wallet.py         ← AlgorandWallet (implements x402 ClientAvmSigner)
 │   ├── bank.py           ← funds all agents from one bank wallet
-│   ├── captre_client.py  ← HTTP wrapper: attest / revoke / verify with x402 payment
+│   ├── captre_client.py  ← HTTP wrapper: submit_task / attest / evaluate / revoke / verify
 │   ├── hashing.py        ← sha256 content-hash helper
 │   └── log.py            ← colour-coded terminal logger (one colour per agent)
 └── agents/
-    ├── researcher.py
-    ├── coder.py
-    ├── auditor.py
-    └── critic.py
+    ├── researcher.py     ← full 3-step: submit_task → attest → (auditor evaluates)
+    ├── coder.py          ← attest with version lineage chain
+    ├── auditor.py        ← verify (free) + evaluate (paid) + attest report
+    └── critic.py         ← attest → revoke → re-attest correction
 ```
 
 ---
@@ -115,8 +137,10 @@ The bank wallet needs real funds. Budget for the number of simulation runs you p
 
 | Runs | Agent ALGO needed | Agent USDC needed |
 |------|-------------------|-------------------|
-| 10 runs | ~1 ALGO | ~$1 USDC |
-| 30 runs | ~1 ALGO | ~$3 USDC |
+| 10 runs | ~1 ALGO | ~$2 USDC |
+| 30 runs | ~1 ALGO | ~$6 USDC |
+
+> Each run now includes: 1× submit-task ($0.01) + 1× attest ($0.01) + 1× evaluate ($0.01) per researcher output, plus coder and critic attestations.
 
 > The bank only sends what each agent is missing — re-runs are almost free if agent wallets still have balance.
 >

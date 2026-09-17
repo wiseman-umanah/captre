@@ -2,37 +2,63 @@
 
 # Captre
 
-**On-chain first-claim attestation — anchored on Algorand, paid via x402.**
-
-Captre lets any agent or system prove it produced a piece of content *before* anyone else. A SHA-256 hash is anchored in Algorand Box Storage; the payer's address is recorded permanently as the author. The claim is immutable — revocation marks it as retracted but does not reopen the hash to new claimants.
-
-Live demo: **https://captre.onrender.com** · API docs: **/api-reference**
+**On-chain provenance ledger for AI agents — anchored on Algorand, paid via x402.**
 
 ---
 
-## How it works
+## The Problem
+
+AI agents produce outputs — summaries, decisions, code, reports. Right now there is no way to prove:
+
+- **When** an output was produced
+- **Which** agent produced it
+- **Whether** it was independently evaluated
+- **Who** the evaluator was and **what rules** they used
+
+Anyone can claim anything after the fact. Logs can be faked. Timestamps can be altered.
+
+---
+
+## What Captre Does
+
+Captre creates an **immutable, time-stamped chain of proof on Algorand** — a public blockchain — that no one can alter or fake:
+
+**Step 1 — Task registered**
+Proves the task existed *before* the output was produced. The agent's wallet is the proof of identity.
+
+**Step 2 — Output attested**
+Proves the output was produced and claimed by a specific agent wallet at a specific time. First-claim only — you cannot claim the same output twice, even after revocation.
+
+**Step 3 — Evaluation recorded**
+Proves an independent evaluator reviewed the output under a specific policy, and what they decided. The evaluator's wallet is their identity — they cannot deny it later.
 
 ```
-Client                      Captre (FastAPI)               Algorand
-  │                              │                              │
-  │  POST /attest                │                              │
-  │──────────────────────────────▶  402 Payment Required        │
-  │◀─────────────────────────────│  (challenge in header)       │
-  │                              │                              │
-  │  POST /attest + USDC payment │                              │
-  │──────────────────────────────▶  facilitator verifies        │
-  │                              │──────────────────────────────▶ app call
-  │                              │                              │  box write
-  │  201 {attestation_id, …}     │                              │
-  │◀─────────────────────────────│                              │
+Agent submits task      →  TaskApp stores task hash + agent wallet address
+Agent produces output   →  CaptreApp stores content hash + agent wallet address
+Evaluator evaluates     →  LedgerApp verifies both above exist on-chain,
+                           then stores: evaluator + policy hash + result + score
 ```
 
-1. Client sends `POST /attest` — receives a `402` with an ALGO/USDC payment challenge.
-2. Client signs and sends back the payment — the [GoPlausible facilitator](https://facilitator.goplausible.xyz) verifies it on-chain.
-3. Captre's service account submits the AVM app call, writing the attestation to Box Storage.
-4. The payer's address (from the x402 payment payload) is recorded as `author` — **never** from `Txn.sender()`.
+**The key:** Identity is proven by **who paid** — not by what anyone claims. You cannot fake a wallet signature on a blockchain payment. That is what x402 brings — payment and identity in one step.
 
-Verification (`GET /verify`, `GET /attestation/:id`) is always **free**.
+---
+
+## Why This Matters
+
+- **AI governance** — regulators and auditors can verify what an agent did, when, and whether it passed evaluation — without trusting anyone's word
+- **Agent marketplaces** — buyers can verify an agent's track record is real, not fabricated
+- **Liability** — when an AI makes a bad decision, you can trace exactly who submitted the task, who produced the output, and who signed off on it
+- **Interoperability** — any x402-capable agent framework can call these endpoints — no SDK required
+
+---
+
+## The Three Contracts (Mainnet)
+
+| Contract | App ID | Purpose |
+|---|---|---|
+| CaptreApp | `3682418169` | Stores attestations — first-claim content hash registry |
+| TaskApp | `3709725780` | Stores task registrations — proves task existed before output |
+| LedgerApp | `3709726556` | Stores evaluations — cross-calls both above to verify chain |
 
 ---
 
@@ -40,243 +66,135 @@ Verification (`GET /verify`, `GET /attestation/:id`) is always **free**.
 
 | Method | Path | Cost | Description |
 |--------|------|------|-------------|
-| `POST` | `/attest` | `$ATTEST_PRICE` USDC | Create a first-claim attestation |
-| `POST` | `/revoke` | `$REVOKE_PRICE` USDC | Revoke (original author only) |
-| `GET` | `/verify?content_hash=…` | free | Lookup by content hash |
-| `GET` | `/attestation/{id}` | free | Lookup by UUID or content hash |
-| `GET` | `/attestations` | free | List all attestations (newest first) |
+| `POST` | `/submit-task` | `$0.01` USDC | Register a task on-chain |
+| `POST` | `/attest` | `$0.01` USDC | Attest an output (first-claim) |
+| `POST` | `/evaluate` | `$0.01` USDC | Record an evaluation of an attestation |
+| `POST` | `/revoke` | `$0.01` USDC | Revoke an attestation (original author only) |
+| `GET` | `/task/{id}` | free | Retrieve a task record |
+| `GET` | `/verify?content_hash=…` | free | Verify by content hash |
+| `GET` | `/attestation/{id}` | free | Retrieve an attestation |
+| `GET` | `/evaluation/{id}` | free | Retrieve an evaluation |
+| `GET` | `/attestations` | free | List all attestations |
 | `GET` | `/health` | free | Liveness check |
 
-Price defaults to `$0.05` per call. Override with `ATTEST_PRICE` / `REVOKE_PRICE` in `.env`.
+All prices are set via environment variables. See [SETUP.md](SETUP.md) for full configuration.
 
-### Attest
+### Examples
 
-```http
-POST /attest
-Content-Type: application/json
-
-{
-  "content_hash": "sha256:abc123...",
-  "agent_id":     "my-agent-v1",        // optional
-  "output_type":  "research",           // research|file|decision|code|report|other
-  "description":  "Q3 climate analysis",
-  "model":        "gpt-4o",
-  "tags":         ["climate", "v1"],
-  "previous_attestation": null
-}
+Register a task:
+```bash
+curl -X POST https://captre.onrender.com/submit-task \
+  -H "Content-Type: application/json" \
+  -d '{"content": "Summarise the Algorand whitepaper", "agent_id": "my-agent-v1"}'
 ```
 
-Response `200`:
-```json
-{
-  "attestation": {
-    "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
-    "author":         "GFYF3KD...",
-    "content_hash":   "sha256:abc123...",
-    "status":         "active",
-    "tx_id":          "QK5ATJT...",
-    "created_at":     "2025-01-01T00:00:00Z"
-  },
-  "message": "Attestation created successfully"
-}
+Attest an output:
+```bash
+curl -X POST https://captre.onrender.com/attest \
+  -H "Content-Type: application/json" \
+  -d '{"content_hash": "sha256:<your-hash>", "output_type": "research", "description": "Summary of Algorand whitepaper"}'
 ```
 
-Error `409` — hash already claimed:
-```json
-{
-  "error": "content_hash already claimed",
-  "existing_attestation": { ... }
-}
+Evaluate an attestation:
+```bash
+curl -X POST https://captre.onrender.com/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"output_attestation_id": "<attestation_id>", "content_hash": "sha256:<your-hash>", "policy_hash": "sha256:<64-hex-chars>", "evaluation_result": "pass", "score": 0.95}'
 ```
 
-### Revoke
-
-```http
-POST /revoke
-Content-Type: application/json
-
-{ "attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4" }
+Verify for free (no payment needed):
+```bash
+curl "https://captre.onrender.com/verify?content_hash=sha256:<your-hash>"
+curl "https://captre.onrender.com/attestation/<attestation_id>"
+curl "https://captre.onrender.com/evaluation/<evaluation_id>"
 ```
 
-- Only the wallet that paid for `/attest` can revoke. `403` is returned otherwise.
-- The hash is permanently closed — revoked attestations remain on-chain and visible.
-- `attestation_id` may be a UUID *or* the raw `content_hash`.
+> All paid endpoints return `402 Payment Required` first. An x402-capable client handles the payment automatically. See [GoPlausible x402 docs](https://facilitator.goplausible.xyz) for client libraries.
 
 ---
 
-## On-chain storage
+## Full Flow
 
-The contract uses two Algorand BoxMaps:
+```mermaid
+sequenceDiagram
+    participant A as Agent Wallet
+    participant C as Captre API
+    participant F as GoPlausible Facilitator
+    participant T as TaskApp (Algorand)
+    participant P as CaptreApp (Algorand)
+    participant L as LedgerApp (Algorand)
 
-| BoxMap | Key | Value |
-|--------|-----|-------|
-| `attestations` | `sha256(content_hash_string)` — 32 bytes | Full JSON attestation blob |
-| `id_index` | `attestation_id` UUID — 36 bytes | Original `content_hash` string |
+    Note over A,L: Step 1 — Register the task
+    A->>C: POST /submit-task {content}
+    C-->>A: 402 Payment Required
+    A->>F: Pay $0.01 USDC (signed by agent wallet)
+    F-->>C: Payment verified
+    C->>T: submit_task(task_hash, author=agent_wallet)
+    T-->>C: box written
+    C-->>A: 200 {task_id, task_hash}
 
-Box names stay well under the 64-byte AVM limit (`b"a:" + 32 bytes` = 34 bytes). Both boxes are written atomically in a single `attest()` call. Each attestation costs **~0.277 ALGO** in minimum balance reserve (MBR) locked in the contract account — budget for this when funding `APP_ADDRESS`.
+    Note over A,L: Step 2 — Attest the output
+    A->>C: POST /attest {content_hash, task_hash}
+    C-->>A: 402 Payment Required
+    A->>F: Pay $0.01 USDC (signed by agent wallet)
+    F-->>C: Payment verified
+    C->>P: attest(content_hash, author=agent_wallet)
+    P-->>C: box written
+    C-->>A: 200 {attestation_id, author}
+
+    Note over A,L: Step 3 — Evaluate the output
+    A->>C: POST /evaluate {attestation_id, policy_hash, result}
+    C-->>A: 402 Payment Required
+    A->>F: Pay $0.01 USDC (signed by evaluator wallet)
+    F-->>C: Payment verified
+    C->>L: add_evaluation(evaluator=evaluator_wallet, ...)
+    L->>P: exists(content_hash_key)?
+    P-->>L: true
+    L->>T: task_exists(task_hash_key)?
+    T-->>L: true
+    L-->>C: box written
+    C-->>A: 200 {evaluation_id, evaluator, result}
+```
+
+**Identity is proven by who signs the payment** — `author` and `evaluator` come from the x402 payment transaction, not from anything in the request body. They cannot be spoofed.
 
 ---
 
-## Local development (testnet)
+## What Gets Stored On-Chain
 
-Use testnet for development. No real money involved — use the free dispenser for ALGO and Tinyman testnet for USDC.
+Every record is written as a JSON blob to Algorand Box Storage — publicly readable, permanently immutable.
 
-### Prerequisites
+| Contract | Box key | What is stored |
+|---|---|---|
+| **TaskApp** | `sha256(task_hash)` — 32 bytes | `task_id`, `author` (wallet), `task_hash`, `created_at`, `tx_id`, optional `agent_id`/`tags` |
+| **CaptreApp** | `sha256(content_hash)` — 32 bytes | `attestation_id`, `author` (wallet), `content_hash`, `status`, `created_at`, `tx_id`, optional `description`/`model`/`tags` |
+| **CaptreApp** | `attestation_id` UUID | Index mapping UUID → `content_hash` (enables lookup by ID) |
+| **LedgerApp** | `sha256(evaluation_id)` — 32 bytes | `evaluation_id`, `evaluator` (wallet), `policy_hash`, `evaluation_result`, `score`, `content_hash`, `task_hash`, `created_at`, `tx_id` |
 
-- Python 3.12+, [uv](https://docs.astral.sh/uv/), [AlgoKit CLI](https://developer.algorand.org/docs/get-details/algokit/)
-- A funded **testnet** wallet (`SERVICE_MNEMONIC`)
-- Testnet USDC opted into `RECEIVER_ADDRESS` (ASA `10458941` on testnet)
-
-### 1. Install
-
-```bash
-uv sync
-```
-
-### 2. Configure for testnet
-
-```bash
-cp .env.example .env
-```
-
-Set these in `.env`:
-
-```env
-ALGORAND_NETWORK=testnet
-ALGOD_URL=https://testnet-api.algonode.cloud
-ALGOD_TOKEN=
-INDEXER_URL=https://testnet-idx.algonode.cloud
-
-DEPLOYER_MNEMONIC=<your 25-word testnet mnemonic>
-SERVICE_MNEMONIC=<your 25-word testnet mnemonic>
-RECEIVER_ADDRESS=<Algorand address matching SERVICE_MNEMONIC>
-
-ATTEST_PRICE=$0.05
-REVOKE_PRICE=$0.05
-```
-
-> **Testnet faucets**
-> - ALGO: [bank.testnet.algorand.network](https://bank.testnet.algorand.network/)
-> - USDC (ASA `10458941`): swap on [Tinyman testnet](https://testnet.tinyman.org/)
-
-### 3. Deploy the contract (testnet)
-
-```bash
-uv run python -m captre.contract.deploy
-```
-
-The script writes `APP_ID` and `APP_ADDRESS` back to `.env`. Then fund the contract account for Box MBR:
-
-```bash
-# send at least 2 ALGO to APP_ADDRESS (copied from .env after deploy)
-# each attestation locks ~0.277 ALGO — fund more for sustained use
-```
-
-### 4. Run the server
-
-```bash
-uv run captre          # hot-reload dev server on :8000
-```
+Box names stay within Algorand's 64-byte limit. All records are written atomically — either the full record lands on-chain or nothing does. No partial writes.
 
 ---
 
-## Production deployment (mainnet)
+## Built With
 
-Use mainnet for real users and competition leaderboard volume.
-
-### 1. Configure for mainnet
-
-```env
-ALGORAND_NETWORK=mainnet
-ALGOD_URL=https://mainnet-api.algonode.cloud
-ALGOD_TOKEN=
-INDEXER_URL=https://mainnet-idx.algonode.cloud
-
-DEPLOYER_MNEMONIC=<your 25-word mainnet mnemonic>
-SERVICE_MNEMONIC=<your 25-word mainnet mnemonic>
-RECEIVER_ADDRESS=<Algorand address matching SERVICE_MNEMONIC>
-
-ATTEST_PRICE=$0.05
-REVOKE_PRICE=$0.05
-
-FACILITATOR_URL=https://facilitator.goplausible.xyz
-```
-
-> **Mainnet USDC:** ASA `31566704`. Ensure `RECEIVER_ADDRESS` is opted in before first payment.
-
-### 2. Deploy contract (mainnet)
-
-```bash
-ALGORAND_NETWORK=mainnet uv run python -m captre.contract.deploy
-```
-
-Copy the printed `APP_ID` and `APP_ADDRESS` into your environment variables.
-
-### 3. Fund the contract account (mainnet)
-
-Each attestation permanently locks ~**0.277 ALGO** in the contract account as Box MBR. Budget accordingly:
-
-| Planned attestations | ALGO to send to `APP_ADDRESS` |
+| Layer | Technology |
 |---|---|
-| 30 | ~9 ALGO |
-| 90 | ~25 ALGO |
-| 300 | ~85 ALGO |
-
-Send the ALGO to `APP_ADDRESS` **before** first attestation. The service will fail with a balance error otherwise.
-
-### 4. Deploy to Render
-
-1. Set all variables above as Render environment variables.
-2. *(Optional)* Add a Persistent Disk at `/data`; set `INDEX_DB_PATH=/data/index.db`.
-3. Start command: `uv run captre`.
+| Smart contracts | [Algorand Python](https://algorandfoundation.github.io/puya/) (AlgoKit / Puya) |
+| Contract interaction | [algokit-utils](https://github.com/algorandfoundation/algokit-utils-py) |
+| API server | [FastAPI](https://fastapi.tiangolo.com/) + [uvicorn](https://www.uvicorn.org/) |
+| Payments | [x402-avm](https://github.com/goplausible/x402-avm) — x402 protocol over Algorand USDC |
+| Payment facilitator | [GoPlausible](https://facilitator.goplausible.xyz) |
+| Package manager | [uv](https://docs.astral.sh/uv/) |
+| Hosting | [Render](https://render.com) |
 
 ---
 
-## Testing
+## Live Demo
 
-```bash
-uv run pytest tests/unit/                           # all unit tests (no chain, no .env needed)
-uv run pytest tests/unit/test_attest_endpoint.py    # single file
-uv run pytest tests/unit/test_attest_endpoint.py::test_attest_success_returns_200  # single test
-
-uv run pytest tests/integration/                    # live chain — requires .env with APP_ID set
-```
-
-```bash
-uv run ruff check .    # lint
-uv run ruff format .   # format
-uv run pyright         # type check
-```
-
-Unit tests mock all chain and payment calls — no ALGO, no USDC, no network required.
-Integration tests write real boxes to a live contract. They must be run against testnet first.
+**https://captre.onrender.com** · API docs: **/api-reference** · OpenAPI: **/docs**
 
 ---
 
-## Project structure
+## Quick Start
 
-```
-src/captre/
-├── api/
-│   ├── attest.py          # POST /attest — x402-paid
-│   ├── revoke.py          # POST /revoke — x402-paid, author-only
-│   └── verify.py          # GET /verify, GET /attestation/:id, GET /attestations — free
-├── contract/
-│   ├── captre_app.py      # Algorand Python smart contract (AlgoKit/Puya)
-│   ├── deploy.py          # Reuse-or-deploy script
-│   └── artifacts/         # Compiled ARC-56 + TEAL (generated)
-├── settlement/
-│   └── write_attestation.py  # Payment settle → box write (sequential)
-├── ui/
-│   ├── static/style.css
-│   └── templates/         # Jinja2 templates
-├── __init__.py            # App factory, x402 middleware wiring
-├── models.py              # Pydantic schemas
-└── x402_config.py         # Route configs, pricing, Bazaar discovery
-```
-
----
-
-## Agents demo
-
-See [`agents/README.md`](agents/README.md) for a standalone multi-agent world simulation that exercises every endpoint concurrently across four distinct AI agents — on testnet or mainnet.
+See **[SETUP.md](SETUP.md)** for full setup — local testnet, mainnet production, and all environment variables.

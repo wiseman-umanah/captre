@@ -1,15 +1,18 @@
 """
-shared/captre_client.py — HTTP client for the Captre attestation API.
+shared/captre_client.py — HTTP client for the Captre provenance API.
 
 Handles the full x402 payment handshake automatically using x402ClientSync.
-The caller only needs a wallet and the content to attest — this module manages
+The caller only needs a wallet and the content — this module manages
 the 402 challenge, payment payload construction, and retry.
 
 API surface exposed:
-  attest(wallet, content_hash, **fields) -> dict
-  revoke(wallet, attestation_id)         -> dict
-  verify(content_hash)                   -> dict | None  (free, no wallet needed)
-  get_attestation(attestation_id)        -> dict | None  (free, no wallet needed)
+  submit_task(wallet, content, **fields) -> dict              (paid)
+  attest(wallet, content_hash, **fields) -> dict              (paid)
+  evaluate(wallet, ..., **fields)        -> dict              (paid)
+  revoke(wallet, attestation_id)         -> dict              (paid)
+  verify(content_hash)                   -> dict | None       (free)
+  get_attestation(attestation_id)        -> dict | None       (free)
+  get_evaluation(evaluation_id)          -> dict | None       (free)
 """
 
 from __future__ import annotations
@@ -48,6 +51,30 @@ class DuplicateClaimError(AttestError):
 
 class RevokeError(Exception):
     """Raised when POST /revoke fails."""
+
+
+class SubmitTaskError(Exception):
+    """Raised when POST /submit-task fails."""
+
+
+class DuplicateTaskError(SubmitTaskError):
+    """Raised when the task content has already been claimed (409)."""
+
+    def __init__(self, existing: dict[str, Any]) -> None:
+        """
+        Construct a DuplicateTaskError.
+
+        Parameters
+        ----------
+        existing : dict
+            The existing task record returned in the 409 body.
+        """
+        super().__init__("task content already claimed")
+        self.existing = existing
+
+
+class EvaluateError(Exception):
+    """Raised when POST /evaluate fails."""
 
 
 class NotFoundError(Exception):
@@ -337,6 +364,186 @@ def get_attestation(
     base_url = base_url or os.environ["CAPTRE_BASE_URL"]
     with httpx.Client(timeout=15) as http:
         resp = http.get(f"{base_url}/attestation/{attestation_id}")
+        if resp.status_code == 404:
+            return None
+        resp.raise_for_status()
+        return resp.json()
+
+
+def submit_task(
+    wallet: AlgorandWallet,
+    content: str,
+    agent_id: str | None = None,
+    description: str | None = None,
+    tags: list[str] | None = None,
+    extra: dict[str, Any] | None = None,
+    base_url: str = "",
+    algod_url: str = "",
+) -> dict[str, Any]:
+    """
+    Register a task on-chain via POST /submit-task, paying with the agent's wallet.
+
+    Parameters
+    ----------
+    wallet : AlgorandWallet
+        The agent wallet that will sign and pay the x402 fee.
+    content : str
+        Raw task content (prompt, specification, etc.). The SHA-256 hash is
+        stored on-chain — the content itself stays off-chain.
+    agent_id : str or None
+        Optional identifier for this agent.
+    description : str or None
+        Human-readable description of the task.
+    tags : list[str] or None
+        Free-form tags.
+    extra : dict or None
+        Arbitrary extra metadata.
+    base_url : str
+        Captre server base URL. Falls back to ``CAPTRE_BASE_URL`` env var.
+    algod_url : str
+        Algod node URL. Falls back to ``ALGOD_URL`` env var.
+
+    Returns
+    -------
+    dict[str, Any]
+        Full ``SubmitTaskResponse`` body from the server including ``task_id``
+        and ``task_hash``.
+
+    Raises
+    ------
+    DuplicateTaskError
+        If the task content has already been claimed (409).
+    SubmitTaskError
+        If the submission fails for any other reason.
+    """
+    base_url = base_url or os.environ["CAPTRE_BASE_URL"]
+    algod_url = algod_url or os.environ["ALGOD_URL"]
+
+    body: dict[str, Any] = {"content": content}
+    if agent_id:
+        body["agent_id"] = agent_id
+    if description:
+        body["description"] = description
+    if tags:
+        body["tags"] = tags
+    if extra:
+        body["extra"] = extra
+
+    x402_client = _build_x402_client(wallet, algod_url)
+    with httpx.Client(timeout=30) as http:
+        try:
+            return _do_paid_post(http, x402_client, f"{base_url}/submit-task", body)
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 409:
+                detail = exc.response.json().get("detail", {})
+                existing = detail.get("existing_task", {}) if isinstance(detail, dict) else {}
+                raise DuplicateTaskError(existing) from exc
+            raise SubmitTaskError(
+                f"submit_task failed {exc.response.status_code}: {exc.response.text}"
+            ) from exc
+
+
+def evaluate(
+    wallet: AlgorandWallet,
+    output_attestation_id: str,
+    content_hash: str,
+    policy_hash: str,
+    evaluation_result: str,
+    task_hash: str | None = None,
+    score: float | None = None,
+    notes: str | None = None,
+    base_url: str = "",
+    algod_url: str = "",
+) -> dict[str, Any]:
+    """
+    Record an evaluation of an attestation via POST /evaluate, paying with the wallet.
+
+    The evaluator identity is the wallet address — proven by the x402 payment,
+    never self-reported.
+
+    Parameters
+    ----------
+    wallet : AlgorandWallet
+        The evaluator wallet that will sign and pay the x402 fee.
+    output_attestation_id : str
+        UUID ``attestation_id`` of the attestation being evaluated.
+    content_hash : str
+        SHA-256 hash of the attested output — must match the on-chain record.
+    policy_hash : str
+        ``sha256:<64 hex chars>`` of the policy document used for evaluation.
+        This is an immutable on-chain commitment to the policy ruleset.
+    evaluation_result : str
+        Outcome: ``"pass"``, ``"fail"``, ``"partial"``, or ``"score_only"``.
+    task_hash : str or None
+        Optional SHA-256 hash of the originating task.
+    score : float or None
+        Optional numeric score (0.0–1.0).
+    notes : str or None
+        Optional human-readable evaluation notes.
+    base_url : str
+        Captre server base URL. Falls back to ``CAPTRE_BASE_URL`` env var.
+    algod_url : str
+        Algod node URL. Falls back to ``ALGOD_URL`` env var.
+
+    Returns
+    -------
+    dict[str, Any]
+        Full ``EvaluateResponse`` body from the server including ``evaluation_id``
+        and ``evaluator`` address.
+
+    Raises
+    ------
+    EvaluateError
+        If the evaluation fails (e.g. 404 attestation not found, 409 duplicate).
+    """
+    base_url = base_url or os.environ["CAPTRE_BASE_URL"]
+    algod_url = algod_url or os.environ["ALGOD_URL"]
+
+    body: dict[str, Any] = {
+        "output_attestation_id": output_attestation_id,
+        "content_hash": content_hash,
+        "policy_hash": policy_hash,
+        "evaluation_result": evaluation_result,
+    }
+    if task_hash:
+        body["task_hash"] = task_hash
+    if score is not None:
+        body["score"] = score
+    if notes:
+        body["notes"] = notes
+
+    x402_client = _build_x402_client(wallet, algod_url)
+    with httpx.Client(timeout=30) as http:
+        try:
+            return _do_paid_post(http, x402_client, f"{base_url}/evaluate", body)
+        except httpx.HTTPStatusError as exc:
+            raise EvaluateError(
+                f"evaluate failed {exc.response.status_code}: {exc.response.text}"
+            ) from exc
+
+
+def get_evaluation(
+    evaluation_id: str,
+    base_url: str = "",
+) -> dict[str, Any] | None:
+    """
+    Retrieve an evaluation record by UUID via GET /evaluation/:id (free endpoint).
+
+    Parameters
+    ----------
+    evaluation_id : str
+        The UUID of the evaluation to retrieve.
+    base_url : str
+        Captre server base URL. Falls back to ``CAPTRE_BASE_URL`` env var.
+
+    Returns
+    -------
+    dict[str, Any] or None
+        Full ``EvaluationRecord`` body, or ``None`` if not found (404).
+    """
+    base_url = base_url or os.environ["CAPTRE_BASE_URL"]
+    with httpx.Client(timeout=15) as http:
+        resp = http.get(f"{base_url}/evaluation/{evaluation_id}")
         if resp.status_code == 404:
             return None
         resp.raise_for_status()
