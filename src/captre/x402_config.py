@@ -33,6 +33,8 @@ RECEIVER_ADDRESS: str = os.environ["RECEIVER_ADDRESS"]
 # --- Pricing ---
 ATTEST_PRICE: str = os.environ.get("ATTEST_PRICE", "$0.05")
 REVOKE_PRICE: str = os.environ.get("REVOKE_PRICE", "$0.05")
+SUBMIT_TASK_PRICE: str = os.environ.get("SUBMIT_TASK_PRICE", "$0.01")
+EVALUATE_PRICE: str = os.environ.get("EVALUATE_PRICE", "$0.01")
 
 # --- Facilitator (required by competition rules — do not change) ---
 FACILITATOR_URL: str = os.environ.get(
@@ -152,9 +154,94 @@ REVOKE_ROUTE_CONFIG = RouteConfig(
     )),
 )
 
+SUBMIT_TASK_ROUTE_CONFIG = RouteConfig(
+    accepts=PaymentOption(
+        scheme="exact",
+        pay_to=RECEIVER_ADDRESS,
+        price=SUBMIT_TASK_PRICE,
+        network=NETWORK,
+    ),
+    description="Submit a task for on-chain registration (proves submitter identity via wallet)",
+    extensions=_discovery(declare_discovery_extension(
+        input={
+            "content": "Write a summary of the Algorand blockchain",
+            "agent_id": "my-agent-v1",
+            "description": "Optional task description",
+            "tags": ["research"],
+        },
+        input_schema={
+            "properties": {
+                "content": {"type": "string", "description": "Raw task content whose SHA-256 hash is stored on-chain"},
+                "agent_id": {"type": "string", "description": "Optional agent identifier"},
+                "description": {"type": "string"},
+                "tags": {"type": "array", "items": {"type": "string"}},
+            },
+            "required": ["content"],
+        },
+        body_type="json",
+        output=OutputConfig(
+            example={
+                "task": {
+                    "task_id": "b11fe88e-c4fa-4d4a-92d6-043af786e4b4",
+                    "author": "GFYF3KDNCMINZCDJ6KIQDV24WU2PPFMLNST4J5FBW2Z2YQFT54BOEEGJYY",
+                    "task_hash": "sha256:abc123...",
+                    "created_at": "2025-01-01T00:00:00Z",
+                },
+                "message": "Task submitted successfully",
+            }
+        ),
+    )),
+)
+
+EVALUATE_ROUTE_CONFIG = RouteConfig(
+    accepts=PaymentOption(
+        scheme="exact",
+        pay_to=RECEIVER_ADDRESS,
+        price=EVALUATE_PRICE,
+        network=NETWORK,
+    ),
+    description="Record an evaluation of an attested output (proves evaluator identity via wallet)",
+    extensions=_discovery(declare_discovery_extension(
+        input={
+            "output_attestation_id": "a00fe88e-c4fa-4d4a-92d6-043af786e4b4",
+            "content_hash": "sha256:abc123...",
+            "policy_hash": "sha256:" + "a" * 64,
+            "evaluation_result": "pass",
+            "score": 0.95,
+        },
+        input_schema={
+            "properties": {
+                "output_attestation_id": {"type": "string", "description": "UUID of the attestation being evaluated"},
+                "content_hash": {"type": "string", "description": "SHA-256 hash of the attested output"},
+                "task_hash": {"type": "string", "description": "Optional SHA-256 hash of the originating task"},
+                "policy_hash": {"type": "string", "description": "sha256:<64 hex chars> of the policy document"},
+                "evaluation_result": {"type": "string", "enum": ["pass", "fail", "partial", "score_only"]},
+                "score": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                "notes": {"type": "string"},
+            },
+            "required": ["output_attestation_id", "content_hash", "policy_hash", "evaluation_result"],
+        },
+        body_type="json",
+        output=OutputConfig(
+            example={
+                "evaluation": {
+                    "evaluation_id": "c22fe88e-c4fa-4d4a-92d6-043af786e4b4",
+                    "evaluator": "GFYF3KDNCMINZCDJ6KIQDV24WU2PPFMLNST4J5FBW2Z2YQFT54BOEEGJYY",
+                    "policy_hash": "sha256:abc123...",
+                    "evaluation_result": "pass",
+                    "created_at": "2025-01-01T00:00:00Z",
+                },
+                "message": "Evaluation recorded successfully",
+            }
+        ),
+    )),
+)
+
 ROUTES_CONFIG = {
     "POST /attest": ATTEST_ROUTE_CONFIG,
     "POST /revoke": REVOKE_ROUTE_CONFIG,
+    "POST /submit-task": SUBMIT_TASK_ROUTE_CONFIG,
+    "POST /evaluate": EVALUATE_ROUTE_CONFIG,
 }
 
 

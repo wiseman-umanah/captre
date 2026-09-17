@@ -22,19 +22,23 @@ dependencies = [
 # ---------------------------------------------------------------------------
 # Entry-point scripts  (uv run <name>  or  just  <name>  after install)
 # ---------------------------------------------------------------------------
-# uv run captre     — start the API server (hot-reload, port 8000)
-# uv run captre-test — run the full unit test suite
-# uv run captre-lint — ruff lint check
-# uv run captre-fmt  — ruff auto-format
-# uv run captre-deploy — deploy / re-use the Algorand smart contract
+# uv run captre               — start the API server (hot-reload, port 8000)
+# uv run captre-test          — run the full unit test suite
+# uv run captre-lint          — ruff lint check
+# uv run captre-fmt           — ruff auto-format
+# uv run captre-deploy        — deploy / re-use CaptreApp
+# uv run captre-deploy-task   — deploy / re-use TaskApp
+# uv run captre-deploy-ledger — deploy / re-use LedgerApp
 # ---------------------------------------------------------------------------
 [project.scripts]
-captre        = "captre:main"
-captre-dev    = "captre._scripts:dev"
-captre-test   = "captre._scripts:test"
-captre-lint   = "captre._scripts:lint"
-captre-fmt    = "captre._scripts:fmt"
-captre-deploy = "captre._scripts:deploy"
+captre                = "captre:main"
+captre-dev            = "captre._scripts:dev"
+captre-test           = "captre._scripts:test"
+captre-lint           = "captre._scripts:lint"
+captre-fmt            = "captre._scripts:fmt"
+captre-deploy         = "captre._scripts:deploy"
+captre-deploy-task    = "captre._scripts:deploy_task"
+captre-deploy-ledger  = "captre._scripts:deploy_ledger"
 
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]

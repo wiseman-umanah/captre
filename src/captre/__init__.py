@@ -19,7 +19,11 @@ from fastapi.staticfiles import StaticFiles
 from x402.http.middleware.fastapi import payment_middleware
 
 from captre.api.attest import router as attest_router
+from captre.api.evaluate import router as evaluate_router
+from captre.api.evaluation_verify import router as evaluation_verify_router
 from captre.api.revoke import router as revoke_router
+from captre.api.submit_task import router as submit_task_router
+from captre.api.task_verify import router as task_verify_router
 from captre.api.verify import router as verify_router
 from captre.ui import router as ui_router
 from captre.x402_config import ROUTES_CONFIG, build_x402_server
@@ -60,10 +64,14 @@ def create_app() -> FastAPI:
     # Static files (CSS)
     app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
-    # API routers
+    # API routers — all must be registered before ui_router
     app.include_router(attest_router)
     app.include_router(verify_router)
     app.include_router(revoke_router)
+    app.include_router(submit_task_router)
+    app.include_router(task_verify_router)
+    app.include_router(evaluate_router)
+    app.include_router(evaluation_verify_router)
 
     # UI pages (must come after API routers so /verify etc. are not shadowed)
     app.include_router(ui_router)

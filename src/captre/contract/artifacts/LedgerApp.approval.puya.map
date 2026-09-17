@@ -1,0 +1,2662 @@
+{
+  "version": 3,
+  "sources": [
+    "../ledger_app.py"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;AAwCA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;AAAA;;;AAAA;;;;;;AAAA;AAAA;;AAAA;;;;;;;;;;;;;;AAAA;AAyBK;;AAAA;AAJA;;AAAA;;;;;AAQA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;;AA0DU;;AAAA;AAAP;AACO;;AAAA;AAAP;AACO;AAAP;AACgC;AAAzB;AAAA;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAP;AAK2B;;;;;AAAA;;;;;;;;;;;AAAA;;;;AAAA;;;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKpB;AAAA;AAAP;AAIG;AAAX;;;AACiC;;;;;AAAA;;;;;;;;;;;;AAAA;;;;AAAA;;;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKd;AAAA;AAAP;AAEJ;AAAA;;AAAA;AAAA;AAnFH;AAAA;AAqFA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAgB2B;AAArB;AAAA;AAAA;AAAA;AAAA;;AAAX;;;AACmB;AAAA;AAjBd;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAkBU;;AAlBV",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "algopy.arc4.ARC4Contract.approval_program",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 0 2 1 8"
+    },
+    "7": {
+      "op": "bytecblock 0x151f7c75 0x653a"
+    },
+    "17": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "19": {
+      "op": "bz main_bare_routing@11",
+      "stack_out": []
+    },
+    "22": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "24": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "25": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "26": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "28": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "29": {
+      "op": "pushbytess 0x0916785d 0x6a341a0c // method \"add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void\", method \"get_evaluation(byte[])byte[]\"",
+      "defined_out": [
+        "Method(add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void)",
+        "Method(get_evaluation(byte[])byte[])"
+      ],
+      "stack_out": [
+        "Method(add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void)",
+        "Method(get_evaluation(byte[])byte[])"
+      ]
+    },
+    "41": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void)",
+        "Method(get_evaluation(byte[])byte[])",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void)",
+        "Method(get_evaluation(byte[])byte[])",
+        "tmp%6#0"
+      ]
+    },
+    "44": {
+      "op": "match add_evaluation get_evaluation",
+      "stack_out": []
+    },
+    "50": {
+      "block": "main_after_if_else@16",
+      "stack_in": [],
+      "op": "err"
+    },
+    "51": {
+      "block": "main_bare_routing@11",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "53": {
+      "op": "switch main___algopy_default_create@12 main_after_if_else@16 main_after_if_else@16 main_after_if_else@16 main_update@13 main_delete@14",
+      "stack_out": []
+    },
+    "67": {
+      "op": "err"
+    },
+    "68": {
+      "block": "main_delete@14",
+      "stack_in": [],
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%12#0"
+      ],
+      "stack_out": [
+        "tmp%12#0"
+      ]
+    },
+    "70": {
+      "op": "return",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "71": {
+      "block": "main_update@13",
+      "stack_in": [],
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%10#0"
+      ],
+      "stack_out": [
+        "tmp%10#0"
+      ]
+    },
+    "73": {
+      "op": "return",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "74": {
+      "block": "main___algopy_default_create@12",
+      "stack_in": [],
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "76": {
+      "op": "!",
+      "defined_out": [
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%9#0"
+      ]
+    },
+    "77": {
+      "op": "return",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "78": {
+      "subroutine": "ledger_app.LedgerApp.add_evaluation[routing]",
+      "params": {},
+      "block": "add_evaluation",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "81": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "82": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0"
+      ]
+    },
+    "83": {
+      "op": "intc_3 // 8",
+      "defined_out": [
+        "8",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0",
+        "8"
+      ]
+    },
+    "84": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "85": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "86": {
+      "op": "btoi",
+      "defined_out": [
+        "attestation_app_id#0"
+      ],
+      "stack_out": [
+        "attestation_app_id#0"
+      ]
+    },
+    "87": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "attestation_app_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0"
+      ]
+    },
+    "90": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "91": {
+      "op": "len",
+      "defined_out": [
+        "attestation_app_id#0",
+        "len%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0",
+        "len%1#0"
+      ]
+    },
+    "92": {
+      "op": "intc_3 // 8",
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0",
+        "len%1#0",
+        "8"
+      ]
+    },
+    "93": {
+      "op": "==",
+      "defined_out": [
+        "attestation_app_id#0",
+        "eq%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "94": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "attestation_app_id#0",
+        "tmp%2#0"
+      ]
+    },
+    "95": {
+      "op": "btoi",
+      "defined_out": [
+        "attestation_app_id#0",
+        "task_app_id#0"
+      ],
+      "stack_out": [
+        "attestation_app_id#0",
+        "task_app_id#0"
+      ]
+    },
+    "96": {
+      "op": "swap",
+      "defined_out": [
+        "attestation_app_id#0",
+        "task_app_id#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0"
+      ]
+    },
+    "97": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "attestation_app_id#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0"
+      ]
+    },
+    "100": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "101": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)",
+        "0"
+      ]
+    },
+    "102": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "attestation_app_id#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "103": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "attestation_app_id#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "104": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "attestation_app_id#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "add%0#0"
+      ]
+    },
+    "105": {
+      "op": "dig 1",
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "add%0#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "107": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "attestation_app_id#0",
+        "len%2#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "add%0#0",
+        "len%2#0"
+      ]
+    },
+    "108": {
+      "op": "==",
+      "defined_out": [
+        "attestation_app_id#0",
+        "eq%2#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "eq%2#0"
+      ]
+    },
+    "109": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0"
+      ]
+    },
+    "110": {
+      "op": "dup",
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "111": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0"
+      ]
+    },
+    "114": {
+      "op": "txna ApplicationArgs 4"
+    },
+    "117": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "tmp%6#0"
+      ]
+    },
+    "118": {
+      "op": "cover 4",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0"
+      ]
+    },
+    "120": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "121": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)",
+        "0"
+      ]
+    },
+    "122": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%1#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "aggregate%array_length%1#0"
+      ]
+    },
+    "123": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "aggregate%array_length%1#0",
+        "2"
+      ]
+    },
+    "124": {
+      "op": "+",
+      "defined_out": [
+        "add%1#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "add%1#0"
+      ]
+    },
+    "125": {
+      "op": "dig 1",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "add%1#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "127": {
+      "op": "len",
+      "defined_out": [
+        "add%1#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "len%3#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "add%1#0",
+        "len%3#0"
+      ]
+    },
+    "128": {
+      "op": "==",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "eq%3#0",
+        "task_app_id#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0",
+        "eq%3#0"
+      ]
+    },
+    "129": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "tmp%6#0"
+      ]
+    },
+    "130": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0"
+      ]
+    },
+    "133": {
+      "op": "txna ApplicationArgs 5",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0"
+      ]
+    },
+    "136": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "137": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)",
+        "0"
+      ]
+    },
+    "138": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%2#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "aggregate%array_length%2#0"
+      ]
+    },
+    "139": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "aggregate%array_length%2#0",
+        "2"
+      ]
+    },
+    "140": {
+      "op": "+",
+      "defined_out": [
+        "add%2#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "add%2#0"
+      ]
+    },
+    "141": {
+      "op": "dig 1",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "add%2#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "143": {
+      "op": "len",
+      "defined_out": [
+        "add%2#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "len%4#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "add%2#0",
+        "len%4#0"
+      ]
+    },
+    "144": {
+      "op": "==",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "eq%4#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0",
+        "eq%4#0"
+      ]
+    },
+    "145": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "tmp%8#0"
+      ]
+    },
+    "146": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0"
+      ]
+    },
+    "149": {
+      "op": "txna ApplicationArgs 6",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0"
+      ]
+    },
+    "152": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%10#0 (copy)",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "tmp%10#0 (copy)"
+      ]
+    },
+    "153": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "tmp%10#0 (copy)",
+        "0"
+      ]
+    },
+    "154": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%3#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "aggregate%array_length%3#0"
+      ]
+    },
+    "155": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "aggregate%array_length%3#0",
+        "2"
+      ]
+    },
+    "156": {
+      "op": "+",
+      "defined_out": [
+        "add%3#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "add%3#0"
+      ]
+    },
+    "157": {
+      "op": "dig 1",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "add%3#0",
+        "tmp%10#0 (copy)"
+      ]
+    },
+    "159": {
+      "op": "len",
+      "defined_out": [
+        "add%3#0",
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "len%5#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "add%3#0",
+        "len%5#0"
+      ]
+    },
+    "160": {
+      "op": "==",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "eq%5#0",
+        "evaluation_id_key#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%10#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0",
+        "eq%5#0"
+      ]
+    },
+    "161": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%10#0"
+      ]
+    },
+    "162": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0"
+      ]
+    },
+    "165": {
+      "op": "dup",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "metadata_json#0"
+      ]
+    },
+    "166": {
+      "op": "cover 6",
+      "defined_out": [
+        "attestation_app_id#0",
+        "content_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "content_hash_key#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0"
+      ]
+    },
+    "168": {
+      "op": "uncover 3",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "content_hash_key#0"
+      ]
+    },
+    "170": {
+      "op": "len",
+      "defined_out": [
+        "attestation_app_id#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%0#1",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "tmp%0#1"
+      ]
+    },
+    "171": {
+      "error": "ERR_EMPTY_HASH",
+      "op": "assert // ERR_EMPTY_HASH",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0"
+      ]
+    },
+    "172": {
+      "op": "dig 1",
+      "defined_out": [
+        "attestation_app_id#0",
+        "evaluation_id_key#0",
+        "evaluation_id_key#0 (copy)",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "evaluation_id_key#0 (copy)"
+      ]
+    },
+    "174": {
+      "op": "len",
+      "defined_out": [
+        "attestation_app_id#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%2#1",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "tmp%2#1"
+      ]
+    },
+    "175": {
+      "error": "ERR_EMPTY_ID_KEY",
+      "op": "assert // ERR_EMPTY_ID_KEY",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "metadata_json#0"
+      ]
+    },
+    "176": {
+      "op": "len",
+      "defined_out": [
+        "attestation_app_id#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%4#1",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "tmp%4#1"
+      ]
+    },
+    "177": {
+      "error": "ERR_EMPTY_METADATA",
+      "op": "assert // ERR_EMPTY_METADATA",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0"
+      ]
+    },
+    "178": {
+      "op": "bytec_1 // 0x653a",
+      "defined_out": [
+        "0x653a",
+        "attestation_app_id#0",
+        "evaluation_id_key#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "evaluation_id_key#0",
+        "0x653a"
+      ]
+    },
+    "179": {
+      "op": "swap",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "0x653a",
+        "evaluation_id_key#0"
+      ]
+    },
+    "180": {
+      "op": "concat",
+      "defined_out": [
+        "attestation_app_id#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "181": {
+      "op": "dup",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "182": {
+      "op": "cover 4",
+      "defined_out": [
+        "attestation_app_id#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "184": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "attestation_app_id#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "185": {
+      "op": "bury 1",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "187": {
+      "op": "!",
+      "defined_out": [
+        "attestation_app_id#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0",
+        "tmp%6#1"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "tmp%6#1"
+      ]
+    },
+    "188": {
+      "error": "ERR_ALREADY_EXISTS",
+      "op": "assert // ERR_ALREADY_EXISTS",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "attestation_app_id#0",
+        "tmp%4#0",
+        "task_hash_key#0"
+      ]
+    },
+    "189": {
+      "op": "itxn_begin"
+    },
+    "190": {
+      "op": "uncover 2",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "attestation_app_id#0"
+      ]
+    },
+    "192": {
+      "op": "itxn_field ApplicationID",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%4#0",
+        "task_hash_key#0"
+      ]
+    },
+    "194": {
+      "op": "pushbytes 0x5eef1ef5 // method \"exists(byte[])bool\"",
+      "defined_out": [
+        "Method(exists(byte[])bool)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%4#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%4#0",
+        "task_hash_key#0",
+        "Method(exists(byte[])bool)"
+      ]
+    },
+    "200": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%4#0",
+        "task_hash_key#0"
+      ]
+    },
+    "202": {
+      "op": "swap",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "tmp%4#0"
+      ]
+    },
+    "203": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0"
+      ]
+    },
+    "205": {
+      "op": "pushint 6 // appl",
+      "defined_out": [
+        "appl",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "appl"
+      ]
+    },
+    "207": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0"
+      ]
+    },
+    "209": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "0"
+      ]
+    },
+    "210": {
+      "op": "itxn_field Fee",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0"
+      ]
+    },
+    "212": {
+      "op": "itxn_submit"
+    },
+    "213": {
+      "op": "itxn LastLog",
+      "defined_out": [
+        "awst_tmp%0#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0"
+      ]
+    },
+    "215": {
+      "op": "dup",
+      "defined_out": [
+        "awst_tmp%0#0",
+        "awst_tmp%0#0 (copy)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0",
+        "awst_tmp%0#0 (copy)"
+      ]
+    },
+    "216": {
+      "op": "extract 0 4",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0",
+        "tmp%8#0"
+      ]
+    },
+    "219": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "awst_tmp%0#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0",
+        "tmp%8#0",
+        "0x151f7c75"
+      ]
+    },
+    "220": {
+      "op": "==",
+      "defined_out": [
+        "awst_tmp%0#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0",
+        "tmp%9#1"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0",
+        "tmp%9#1"
+      ]
+    },
+    "221": {
+      "error": "application log value is not the result of an ABI return",
+      "op": "assert // application log value is not the result of an ABI return",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "awst_tmp%0#0"
+      ]
+    },
+    "222": {
+      "op": "extract 4 0",
+      "defined_out": [
+        "attestation_exists#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0"
+      ]
+    },
+    "225": {
+      "op": "dup",
+      "defined_out": [
+        "attestation_exists#0",
+        "attestation_exists#0 (copy)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0",
+        "attestation_exists#0 (copy)"
+      ]
+    },
+    "226": {
+      "op": "len",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0",
+        "len%0#0"
+      ]
+    },
+    "227": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1",
+        "attestation_exists#0",
+        "len%0#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0",
+        "len%0#0",
+        "1"
+      ]
+    },
+    "228": {
+      "op": "==",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0",
+        "eq%0#0"
+      ]
+    },
+    "229": {
+      "error": "invalid number of bytes for arc4.bool",
+      "op": "assert // invalid number of bytes for arc4.bool",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0"
+      ]
+    },
+    "230": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "attestation_exists#0",
+        "0"
+      ]
+    },
+    "231": {
+      "op": "getbit",
+      "defined_out": [
+        "aggregate%get_bit%0#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_hash_key#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0",
+        "aggregate%get_bit%0#0"
+      ]
+    },
+    "232": {
+      "error": "ERR_ATTESTATION_NOT_FOUND",
+      "op": "assert // ERR_ATTESTATION_NOT_FOUND",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_hash_key#0"
+      ]
+    },
+    "233": {
+      "op": "len",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%12#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%12#0"
+      ]
+    },
+    "234": {
+      "op": "bz add_evaluation_after_if_else@5",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "237": {
+      "op": "itxn_begin"
+    },
+    "238": {
+      "op": "dig 3",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_app_id#0"
+      ]
+    },
+    "240": {
+      "op": "itxn_field ApplicationID",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "242": {
+      "op": "pushbytes 0xb01334d1 // method \"task_exists(byte[])bool\"",
+      "defined_out": [
+        "Method(task_exists(byte[])bool)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "Method(task_exists(byte[])bool)"
+      ]
+    },
+    "248": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "250": {
+      "op": "dig 2",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "tmp%6#0"
+      ]
+    },
+    "252": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "254": {
+      "op": "pushint 6 // appl",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "appl"
+      ]
+    },
+    "256": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "258": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "0"
+      ]
+    },
+    "259": {
+      "op": "itxn_field Fee",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "261": {
+      "op": "itxn_submit"
+    },
+    "262": {
+      "op": "itxn LastLog",
+      "defined_out": [
+        "awst_tmp%1#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0"
+      ]
+    },
+    "264": {
+      "op": "dup",
+      "defined_out": [
+        "awst_tmp%1#0",
+        "awst_tmp%1#0 (copy)",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0",
+        "awst_tmp%1#0 (copy)"
+      ]
+    },
+    "265": {
+      "op": "extract 0 4",
+      "defined_out": [
+        "awst_tmp%1#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%15#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0",
+        "tmp%15#0"
+      ]
+    },
+    "268": {
+      "op": "bytec_0 // 0x151f7c75",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0",
+        "tmp%15#0",
+        "0x151f7c75"
+      ]
+    },
+    "269": {
+      "op": "==",
+      "defined_out": [
+        "awst_tmp%1#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%16#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0",
+        "tmp%16#0"
+      ]
+    },
+    "270": {
+      "error": "application log value is not the result of an ABI return",
+      "op": "assert // application log value is not the result of an ABI return",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "awst_tmp%1#0"
+      ]
+    },
+    "271": {
+      "op": "extract 4 0",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_exists#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0"
+      ]
+    },
+    "274": {
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "task_exists#0",
+        "task_exists#0 (copy)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0",
+        "task_exists#0 (copy)"
+      ]
+    },
+    "275": {
+      "op": "len",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0",
+        "len%1#0"
+      ]
+    },
+    "276": {
+      "op": "intc_2 // 1",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0",
+        "len%1#0",
+        "1"
+      ]
+    },
+    "277": {
+      "op": "==",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0",
+        "eq%1#0"
+      ]
+    },
+    "278": {
+      "error": "invalid number of bytes for arc4.bool",
+      "op": "assert // invalid number of bytes for arc4.bool",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0"
+      ]
+    },
+    "279": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "task_exists#0",
+        "0"
+      ]
+    },
+    "280": {
+      "op": "getbit",
+      "defined_out": [
+        "aggregate%get_bit%1#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0",
+        "task_app_id#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "aggregate%get_bit%1#0"
+      ]
+    },
+    "281": {
+      "error": "ERR_TASK_NOT_FOUND",
+      "op": "assert // ERR_TASK_NOT_FOUND",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "282": {
+      "block": "add_evaluation_after_if_else@5",
+      "stack_in": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "283": {
+      "op": "box_del",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "284": {
+      "op": "pop",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "metadata_json#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "285": {
+      "op": "swap",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "metadata_json#0"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "map_prefixed_key%0#0",
+        "metadata_json#0"
+      ]
+    },
+    "286": {
+      "op": "box_put",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0"
+      ]
+    },
+    "287": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0",
+        "1"
+      ]
+    },
+    "288": {
+      "op": "return",
+      "stack_out": [
+        "task_app_id#0",
+        "tmp%6#0"
+      ]
+    },
+    "289": {
+      "subroutine": "ledger_app.LedgerApp.get_evaluation[routing]",
+      "params": {},
+      "block": "get_evaluation",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "292": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "293": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "294": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "295": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "296": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "297": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "299": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "300": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "301": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "302": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "evaluation_id_key#0"
+      ],
+      "stack_out": [
+        "evaluation_id_key#0"
+      ]
+    },
+    "305": {
+      "op": "bytec_1 // 0x653a",
+      "defined_out": [
+        "0x653a",
+        "evaluation_id_key#0"
+      ],
+      "stack_out": [
+        "evaluation_id_key#0",
+        "0x653a"
+      ]
+    },
+    "306": {
+      "op": "swap",
+      "stack_out": [
+        "0x653a",
+        "evaluation_id_key#0"
+      ]
+    },
+    "307": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "308": {
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "309": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "310": {
+      "op": "bury 1",
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "312": {
+      "op": "bz get_evaluation_after_if_else@3",
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "315": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ],
+      "stack_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "316": {
+      "error": "check self.evaluations entry exists",
+      "op": "assert // check self.evaluations entry exists",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "317": {
+      "block": "get_evaluation_after_inlined_ledger_app.LedgerApp.get_evaluation@4",
+      "stack_in": [
+        "tmp%2#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "318": {
+      "op": "len",
+      "defined_out": [
+        "aggregate%length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%length%0#0"
+      ]
+    },
+    "319": {
+      "op": "itob",
+      "defined_out": [
+        "aggregate%as_bytes%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%as_bytes%0#0"
+      ]
+    },
+    "320": {
+      "op": "extract 6 2",
+      "defined_out": [
+        "aggregate%length_uint16%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%length_uint16%0#0"
+      ]
+    },
+    "323": {
+      "op": "swap",
+      "stack_out": [
+        "aggregate%length_uint16%0#0",
+        "tmp%2#0"
+      ]
+    },
+    "324": {
+      "op": "concat",
+      "defined_out": [
+        "aggregate%encoded_value%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_value%0#0"
+      ]
+    },
+    "325": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "aggregate%encoded_value%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_value%0#0",
+        "0x151f7c75"
+      ]
+    },
+    "326": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "aggregate%encoded_value%0#0"
+      ]
+    },
+    "327": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "328": {
+      "op": "log",
+      "stack_out": []
+    },
+    "329": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "330": {
+      "op": "return",
+      "stack_out": []
+    },
+    "331": {
+      "block": "get_evaluation_after_if_else@3",
+      "stack_in": [
+        "map_prefixed_key%0#0"
+      ],
+      "op": "pop",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "332": {
+      "op": "pushbytes 0x",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "334": {
+      "op": "b get_evaluation_after_inlined_ledger_app.LedgerApp.get_evaluation@4"
+    }
+  }
+}

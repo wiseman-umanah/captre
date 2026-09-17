@@ -17,9 +17,10 @@
       <a href="/docs" style="color:var(--amber-600);">Interactive OpenAPI ↗</a>
     </p>
     <div class="alert alert-warn" style="max-width:680px;">
-      <strong>Paid endpoints</strong> (<code>POST /attest</code>, <code>POST /revoke</code>) require an
+      <strong>Paid endpoints</strong> (<code>POST /attest</code>, <code>POST /revoke</code>,
+      <code>POST /submit-task</code>, <code>POST /evaluate</code>) require an
       x402-enabled HTTP client. The server returns <code>402 Payment Required</code>
-      and the client must settle {{ attest_price }} USDC on Algorand before the request is fulfilled.
+      and the client must settle USDC on Algorand before the request is fulfilled.
       Free endpoints work with plain curl.
     </div>
   </div>
@@ -63,6 +64,30 @@
             <td style="font-family:var(--mono); font-size:13px;">/revoke</td>
             <td><span class="badge badge-paid">{{ revoke_price }} USDC</span></td>
             <td style="color:var(--muted);">Revoke — original author only</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-post">POST</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/submit-task</td>
+            <td><span class="badge badge-paid">{{ submit_task_price }} USDC</span></td>
+            <td style="color:var(--muted);">Anchor a task hash on-chain</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-get">GET</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/task/{id}</td>
+            <td><span class="badge badge-free">Free</span></td>
+            <td style="color:var(--muted);">Retrieve task by UUID or hash</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-post">POST</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/evaluate</td>
+            <td><span class="badge badge-paid">{{ evaluate_price }} USDC</span></td>
+            <td style="color:var(--muted);">Record evaluation of an attestation</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-get">GET</span></td>
+            <td style="font-family:var(--mono); font-size:13px;">/evaluation/{id}</td>
+            <td><span class="badge badge-free">Free</span></td>
+            <td style="color:var(--muted);">Retrieve evaluation by UUID</td>
           </tr>
         </tbody>
       </table>
@@ -242,6 +267,172 @@
       <div class="alert alert-warn"><code>402</code> Payment required</div>
       <div class="alert alert-error"><code>403</code> Payer is not the original author</div>
       <div class="alert alert-warn"><code>404</code> Attestation not found</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- POST /submit-task -->
+<section class="section" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-post">POST</span>
+      <code style="font-size:16px; font-weight:700;">/submit-task</code>
+      <span class="badge badge-paid">{{ submit_task_price }} USDC</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Anchor a task hash on-chain</div>
+    <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-8);">
+      Register a task in <code>TaskApp</code>. The SHA-256 of the raw <code>content</code>
+      becomes the on-chain key — only the hash is written to Algorand box storage.
+      A task hash can only be claimed once.
+    </p>
+
+    <div class="two-col-code">
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Request body (JSON)</div>
+          <pre>{
+  "content":     "Summarise paper X",  // required — hashed on server
+  "agent_id":    "my-agent",           // optional
+  "description": "…",                  // optional
+  "tags":        ["v1"],               // optional
+  "extra":       {}                    // optional
+}</pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Response 200</div>
+          <pre>{
+  "task": {
+    "task_id":    "b12fe88e-…",
+    "author":     "GFYF3KDN…",
+    "task_hash":  "sha256:abc…",
+    "tx_id":      "QK5ATJTD…"
+  },
+  "message": "Task submitted successfully"
+}</pre>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:var(--sp-3); margin-top:var(--sp-6);">
+      <div class="alert alert-warn"><code>402</code> Payment required</div>
+      <div class="alert alert-warn"><code>409</code> Task content already claimed</div>
+      <div class="alert alert-error"><code>500</code> Box write failed after payment settled (retry safe)</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GET /task/:id -->
+<section class="section section-alt" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-get">GET</span>
+      <code style="font-size:16px; font-weight:700;">/task/{id}</code>
+      <span class="badge badge-free">Free</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Retrieve task by UUID or task hash</div>
+    <p style="color:var(--muted); font-size:14px; max-width:540px; margin-bottom:var(--sp-6);">
+      Pass either the server-assigned <code>task_id</code> UUID or the
+      raw <code>sha256:…</code> task hash.
+    </p>
+
+    <div class="two-col-code">
+      <div class="pre-wrap">
+        <div class="pre-label">By UUID</div>
+        <pre>curl "{{ request.base_url }}task/b12fe88e-c4fa-4d4a-92d6-043af786e4b4"</pre>
+      </div>
+      <div class="pre-wrap">
+        <div class="pre-label">By task hash</div>
+        <pre>curl "{{ request.base_url }}task/sha256%3Aabc123..."</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- POST /evaluate -->
+<section class="section" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-post">POST</span>
+      <code style="font-size:16px; font-weight:700;">/evaluate</code>
+      <span class="badge badge-paid">{{ evaluate_price }} USDC</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Record evaluation of an attestation</div>
+    <p style="color:var(--muted); font-size:14px; max-width:560px; margin-bottom:var(--sp-8);">
+      Write an evaluation record to <code>LedgerApp</code>. The evaluator identity is
+      the x402 payer address — cryptographically proven, not self-reported.
+      <code>policy_hash</code> creates an immutable on-chain commitment to the policy
+      document used (not just a label).
+    </p>
+
+    <div class="two-col-code">
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Request body (JSON)</div>
+          <pre>{
+  "output_attestation_id": "a00fe88e-…",  // required
+  "content_hash":  "sha256:abc…",         // required
+  "policy_hash":   "sha256:def…",         // required — 64 hex chars
+  "evaluation_result": "pass",            // pass|fail|partial|score_only
+  "task_hash":     "sha256:ghi…",         // optional
+  "score":         0.92,                  // optional (required for score_only)
+  "notes":         "Meets all criteria"   // optional
+}</pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="pre-wrap">
+          <div class="pre-label">Response 200</div>
+          <pre>{
+  "evaluation": {
+    "evaluation_id": "c99ab88e-…",
+    "evaluator":     "GFYF3KDN…",
+    "evaluation_result": "pass",
+    "policy_hash":   "sha256:def…",
+    "tx_id":         "QK5ATJTD…"
+  },
+  "message": "Evaluation recorded successfully"
+}</pre>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:var(--sp-3); margin-top:var(--sp-6);">
+      <div class="alert alert-warn"><code>402</code> Payment required</div>
+      <div class="alert alert-warn"><code>404</code> output_attestation_id not found</div>
+      <div class="alert alert-error"><code>500</code> Box write failed after payment settled</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GET /evaluation/:id -->
+<section class="section section-alt" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+      <span class="badge badge-get">GET</span>
+      <code style="font-size:16px; font-weight:700;">/evaluation/{id}</code>
+      <span class="badge badge-free">Free</span>
+    </div>
+    <div class="label" style="margin-bottom:var(--sp-4);">Retrieve evaluation by UUID</div>
+
+    <div class="pre-wrap" style="max-width:680px;">
+      <div class="pre-label">curl example</div>
+      <pre>curl "{{ request.base_url }}evaluation/c99ab88e-c4fa-4d4a-92d6-043af786e4b4"</pre>
     </div>
 
   </div>

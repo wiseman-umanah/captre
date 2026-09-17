@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Captre — First-Claim On-Chain Attestation{% endblock %}
-{% block meta_desc %}Create permanent, verifiable first-claim proofs for any content hash. Anchored on Algorand blockchain via x402 micropayments. Agent-native API.{% endblock %}
+{% block title %}Captre — On-Chain Provenance Ledger{% endblock %}
+{% block meta_desc %}Submit tasks, attest outputs, and record evaluations on Algorand. Full provenance chain — task → output → evaluation — anchored via x402 micropayments. Agent-native API.{% endblock %}
 
 {% block content %}
 
@@ -18,15 +18,15 @@
       </div>
 
       <h1>
-        Prove you were
-        <em>first</em>.
-        On-chain. Forever.
+        From task to proof.
+        <em>On-chain.</em>
+        Forever.
       </h1>
 
       <p class="hero-desc">
-        Captre lets agents and humans create a permanent, independently
-        verifiable first-claim record for any content hash — anchored on
-        Algorand, settled via x402 micropayment in under 8 seconds.
+        Captre is a provenance ledger for AI outputs. Submit a task, attest the output,
+        record an evaluation — every step anchored on Algorand via x402, every identity
+        proven by the wallet that paid.
       </p>
 
       <div class="hero-actions">
@@ -37,16 +37,16 @@
 
       <div class="hero-stats">
         <div class="hero-stat">
+          <div class="hero-stat-val amber">{{ submit_task_price }}</div>
+          <div class="hero-stat-label">Submit task</div>
+        </div>
+        <div class="hero-stat">
           <div class="hero-stat-val amber">{{ attest_price }}</div>
-          <div class="hero-stat-label">Cost per attestation</div>
+          <div class="hero-stat-label">Attest output</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-val">&lt;8s</div>
-          <div class="hero-stat-label">Target latency</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-val">∞</div>
-          <div class="hero-stat-label">Permanent record</div>
+          <div class="hero-stat-val amber">{{ evaluate_price }}</div>
+          <div class="hero-stat-label">Record evaluation</div>
         </div>
         <div class="hero-stat">
           <div class="hero-stat-val amber">x402</div>
@@ -67,26 +67,26 @@
 
       <div class="feature">
         <div class="feature-num">01</div>
-        <div class="feature-title">Immutable first claim</div>
-        <div class="feature-desc">Once a content hash is claimed it can never be re-claimed — even after revocation. The record is permanent.</div>
+        <div class="feature-title">Task → Output → Evaluation</div>
+        <div class="feature-desc">Three linked on-chain records form the full provenance chain. Each reference is verified by the contract before writing.</div>
       </div>
 
       <div class="feature">
         <div class="feature-num">02</div>
-        <div class="feature-title">Agent-native API</div>
-        <div class="feature-desc">Pay via x402, receive a receipt. No browser wallets, no manual steps — designed for programmatic callers.</div>
+        <div class="feature-title">Identity proven by payment</div>
+        <div class="feature-desc">Every x402 payment carries the payer's Algorand address. Submitter, attester, and evaluator identity are all wallet-proven — never self-reported.</div>
       </div>
 
       <div class="feature">
         <div class="feature-num">03</div>
-        <div class="feature-title">Independent verification</div>
-        <div class="feature-desc">Anyone can verify without the original payment context — free <code>GET /verify</code> reads directly from chain.</div>
+        <div class="feature-title">Policy hash, not labels</div>
+        <div class="feature-desc">Evaluations store <code>sha256:&lt;policy_doc&gt;</code> — an immutable commitment to the exact ruleset used. Not a version label that can be reused.</div>
       </div>
 
       <div class="feature">
         <div class="feature-num">04</div>
-        <div class="feature-title">Fully on-chain</div>
-        <div class="feature-desc">Data lives in Algorand Box Storage. No off-chain database, no trust required. Read it from any Algorand node.</div>
+        <div class="feature-title">Fully on-chain, no database</div>
+        <div class="feature-desc">All records live in Algorand Box Storage across three contracts. Read any record from any Algorand node — no Captre trust required.</div>
       </div>
 
     </div>
@@ -102,10 +102,10 @@
 
       <div>
         <div class="label">How it works</div>
-        <h2 class="section-h">Three steps.<br/>Done.</h2>
+        <h2 class="section-h">Three contracts.<br/>One chain of proof.</h2>
         <p class="section-sub">
-          Payment settles first via the x402 facilitator, then Captre writes
-          two boxes atomically — the attestation record and the UUID index.
+          Each step is a separate x402 payment. The payer's wallet address
+          becomes the on-chain identity for that step — no signup, no API keys.
         </p>
       </div>
 
@@ -113,22 +113,22 @@
         <div class="step">
           <div class="step-index">01</div>
           <div>
-            <div class="step-title">POST /attest with your content hash</div>
-            <div class="step-desc">Send <code>content_hash</code> plus optional metadata. The x402 middleware intercepts and issues a 402 payment challenge.</div>
+            <div class="step-title">POST /submit-task — {{ submit_task_price }}</div>
+            <div class="step-desc">Register the task on-chain. The SHA-256 of the content is stored in <code>TaskApp</code>. Your wallet address becomes the task author.</div>
           </div>
         </div>
         <div class="step">
           <div class="step-index">02</div>
           <div>
-            <div class="step-title">Pay {{ attest_price }} USDC via x402</div>
-            <div class="step-desc">Your x402 client signs and submits the Algorand USDC payment. The GoPlausible facilitator verifies settlement.</div>
+            <div class="step-title">POST /attest — {{ attest_price }}</div>
+            <div class="step-desc">Anchor the output hash in <code>CaptreApp</code>, linking it to the task. First-claim — once attested, the hash is permanently yours.</div>
           </div>
         </div>
         <div class="step">
           <div class="step-index">03</div>
           <div>
-            <div class="step-title">Receive your on-chain receipt</div>
-            <div class="step-desc">Captre writes two boxes to the contract and returns <code>attestation_id</code>, <code>author</code>, and <code>tx_id</code>.</div>
+            <div class="step-title">POST /evaluate — {{ evaluate_price }}</div>
+            <div class="step-desc">Record the evaluation in <code>LedgerApp</code>. Supply <code>policy_hash</code> (SHA-256 of your policy doc) and <code>evaluation_result</code>. The contract cross-calls both upstream contracts to verify the chain before writing.</div>
           </div>
         </div>
       </div>
@@ -368,9 +368,10 @@
   <div class="container-tight">
     <div class="alert alert-warn">
       <strong>Honest positioning —</strong>
-      Captre proves <em>first on-chain claim</em> to a content hash by a specific Algorand account.
-      It does <strong>not</strong> prove original creation or authorship of the underlying content.
-      Once a hash is claimed the record is permanent — revocation does not reopen it to new claimants.
+      Captre proves the <em>chain of custody</em>: who submitted the task, who attested the output, and
+      who evaluated it — all proven by x402 wallet signatures. It does <strong>not</strong> prove original
+      creation or authorship of the underlying content. Once a hash is claimed the record is permanent —
+      revocation does not reopen it to new claimants.
     </div>
   </div>
 </section>

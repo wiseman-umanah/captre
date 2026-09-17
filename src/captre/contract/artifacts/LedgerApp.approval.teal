@@ -1,0 +1,290 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1 8
+    bytecblock 0x151f7c75 0x653a
+    // /tmp/captre_compile/ledger_app.py:41
+    // class LedgerApp(ARC4Contract):
+    txn NumAppArgs
+    bz main_bare_routing@11
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x0916785d 0x6a341a0c // method "add_evaluation(uint64,uint64,byte[],byte[],byte[],byte[])void", method "get_evaluation(byte[])byte[]"
+    txna ApplicationArgs 0
+    match add_evaluation get_evaluation
+
+main_after_if_else@16:
+    // /tmp/captre_compile/ledger_app.py:41
+    // class LedgerApp(ARC4Contract):
+    err
+
+main_bare_routing@11:
+    // /tmp/captre_compile/ledger_app.py:41
+    // class LedgerApp(ARC4Contract):
+    txn OnCompletion
+    switch main___algopy_default_create@12 main_after_if_else@16 main_after_if_else@16 main_after_if_else@16 main_update@13 main_delete@14
+    err
+
+main_delete@14:
+    // /tmp/captre_compile/ledger_app.py:66
+    // @arc4.baremethod(allow_actions=["DeleteApplication"])
+    txn ApplicationID
+    return
+
+main_update@13:
+    // /tmp/captre_compile/ledger_app.py:62
+    // @arc4.baremethod(allow_actions=["UpdateApplication"])
+    txn ApplicationID
+    return
+
+main___algopy_default_create@12:
+    txn ApplicationID
+    !
+    return
+
+
+// ledger_app.LedgerApp.add_evaluation[routing]() -> void:
+add_evaluation:
+    // /tmp/captre_compile/ledger_app.py:70
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    txna ApplicationArgs 3
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    dup
+    extract 2 0
+    txna ApplicationArgs 4
+    dup
+    cover 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 5
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 6
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    dup
+    cover 6
+    // /tmp/captre_compile/ledger_app.py:128
+    // assert content_hash_key.length > UInt64(0), "ERR_EMPTY_HASH"
+    uncover 3
+    len
+    assert // ERR_EMPTY_HASH
+    // /tmp/captre_compile/ledger_app.py:129
+    // assert evaluation_id_key.length > UInt64(0), "ERR_EMPTY_ID_KEY"
+    dig 1
+    len
+    assert // ERR_EMPTY_ID_KEY
+    // /tmp/captre_compile/ledger_app.py:130
+    // assert metadata_json.length > UInt64(0), "ERR_EMPTY_METADATA"
+    len
+    assert // ERR_EMPTY_METADATA
+    // /tmp/captre_compile/ledger_app.py:131
+    // assert evaluation_id_key not in self.evaluations, "ERR_ALREADY_EXISTS"
+    bytec_1 // 0x653a
+    swap
+    concat
+    dup
+    cover 4
+    box_len
+    bury 1
+    !
+    assert // ERR_ALREADY_EXISTS
+    // /tmp/captre_compile/ledger_app.py:133-140
+    // # Verify the referenced attestation exists in CaptreApp.
+    // # arc4.abi_call[ABIBool] is required when using a string selector so
+    // # puyapy can infer the return type; .native converts arc4.Bool → bool.
+    // attestation_exists, _txn = arc4.abi_call[ABIBool](
+    //     "exists(byte[])bool",
+    //     content_hash_key,
+    //     app_id=Application(attestation_app_id),
+    // )
+    itxn_begin
+    uncover 2
+    itxn_field ApplicationID
+    pushbytes 0x5eef1ef5 // method "exists(byte[])bool"
+    itxn_field ApplicationArgs
+    swap
+    itxn_field ApplicationArgs
+    pushint 6 // appl
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itxn LastLog
+    dup
+    extract 0 4
+    bytec_0 // 0x151f7c75
+    ==
+    assert // application log value is not the result of an ABI return
+    extract 4 0
+    dup
+    len
+    intc_2 // 1
+    ==
+    assert // invalid number of bytes for arc4.bool
+    // /tmp/captre_compile/ledger_app.py:141
+    // assert attestation_exists.native, "ERR_ATTESTATION_NOT_FOUND"
+    intc_0 // 0
+    getbit
+    assert // ERR_ATTESTATION_NOT_FOUND
+    // /tmp/captre_compile/ledger_app.py:143-145
+    // # When task_hash_key is supplied, verify the referenced task exists in
+    // # TaskApp. Passing b"" skips this check for free-standing evaluations.
+    // if task_hash_key.length > UInt64(0):
+    len
+    bz add_evaluation_after_if_else@5
+    // /tmp/captre_compile/ledger_app.py:146-150
+    // task_exists, _txn2 = arc4.abi_call[ABIBool](
+    //     "task_exists(byte[])bool",
+    //     task_hash_key,
+    //     app_id=Application(task_app_id),
+    // )
+    itxn_begin
+    dig 3
+    itxn_field ApplicationID
+    pushbytes 0xb01334d1 // method "task_exists(byte[])bool"
+    itxn_field ApplicationArgs
+    dig 2
+    itxn_field ApplicationArgs
+    pushint 6 // appl
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itxn LastLog
+    dup
+    extract 0 4
+    bytec_0 // 0x151f7c75
+    ==
+    assert // application log value is not the result of an ABI return
+    extract 4 0
+    dup
+    len
+    intc_2 // 1
+    ==
+    assert // invalid number of bytes for arc4.bool
+    // /tmp/captre_compile/ledger_app.py:151
+    // assert task_exists.native, "ERR_TASK_NOT_FOUND"
+    intc_0 // 0
+    getbit
+    assert // ERR_TASK_NOT_FOUND
+
+add_evaluation_after_if_else@5:
+    // /tmp/captre_compile/ledger_app.py:153
+    // self.evaluations[evaluation_id_key] = metadata_json
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // /tmp/captre_compile/ledger_app.py:70
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// ledger_app.LedgerApp.get_evaluation[routing]() -> void:
+get_evaluation:
+    // /tmp/captre_compile/ledger_app.py:155
+    // @arc4.abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // /tmp/captre_compile/ledger_app.py:171
+    // if evaluation_id_key in self.evaluations:
+    bytec_1 // 0x653a
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    bz get_evaluation_after_if_else@3
+    // /tmp/captre_compile/ledger_app.py:172
+    // return self.evaluations[evaluation_id_key]
+    box_get
+    assert // check self.evaluations entry exists
+
+get_evaluation_after_inlined_ledger_app.LedgerApp.get_evaluation@4:
+    // /tmp/captre_compile/ledger_app.py:155
+    // @arc4.abimethod(readonly=True)
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_0 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+get_evaluation_after_if_else@3:
+    pop
+    // /tmp/captre_compile/ledger_app.py:173
+    // return Bytes(b"")
+    pushbytes 0x
+    // /tmp/captre_compile/ledger_app.py:155
+    // @arc4.abimethod(readonly=True)
+    b get_evaluation_after_inlined_ledger_app.LedgerApp.get_evaluation@4

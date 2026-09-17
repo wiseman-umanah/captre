@@ -108,6 +108,55 @@ def deploy() -> None:
     sys.exit(result.returncode)
 
 
+def deploy_task() -> None:
+    """
+    Deploy (or reuse) the TaskApp smart contract on Algorand.
+
+    Delegates to ``python -m captre.contract.deploy_task``. Reads ``ALGOD_URL``,
+    ``DEPLOYER_MNEMONIC``, and optionally ``TASK_APP_ID`` from the ``.env``
+    file. If ``TASK_APP_ID`` is already set, the existing deployment is reused.
+
+    Parameters
+    ----------
+    (none)
+
+    Returns
+    -------
+    None
+        Exits the process with the deploy script's return code.
+    """
+    result = subprocess.run(
+        [sys.executable, "-m", "captre.contract.deploy_task"],
+        check=False,
+    )
+    sys.exit(result.returncode)
+
+
+def deploy_ledger() -> None:
+    """
+    Deploy (or reuse) the LedgerApp smart contract on Algorand.
+
+    Delegates to ``python -m captre.contract.deploy_ledger``. Reads
+    ``ALGOD_URL``, ``DEPLOYER_MNEMONIC``, and optionally ``LEDGER_APP_ID``
+    from the ``.env`` file. If ``LEDGER_APP_ID`` is already set, the existing
+    deployment is reused.
+
+    Parameters
+    ----------
+    (none)
+
+    Returns
+    -------
+    None
+        Exits the process with the deploy script's return code.
+    """
+    result = subprocess.run(
+        [sys.executable, "-m", "captre.contract.deploy_ledger"],
+        check=False,
+    )
+    sys.exit(result.returncode)
+
+
 def dev() -> None:
     """
     Run the development server with hot-reload enabled.

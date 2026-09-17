@@ -16,13 +16,18 @@ Methods:
   get_attestation(content_hash_key) -> bytes
   resolve_id(attestation_id) -> bytes   # returns content_hash_str bytes, or b""
   exists(content_hash_key) -> bool
+  admin_delete_box(box_name_without_prefix, is_attestation) -> None  # creator-only cleanup
 
-Compile with (from project root):
-  algokit compile python src/captre/contract/captre_app.py \\
-    --out-dir src/captre/contract/artifacts --output-arc32
+Compile with (from project root — use isolation workaround):
+  mkdir -p /tmp/captre_compile && \\
+  cp src/captre/contract/captre_app.py /tmp/captre_compile/ && \\
+  algokit compile python /tmp/captre_compile/captre_app.py \\
+    --out-dir /tmp/captre_compile/artifacts --output-arc32 && \\
+  cp /tmp/captre_compile/artifacts/* src/captre/contract/artifacts/ && \\
+  rm -rf /tmp/captre_compile
 """
 
-from algopy import ARC4Contract, BoxMap, Bytes, String, UInt64, arc4
+from algopy import ARC4Contract, BoxMap, Bytes, Global, String, Txn, UInt64, arc4
 
 
 class CaptreApp(ARC4Contract):
@@ -194,3 +199,37 @@ class CaptreApp(ARC4Contract):
             ``True`` if a box exists for this key, ``False`` otherwise.
         """
         return content_hash_key in self.attestations
+
+    @arc4.abimethod
+    def admin_delete_box(self, box_key: Bytes, is_attestation: bool) -> None:
+        """
+        Delete a single box by its key (without prefix). Creator-only.
+
+        Used during MBR reclaim before contract migration. Each deletion
+        releases the box's MBR back to the contract account so the balance
+        can be recovered before the app is deleted.
+
+        Parameters
+        ----------
+        box_key : Bytes
+            The key portion of the box name **without** the prefix.
+            For attestation boxes this is the 32-byte SHA-256 digest.
+            For id_index boxes this is the UUID bytes.
+        is_attestation : bool
+            ``True`` to delete from ``attestations`` (prefix ``b"a:"``).
+            ``False`` to delete from ``id_index`` (prefix ``b"i:"``).
+
+        Raises
+        ------
+        Assert(ERR_NOT_CREATOR)
+            If the transaction sender is not the application creator.
+        Assert(ERR_BOX_NOT_FOUND)
+            If the specified box does not exist.
+        """
+        assert Txn.sender == Global.creator_address, "ERR_NOT_CREATOR"
+        if is_attestation:
+            assert box_key in self.attestations, "ERR_BOX_NOT_FOUND"
+            del self.attestations[box_key]
+        else:
+            assert box_key in self.id_index, "ERR_BOX_NOT_FOUND"
+            del self.id_index[box_key]

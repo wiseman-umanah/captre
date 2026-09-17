@@ -14,6 +14,9 @@
           </span>
           {% if att.output_type %}<span class="tag" style="font-size:11px;">{{ att.output_type }}</span>{% endif %}
           {% for tag in att.tags[:3] %}<span class="tag" style="font-size:11px;">{{ tag }}</span>{% endfor %}
+          {% if att.extra and att.extra.get('evaluation_id') %}
+            <span class="tag" style="font-size:11px; background:var(--amber-50,#fffbeb); color:var(--amber-600); border-color:var(--amber-200,#fde68a);">evaluated</span>
+          {% endif %}
         </div>
         <div style="font-family:var(--mono); font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:var(--sp-2);">
           {{ att.content_hash }}
@@ -190,6 +193,9 @@
     (att.tags || []).slice(0, 3).forEach(function (t) {
       tags += '<span class="tag" style="font-size:11px;">' + esc(t) + '</span>';
     });
+    if (att.extra && att.extra.evaluation_id) {
+      tags += '<span class="tag" style="font-size:11px;background:var(--amber-50,#fffbeb);color:var(--amber-600);border-color:var(--amber-200,#fde68a);">evaluated</span>';
+    }
 
     var desc = att.description
       ? '<div style="font-size:13px;color:var(--text);line-height:1.5;margin-top:4px;">' + esc(att.description.slice(0, 120)) + (att.description.length > 120 ? '…' : '') + '</div>'

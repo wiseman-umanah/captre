@@ -5,7 +5,7 @@ Routes
 ------
 GET /              Landing page — hero, stats, how it works
 GET /explore       Browse recent attestations (on-chain read)
-GET /explore/{id}  Single attestation detail
+GET /explore/{id}  Single attestation detail + evaluations
 GET /api-reference API endpoint reference with curl examples
 GET /robots.txt    Crawler permission file
 GET /sitemap.xml   XML sitemap for search engines
@@ -24,6 +24,7 @@ from captre.settlement.write_attestation import (
     read_attestation_from_box_async,
     resolve_id_from_chain_async,
 )
+from captre.settlement.write_evaluation import read_evaluation_from_box_async
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 # Disable Jinja2 template auto-reload in production (re-reads disk on every render).
@@ -37,6 +38,8 @@ router = APIRouter(include_in_schema=False)
 
 _NETWORK = os.environ.get("ALGORAND_NETWORK", "testnet")
 _APP_ID = os.environ.get("APP_ID", "")
+_TASK_APP_ID = os.environ.get("TASK_APP_ID", "").strip("'\"")
+_LEDGER_APP_ID = os.environ.get("LEDGER_APP_ID", "").strip("'\"")
 _EXPLORER_BASE = (
     "https://explorer.perawallet.app/application"
     if _NETWORK == "mainnet"
@@ -44,6 +47,8 @@ _EXPLORER_BASE = (
 )
 _ATTEST_PRICE = os.environ.get("ATTEST_PRICE", "$0.05")
 _REVOKE_PRICE = os.environ.get("REVOKE_PRICE", "$0.05")
+_SUBMIT_TASK_PRICE = os.environ.get("SUBMIT_TASK_PRICE", "$0.01")
+_EVALUATE_PRICE = os.environ.get("EVALUATE_PRICE", "$0.01")
 
 
 def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
@@ -65,9 +70,13 @@ def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
     return {
         "network": _NETWORK,
         "app_id": _APP_ID,
+        "task_app_id": _TASK_APP_ID,
+        "ledger_app_id": _LEDGER_APP_ID,
         "explorer_base": _EXPLORER_BASE,
         "attest_price": _ATTEST_PRICE,
         "revoke_price": _REVOKE_PRICE,
+        "submit_task_price": _SUBMIT_TASK_PRICE,
+        "evaluate_price": _EVALUATE_PRICE,
         **extra,
     }
 
@@ -126,12 +135,14 @@ async def explore(request: Request) -> HTMLResponse:
 @router.get("/explore/{attestation_id}", response_class=HTMLResponse)
 async def explore_detail(request: Request, attestation_id: str) -> HTMLResponse:
     """
-    Render the detail page for a single attestation.
+    Render the detail page for a single attestation, including any evaluations.
 
     Resolves the ``attestation_id`` (UUID or content_hash) via the on-chain
-    id_index BoxMap, then reads the full record. Renders a not-found state
-    if the attestation does not exist rather than raising a 404, so the page
-    always returns HTTP 200 with appropriate UI feedback.
+    id_index BoxMap, then reads the full record. If the attestation has an
+    ``evaluation_id`` in its ``extra`` dict, also fetches that evaluation.
+    Renders a not-found state if the attestation does not exist rather than
+    raising a 404, so the page always returns HTTP 200 with appropriate
+    UI feedback.
 
     Parameters
     ----------
@@ -143,10 +154,11 @@ async def explore_detail(request: Request, attestation_id: str) -> HTMLResponse:
     Returns
     -------
     HTMLResponse
-        The rendered ``detail.html`` template with the attestation record or
-        a not-found indicator.
+        The rendered ``detail.html`` template with the attestation record,
+        optional evaluation, and not-found indicator as appropriate.
     """
     attestation = None
+    evaluation = None
     error = None
 
     try:
@@ -155,6 +167,15 @@ async def explore_detail(request: Request, attestation_id: str) -> HTMLResponse:
             attestation = await read_attestation_from_box_async(content_hash)
         if attestation is None:
             attestation = await read_attestation_from_box_async(attestation_id)
+
+        # If the attestation extra dict carries an evaluation_id, fetch it
+        if attestation and attestation.extra.get("evaluation_id"):
+            try:
+                evaluation = await read_evaluation_from_box_async(
+                    attestation.extra["evaluation_id"]
+                )
+            except Exception:  # noqa: BLE001, S110
+                pass  # evaluation not critical — page still renders without it
     except Exception as exc:  # noqa: BLE001
         error = str(exc)
 
@@ -164,6 +185,7 @@ async def explore_detail(request: Request, attestation_id: str) -> HTMLResponse:
         _ctx(
             request,
             attestation=attestation,
+            evaluation=evaluation,
             lookup_id=attestation_id,
             error=error,
         ),

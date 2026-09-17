@@ -151,6 +151,93 @@
         </div>
       </div>
 
+      <!-- Evaluation record (populated when attestation has evaluation_id in extra) -->
+      {% if evaluation %}
+      <div style="margin-top:var(--sp-8);">
+        <div class="label" style="margin-bottom:var(--sp-3);">Evaluation</div>
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:0 var(--sp-8);">
+
+            <div class="detail-row">
+              <div class="detail-key">Evaluation ID</div>
+              <div class="detail-val" style="font-family:var(--mono); font-size:13px;">{{ evaluation.evaluation_id }}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-key">Result</div>
+              <div class="detail-val">
+                {% if evaluation.evaluation_result == 'pass' %}
+                  <span class="status-active">Pass</span>
+                {% elif evaluation.evaluation_result == 'fail' %}
+                  <span class="status-revoked">Fail</span>
+                {% else %}
+                  <span class="tag">{{ evaluation.evaluation_result }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if evaluation.score is not none %}
+            <div class="detail-row">
+              <div class="detail-key">Score</div>
+              <div class="detail-val">{{ evaluation.score }}</div>
+            </div>
+            {% endif %}
+
+            <div class="detail-row">
+              <div class="detail-key">Evaluator</div>
+              <div class="detail-val">
+                <span style="font-family:var(--mono); font-size:13px;">{{ evaluation.evaluator }}</span>
+                <span style="display:block; font-size:12px; color:var(--muted); margin-top:3px;">Algorand address of the x402 payer</span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-key">Policy Hash</div>
+              <div class="detail-val" style="font-family:var(--mono); font-size:13px; word-break:break-all;">{{ evaluation.policy_hash }}</div>
+            </div>
+
+            {% if evaluation.task_hash %}
+            <div class="detail-row">
+              <div class="detail-key">Task Hash</div>
+              <div class="detail-val" style="font-family:var(--mono); font-size:13px; word-break:break-all;">{{ evaluation.task_hash }}</div>
+            </div>
+            {% endif %}
+
+            {% if evaluation.notes %}
+            <div class="detail-row">
+              <div class="detail-key">Notes</div>
+              <div class="detail-val">{{ evaluation.notes }}</div>
+            </div>
+            {% endif %}
+
+            <div class="detail-row">
+              <div class="detail-key">Evaluated</div>
+              <div class="detail-val">
+                <time data-ts="{{ evaluation.created_at }}Z">{{ evaluation.created_at }} UTC</time>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-key">Payment TX</div>
+              <div class="detail-val" style="font-family:var(--mono); font-size:13px;">{{ evaluation.tx_id }}</div>
+            </div>
+
+            {% if ledger_app_id %}
+            <div class="detail-row">
+              <div class="detail-key">Ledger Contract</div>
+              <div class="detail-val">
+                <a href="{{ explorer_base }}/{{ ledger_app_id }}" target="_blank" rel="noopener" style="color:var(--amber-600);">
+                  App #{{ ledger_app_id }} on Pera Explorer ↗
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Actions -->
       <div style="display:flex; gap:var(--sp-3); flex-wrap:wrap; margin-top:var(--sp-6);">
         <a href="/explore" class="btn btn-outline">← Back to Explorer</a>
